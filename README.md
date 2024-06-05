@@ -9,7 +9,7 @@ This repository contains an ASP.NET Core application with a Blazor WebAssembly (
 
 - ASP.NET Core Kestrel web server: A robust and high-performance server.
 - Blazor WASM UI: A modern web UI framework for .NET.
-- MudBlazor conponents: Using side or top navigation.
+- MudBlazor components: Using side navigation.
 - Swagger UI: An interactive documentation for your API.
 - ASP.NET Core 8 Identity: A membership system that adds login functionality to your application.
 - Entity Framework Core SQLite: A lightweight database provider for Entity Framework Core.
