@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Rewardpoints": 1200,
+    "CreditsDollars": 1.20,
+    "ConversionRate": 0.10,
+    "ExpirationDate": "2024-12-31T00:00:00",
+    "Notes": ""
+  },
+  {
+    "Id": 2,
+    "Rewardpoints": 1500,
+    "CreditsDollars": 1.50,
+    "ConversionRate": 0.10,
+    "ExpirationDate": "2024-12-31T00:00:00",
+    "Notes": ""
+  },
+  {
+    "Id": 3,
+    "Rewardpoints": 1800,
+    "CreditsDollars": 1.80,
+    "ConversionRate": 0.10,
+    "ExpirationDate": "2024-12-31T00:00:00",
+    "Notes": ""
+  }
+]

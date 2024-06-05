@@ -1,0 +1,116 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+@attribute [Authorize]
+
+<EditForm Model="@registerModel" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Add User</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudTextField @bind-Value="registerModel.Email" For="@(() => registerModel.Email)" Label="Email" />
+            <MudTextField @bind-Value="registerModel.Password" For="@(() => registerModel.Password)" Label="Password" InputType="InputType.Password" />
+            <MudTextField @bind-Value="registerModel.ConfirmPassword" For="@(() => registerModel.ConfirmPassword)" Label="Confirm Password" InputType="InputType.Password" />
+            <MudTextField @bind-Value="registerModel.FirstName" For="@(() => registerModel.FirstName)" Label="First Name" />
+            <MudTextField @bind-Value="registerModel.LastName" For="@(() => registerModel.LastName)" Label="Last Name" />
+            <MudTextField @bind-Value="registerModel.Title" For="@(() => registerModel.Title)" Label="Title" />
+            <MudTextField @bind-Value="registerModel.CompanyName" For="@(() => registerModel.CompanyName)" Label="Company Name" />
+            <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => registerModel.Photo = await UploadImageAsync(args))" Accept=".png,.jpg,.jpeg">
+                <ButtonTemplate Context="btnContext">
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
+                        Upload Photo
+                    </MudButton>
+                </ButtonTemplate>
+            </MudFileUpload>
+            @if (!string.IsNullOrEmpty(registerModel.Photo))
+            {
+                <MudImage Src="@GetAbsoluteUri(registerModel.Photo)" style="width:128px;height:128px;object-fit:contain;" Class="mt-1" />
+            }
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private RegisterModel registerModel = new();
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        if (registerModel.Password != registerModel.ConfirmPassword)
+        {
+            Snackbar.Add("Password and Confirm Password do not match.", Severity.Error);
+            return;
+        }
+
+        try
+        {
+            var errors = await AppService.RegisterUserAsync(registerModel);
+
+            if (errors.Any())
+            {
+                Snackbar.Add($"<ul>{string.Join(string.Empty, errors.Values.SelectMany(x => x).Select(x => $"<li>{x}</li>"))}</ul>", Severity.Error);
+                return;
+            }
+
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task<string?> UploadImageAsync(IBrowserFile file, int maxWidth = 256, int maxHeight = 256)
+    {
+        if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
+        {
+            Snackbar.Add("Only PNG or JPEG images can be uploaded.", Severity.Error);
+            return null;
+        }
+
+        var image = await file.RequestImageFileAsync("image/png", maxWidth, maxHeight);
+
+        try
+        {
+            return await AppService.UploadImageAsync(image);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return null;
+    }
+}

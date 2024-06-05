@@ -1,0 +1,86 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+@attribute [Authorize]
+
+@if (user == null)
+{
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Modify Roles</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudText>Loading...</MudText>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Disabled="true">Update</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+else
+{
+    <EditForm Model="model" OnSubmit="OnSubmit">
+        <MudDialog>
+            <TitleContent>
+                <MudText Typo="Typo.h6">Modify Roles for @user.FirstName @user.LastName</MudText>
+            </TitleContent>
+            <DialogContent>
+                <MudSelect T="string" Label="Roles" MultiSelection="true" @bind-SelectedValues="@model.Roles">
+                    <MudSelectItem T="string" Value="@("Administrator")">Administrator</MudSelectItem>
+                </MudSelect>
+            </DialogContent>
+            <DialogActions>
+                <MudButton OnClick="OnCancel">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Update</MudButton>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = null!;
+
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private ApplicationUserWithRolesDto? user;
+    private ModifyRolesModel model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            user = await AppService.GetUserByIdAsync(Id);
+            model.Roles = user?.Roles ?? [];
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            await AppService.ModifyRolesAsync(Id, model.Roles);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private class ModifyRolesModel
+    {
+        public IEnumerable<string> Roles { get; set; } = [];
+    }
+}

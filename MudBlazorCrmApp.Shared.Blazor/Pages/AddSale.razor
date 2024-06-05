@@ -1,0 +1,116 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<EditForm Model="@record" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Add Sale</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudTextField @bind-Value="record.ProductId" For="@(() => record.ProductId)" Label="ProductId" />
+            <MudTextField @bind-Value="record.ServiceId" For="@(() => record.ServiceId)" Label="ServiceId" />
+            <MudNumericField @bind-Value="record.CustomerId" For="@(() => record.CustomerId)" Label="CustomerId" />
+            <MudNumericField @bind-Value="record.Quantity" For="@(() => record.Quantity)" Label="Quantity" />
+            <MudNumericField @bind-Value="record.TotalAmount" For="@(() => record.TotalAmount)" Label="TotalAmount" />
+            <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.SaleDate" For="@(() => record.SaleDate)" Label="SaleDate" />
+            <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.ReceiptPhoto = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
+                <ButtonTemplate Context="btnContext">
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
+                        Upload ReceiptPhoto
+                    </MudButton>
+                </ButtonTemplate>
+            </MudFileUpload>
+            @if (!string.IsNullOrEmpty(record.ReceiptPhoto))
+            {
+                <MudImage Src="@GetAbsoluteUri(record.ReceiptPhoto)" Style="width:128px;height:128px;object-fit:contain;" Class="mt-1" />
+            }
+            <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private Sale record = new();
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            await AppService.InsertSaleAsync(record);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task<string?> UploadImageAsync(IBrowserFile file, int maxWidth = 256, int maxHeight = 256)
+    {
+        if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
+        {
+            Snackbar.Add("Only PNG or JPEG images can be uploaded.", Severity.Error);
+            return null;
+        }
+
+        var image = await file.RequestImageFileAsync("image/png", maxWidth, maxHeight);
+
+        try
+        {
+            return await AppService.UploadImageAsync(image);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return null;
+    }
+}

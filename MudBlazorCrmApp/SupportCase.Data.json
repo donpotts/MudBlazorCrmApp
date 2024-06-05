@@ -1,0 +1,44 @@
+[
+  {
+    "Id": 1,
+    "CustomerId": 301,
+    "ProductId": 101,
+    "ServiceId": "0",
+    "Status": "Open",
+    "Description": "Issue with Widget A",
+    "CreatedDateTime": "2024-01-31T00:00:00",
+    "ModifiedDateTime": "2024-02-01T00:00:00",
+    "UserId": 1,
+    "FollowupDate": "2024-02-31",
+    "Icon": "",
+    "Notes": ""
+  },
+  {
+    "Id": 2,
+    "CustomerId": 302,
+    "ProductId": 102,
+    "ServiceId": "0",
+    "Status": "Open",
+    "Description": "Issue with Gadget B",
+    "CreatedDateTime": "2024-02-01T00:00:00",
+    "ModifiedDateTime": "2024-02-02T00:00:00",
+    "UserId": 2,
+    "FollowupDate": "3/2/2024",
+    "Icon": "",
+    "Notes": ""
+  },
+  {
+    "Id": 3,
+    "CustomerId": 303,
+    "ProductId": 103,
+    "ServiceId": "0",
+    "Status": "Open",
+    "Description": "Issue with Device C",
+    "CreatedDateTime": "2024-02-03T00:00:00",
+    "ModifiedDateTime": "2024-02-04T00:00:00",
+    "UserId": 3,
+    "FollowupDate": "3/3/2024",
+    "Icon": "",
+    "Notes": ""
+  }
+]

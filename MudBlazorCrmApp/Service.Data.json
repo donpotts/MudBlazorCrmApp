@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 201,
+    "ServiceCategoryId": 1,
+    "Name": "AI Predictive Maintenance",
+    "Description": "AI-driven service to predict and prevent equipment failures",
+    "Recurring": "Yes",
+    "Icon": "ai_predictive_maintenance_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 202,
+    "ServiceCategoryId": 2,
+    "Name": "AI Market Forecasting",
+    "Description": "Predictive market analysis service using AI to forecast trends",
+    "Recurring": "Yes",
+    "Icon": "ai_market_forecasting_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 203,
+    "ServiceCategoryId": 3,
+    "Name": "AI Cybersecurity Monitoring",
+    "Description": "Continuous monitoring and threat detection using AI",
+    "Recurring": "Yes",
+    "Icon": "ai_cybersecurity_monitoring_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 204,
+    "ServiceCategoryId": 1,
+    "Name": "AI Business Optimization",
+    "Description": "AI service to enhance business efficiency and productivity",
+    "Recurring": "Yes",
+    "Icon": "ai_business_optimization_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 205,
+    "ServiceCategoryId": 2,
+    "Name": "AI Personalized Marketing",
+    "Description": "Targeted marketing service using AI for customer engagement",
+    "Recurring": "Yes",
+    "Icon": "ai_personalized_marketing_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 206,
+    "ServiceCategoryId": 3,
+    "Name": "AI Fraud Detection",
+    "Description": "AI service for real-time financial fraud detection",
+    "Recurring": "Yes",
+    "Icon": "ai_fraud_detection_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 207,
+    "ServiceCategoryId": 1,
+    "Name": "AI Talent Acquisition",
+    "Description": "Automated recruitment service using AI to find the best candidates",
+    "Recurring": "Yes",
+    "Icon": "ai_talent_acquisition_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 208,
+    "ServiceCategoryId": 2,
+    "Name": "AI Content Creation",
+    "Description": "Content generation service using AI for various media formats",
+    "Recurring": "Yes",
+    "Icon": "ai_content_creation_icon.png",
+    "Notes": ""
+  }
+]

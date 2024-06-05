@@ -1,0 +1,65 @@
+@page "/register"
+@inject AppService AppService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Register</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Register</MudText>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <EditForm Model="@registerModel" OnValidSubmit="@OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudCard>
+            <MudCardContent>
+                <MudTextField @bind-Value="registerModel.Email" For="@(() => registerModel.Email)" Label="Email" />
+                <MudTextField @bind-Value="registerModel.Password" For="@(() => registerModel.Password)" Label="Password" InputType="InputType.Password" />
+                <MudTextField @bind-Value="registerModel.ConfirmPassword" For="@(() => registerModel.ConfirmPassword)" Label="Confirm Password" InputType="InputType.Password" />
+                <MudTextField @bind-Value="registerModel.FirstName" For="@(() => registerModel.FirstName)" Label="First Name" />
+                <MudTextField @bind-Value="registerModel.LastName" For="@(() => registerModel.LastName)" Label="Last Name" />
+                <MudTextField @bind-Value="registerModel.Title" For="@(() => registerModel.Title)" Label="Title" />
+                <MudTextField @bind-Value="registerModel.CompanyName" For="@(() => registerModel.CompanyName)" Label="Company Name" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </EditForm>
+    <div class="my-3">
+        <MudText Align="Align.Center">
+            Already have an account? <MudLink href="login">Login</MudLink>
+        </MudText>
+    </div>
+</MudContainer>
+
+@code {
+    private RegisterModel registerModel = new();
+
+    private async void OnValidSubmit()
+    {
+        if (registerModel.Password != registerModel.ConfirmPassword)
+        {
+            Snackbar.Add("Password and Confirm Password do not match.", Severity.Error);
+            return;
+        }
+
+        try
+        {
+            var errors = await AppService.RegisterUserAsync(registerModel);
+
+            if (errors.Any())
+            {
+                Snackbar.Add($"<ul>{string.Join(string.Empty, errors.Values.SelectMany(x => x).Select(x => $"<li>{x}</li>"))}</ul>", Severity.Error);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        Navigation.NavigateTo("login");
+    }
+}

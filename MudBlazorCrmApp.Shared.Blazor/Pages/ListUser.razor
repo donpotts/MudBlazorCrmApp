@@ -1,0 +1,147 @@
+@page "/user"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@attribute [Authorize(Roles = "Administrator")]
+
+<PageTitle>User</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">User</MudText>
+</div>
+
+<MudStack AlignItems="AlignItems.End" Class="mb-3">
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
+</MudStack>
+
+<MudDataGrid T="ApplicationUserDto" @ref="grid" ServerData="(new Func<GridState<ApplicationUserDto>, Task<GridData<ApplicationUserDto>>>(ServerReload))" Filterable="true">
+    <Columns>
+        <PropertyColumn Property="x => x!.Id" Title="Id" />
+        <PropertyColumn Property="x => x!.Email" />
+        <PropertyColumn Property="x => x!.PhoneNumber" Title="Phone Number" />
+        <PropertyColumn Property="x => x!.FirstName" Title="First Name" />
+        <PropertyColumn Property="x => x!.LastName" Title="Last Name" />
+        <PropertyColumn Property="x => x!.Title" />
+        <PropertyColumn Property="x => x!.CompanyName" Title="Company Name" />
+        <TemplateColumn Title="Photo" Sortable="false" Filterable="false">
+            <CellTemplate>
+                @if (!string.IsNullOrEmpty(context.Item!.Photo))
+                {
+                    <MudImage Src="@GetAbsoluteUri(context.Item!.Photo)" Style="width:128px;height:128px;object-fit:contain;" />
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn StickyRight="true" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudStack Row="true">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Badge" Size="@Size.Small" Title="Roles" OnClick="@(e => OnModifyRoles(context.Item!))"  />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="ApplicationUserDto" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private MudDataGrid<ApplicationUserDto>? grid;
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state)
+    {
+        var top = state.PageSize;
+        var skip = state.Page * state.PageSize;
+        var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
+        var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
+
+        AppService.ODataResult<ApplicationUserDto>? result = null;
+
+        try
+        {
+            result = await AppService.ListUserODataAsync(top, skip, orderby, filter, true);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return new() { TotalItems = result?.Count ?? 0, Items = result?.Value ?? Enumerable.Empty<ApplicationUserDto>() };
+    }
+
+    private async void OnAdd()
+    {
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<AddUser>("Add User", dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnModifyRoles(ApplicationUserDto record)
+    {
+        DialogParameters<ModifyRoles> dialogParams = new() { { x => x.Id, record.Id } };
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        await DialogService.Show<ModifyRoles>("Modify Roles", dialogParams, dialogOptions).Result;
+    }
+
+    private async void OnEdit(ApplicationUserDto record)
+    {
+        DialogParameters<UpdateUser> dialogParams = new() { { x => x.Id, record.Id } };
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<UpdateUser>("Update User", dialogParams, dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnDelete(ApplicationUserDto record)
+    {
+        var result = await DialogService.ShowMessageBox(
+            "Warning",
+            "Are you sure you want to delete this record?",
+            "Delete",
+            "Cancel");
+
+        if (result.GetValueOrDefault(false))
+        {
+            try
+            {
+                await AppService.DeleteUserAsync(record.Id!);
+                await (grid?.ReloadServerData() ?? Task.CompletedTask);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+}

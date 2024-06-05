@@ -1,0 +1,32 @@
+[
+  {
+    "Id": 301,
+    "Name": "Cybernetics Corp",
+    "Type": "B2B",
+    "Industry": "Robotics",
+    "AddressId": 901,
+    "ContactId": 801,
+    "Logo": "cybernetics_corp_logo.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 302,
+    "Name": "RoboTech Inc.",
+    "Type": "B2B",
+    "Industry": "Manufacturing",
+    "AddressId": 902,
+    "ContactId": 802,
+    "Logo": "robotech_inc_logo.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 303,
+    "Name": "Jane Engineering",
+    "Type": "B2C",
+    "Industry": "N/A",
+    "AddressId": 903,
+    "ContactId": 803,
+    "Logo": "jane_eng_profile.jpg",
+    "Notes": ""
+  }
+]

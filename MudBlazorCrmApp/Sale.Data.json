@@ -1,0 +1,90 @@
+[
+  {
+    "Id": 701,
+    "ProductId": "101",
+    "ServiceId": "201",
+    "CustomerId": 301,
+    "Quantity": 10,
+    "TotalAmount": 24999.90,
+    "SaleDate": "2024-06-01T00:00:00",
+    "ReceiptPhoto": "sale_receipt.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 702,
+    "ProductId": "102",
+    "ServiceId": "NULL",
+    "CustomerId": 302,
+    "Quantity": 5,
+    "TotalAmount": 24999.95,
+    "SaleDate": "2024-06-15T00:00:00",
+    "ReceiptPhoto": "sale_receipt_702.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 703,
+    "ProductId": "NULL",
+    "ServiceId": "202",
+    "CustomerId": 303,
+    "Quantity": 1,
+    "TotalAmount": 199.99,
+    "SaleDate": "2024-06-20T00:00:00",
+    "ReceiptPhoto": "sale_receipt_703.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 704,
+    "ProductId": "103",
+    "ServiceId": "NULL",
+    "CustomerId": 304,
+    "Quantity": 3,
+    "TotalAmount": 2399.97,
+    "SaleDate": "2024-07-05T00:00:00",
+    "ReceiptPhoto": "sale_receipt_704.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 705,
+    "ProductId": "104",
+    "ServiceId": "204",
+    "CustomerId": 305,
+    "Quantity": 7,
+    "TotalAmount": 9099.93,
+    "SaleDate": "2024-07-12T00:00:00",
+    "ReceiptPhoto": "sale_receipt_705.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 706,
+    "ProductId": "105",
+    "ServiceId": "NULL",
+    "CustomerId": 306,
+    "Quantity": 2,
+    "TotalAmount": 6999.98,
+    "SaleDate": "2024-07-19T00:00:00",
+    "ReceiptPhoto": "sale_receipt_706.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 707,
+    "ProductId": "106",
+    "ServiceId": "205",
+    "CustomerId": 307,
+    "Quantity": 4,
+    "TotalAmount": 1199.96,
+    "SaleDate": "2024-07-26T00:00:00",
+    "ReceiptPhoto": "sale_receipt_707.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 708,
+    "ProductId": "107",
+    "ServiceId": "NULL",
+    "CustomerId": 308,
+    "Quantity": 1,
+    "TotalAmount": 10000.00,
+    "SaleDate": "2024-08-02T00:00:00",
+    "ReceiptPhoto": "sale_receipt_708.jpg",
+    "Notes": ""
+  }
+]

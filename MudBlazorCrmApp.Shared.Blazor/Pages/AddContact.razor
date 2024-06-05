@@ -1,0 +1,134 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<EditForm Model="@record" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Add Contact</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
+            <MudTextField @bind-Value="record.Email" For="@(() => record.Email)" Label="Email" />
+            <MudNumericField @bind-Value="record.Phone" For="@(() => record.Phone)" Label="Phone" />
+            <MudTextField @bind-Value="record.Role" For="@(() => record.Role)" Label="Role" />
+            <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Photo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
+                <ButtonTemplate Context="btnContext">
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
+                        Upload Photo
+                    </MudButton>
+                </ButtonTemplate>
+            </MudFileUpload>
+            @if (!string.IsNullOrEmpty(record.Photo))
+            {
+                <MudImage Src="@GetAbsoluteUri(record.Photo)" Style="width:128px;height:128px;object-fit:contain;" Class="mt-1" />
+            }
+            <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
+            <MudSelect @bind-Value="record.AddressId" For="@(() => record.AddressId)" Label="Address" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem T="long?" Value="null" />
+                @foreach (var address in addressArray ?? Enumerable.Empty<Address>())
+                {
+                    <MudSelectItem Value="@address.Id">@address.City</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSelect T="long?" Label="Reward" MultiSelection="true" @bind-SelectedValues="rewardValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => rewardArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.Rewardpoints)))" AnchorOrigin="Origin.BottomCenter">
+                @foreach (var reward in rewardArray ?? Enumerable.Empty<Reward>())
+                {
+                    <MudSelectItem T="long?" Value="@reward.Id">@reward.Rewardpoints</MudSelectItem>
+                }
+            </MudSelect>
+
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private Address[]? addressArray;
+    private Reward[]? rewardArray;
+    private IEnumerable<long?>? rewardValues;
+    private Contact record = new();
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            addressArray = await AppService.ListAddressAsync();
+            rewardArray = await AppService.ListRewardAsync();
+            rewardValues = record?.Reward?.Select(x => x.Id).ToHashSet() ?? [];
+        }
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            record.Reward = rewardValues?.Select(x => new Reward { Id = x }).ToList();
+            await AppService.InsertContactAsync(record);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task<string?> UploadImageAsync(IBrowserFile file, int maxWidth = 256, int maxHeight = 256)
+    {
+        if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
+        {
+            Snackbar.Add("Only PNG or JPEG images can be uploaded.", Severity.Error);
+            return null;
+        }
+
+        var image = await file.RequestImageFileAsync("image/png", maxWidth, maxHeight);
+
+        try
+        {
+            return await AppService.UploadImageAsync(image);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return null;
+    }
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>CRM Sample</title>
+    <base href="/" />
+    <link rel="stylesheet" href="_content/MudBlazorCrmApp.Shared.Blazor/lib/roboto/300.css" />
+    <link rel="stylesheet" href="_content/MudBlazorCrmApp.Shared.Blazor/lib/roboto/400.css" />
+    <link rel="stylesheet" href="_content/MudBlazorCrmApp.Shared.Blazor/lib/roboto/500.css" />
+    <link rel="stylesheet" href="_content/MudBlazorCrmApp.Shared.Blazor/lib/roboto/700.css" />
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <link href="_content/MudBlazorCrmApp.Shared.Blazor/css/app.css" rel="stylesheet" />
+    <link href="MudBlazorCrmApp.Blazor.styles.css" rel="stylesheet" />
+    <link href="manifest.webmanifest" rel="manifest" />
+</head>
+
+<body>
+    <div id="app">
+        <style>
+            :root {
+                --mud-palette-primary: rgba(89,74,226,1);
+                --mud-palette-primary-text: rgba(255,255,255,1);
+                --mud-palette-background: rgba(255,255,255,1);
+                --mud-palette-text-primary: rgba(66,66,66,1);
+                --mud-typography-default-family: 'Roboto','Helvetica','Arial','sans-serif';
+                --mud-typography-default-size: .875rem;
+                --mud-typography-default-weight: 400;
+                --mud-typography-default-lineheight: 1.43;
+                --mud-typography-default-letterspacing: .01071em;
+                --mud-typography-default-text-transform: none;
+                --mud-typography-subtitle2-family: 'Roboto','Helvetica','Arial','sans-serif';
+                --mud-typography-subtitle2-size: .875rem;
+                --mud-typography-subtitle2-weight: 500;
+                --mud-typography-subtitle2-lineheight: 1.57;
+                --mud-typography-subtitle2-letterspacing: .00714em;
+                --mud-typography-subtitle2-text-transform: none;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --mud-palette-primary: rgba(119,107,231,1);
+                    --mud-palette-background: rgba(50,51,61,1);
+                    --mud-palette-text-primary: rgba(255,255,255,0.6980392156862745);
+                }
+            }
+        </style>
+        <div class="mud-progress-linear mud-progress-linear-large mud-progress-linear-color-primary horizontal mud-flip-x-rtl" role="progressbar">
+            <div class="mud-progress-linear-bars">
+                <div class="mud-progress-linear-bar" style="transform: translateX(calc(var(--blazor-load-percentage, 0%) - 100%));"></div>
+            </div>
+            <div class="mud-progress-linear-content">
+                <h6 class="mud-typography mud-typography-subtitle2 mud-primary-contrast-text loading-progress-text" style="color: var(--mud-palette-primary-text);"></h6>
+            </div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+   <script>navigator.serviceWorker.register('service-worker.js');</script> 
+               <script src="_framework/blazor.webassembly.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,260 @@
+@page "/supportcase"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<PageTitle>Support Case</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Support Case</MudText>
+</div>
+
+<MudStack AlignItems="AlignItems.End" Class="mb-3">
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
+</MudStack>
+
+<MudDataGrid T="SupportCase" @ref="grid" ServerData="(new Func<GridState<SupportCase>, Task<GridData<SupportCase>>>(ServerReload))" Filterable="true">
+    <ToolBarContent>
+         <MudText Typo="Typo.h6">Support Case</MudText>
+         <MudSpacer />
+         <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
+         <MudButton Color="Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x!.Id" Title="Id" />
+        <PropertyColumn Property="x => x!.CustomerId" Title="CustomerId" />
+        <PropertyColumn Property="x => x!.ProductId" Title="ProductId" />
+        <PropertyColumn Property="x => x!.ServiceId" Title="ServiceId" />
+        <PropertyColumn Property="x => x!.Status" Title="Status" />
+        <PropertyColumn Property="x => x!.Description" Title="Description" />
+        <PropertyColumn Property="x => x!.CreatedDateTime" Title="CreatedDateTime" />
+        <PropertyColumn Property="x => x!.ModifiedDateTime" Title="ModifiedDateTime" />
+        <PropertyColumn Property="x => x!.UserId" Title="UserId" />
+        <PropertyColumn Property="x => x!.FollowupDate" Title="FollowupDate" />
+        <TemplateColumn Title="Icon" Sortable="false" Filterable="false">
+            <CellTemplate>
+                @if (!string.IsNullOrEmpty(context.Item!.Icon))
+                {
+                    <MudImage Src="@GetAbsoluteUri(context.Item!.Icon)" Style="width:128px;height:128px;object-fit:contain;" />
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x!.Notes" Title="Notes" />
+        <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudStack Row="true">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="SupportCase" />
+    </PagerContent>
+</MudDataGrid>
+
+<script>
+    window.downloadFromBase64 = function (base64, filename) {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        var byteCharacters = atob(base64);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], { type: "application/octet-stream" });
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+</script>
+
+@code {
+    private MudDataGrid<SupportCase>? grid;
+    private string? _searchString;
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    private async Task<GridData<SupportCase>> ServerReload(GridState<SupportCase> state)
+    {
+        var top = state.PageSize;
+        var skip = state.Page * state.PageSize;
+        var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
+        var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
+
+        AppService.ODataResult<SupportCase>? result = null;
+
+        try
+        {
+            if (_searchString?.Length > 0)
+            {
+               bool isNumeric = double.TryParse(_searchString, out _);
+               bool isDateTime = DateTime.TryParse(_searchString, out _);
+
+               if (isNumeric)
+               {
+                   filter = $"Id eq {_searchString} or CustomerId eq {_searchString} or ProductId eq {_searchString} or UserId eq {_searchString}";
+               }
+               else if (isDateTime)
+               {
+                   filter = $"CreatedDateTime ge cast({_searchString},Edm.DateTimeOffset) or ModifiedDateTime ge cast({_searchString},Edm.DateTimeOffset)";
+               }
+               else
+               {
+                   filter = $"contains(tolower(ServiceId), '{_searchString}') or contains(tolower(Status), '{_searchString}') or contains(tolower(Description), '{_searchString}') or contains(tolower(FollowupDate), '{_searchString}') or contains(tolower(Notes), '{_searchString}') ";
+               }
+            }
+            result = await AppService.ListSupportCaseODataAsync(top, skip, orderby, filter, true, null);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return new() { TotalItems = result?.Count ?? 0, Items = result?.Value ?? Enumerable.Empty<SupportCase>() };
+    }
+
+    private async void OnAdd()
+    {
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<AddSupportCase>("Add Support Case", dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnEdit(SupportCase record)
+    {
+        DialogParameters<UpdateSupportCase> dialogParams = new() { { x => x.Id, record.Id!.Value } };
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var result = await DialogService.Show<UpdateSupportCase>("Update Support Case", dialogParams, dialogOptions).Result;
+
+        if (!result.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnDelete(SupportCase record)
+    {
+        var result = await DialogService.ShowMessageBox(
+            "Warning",
+            "Are you sure you want to delete this record?",
+            "Delete",
+            "Cancel");
+
+        if (result.GetValueOrDefault(false))
+        {
+            try
+            {
+                await AppService.DeleteSupportCaseAsync(record.Id!.Value);
+                await (grid?.ReloadServerData() ?? Task.CompletedTask);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+    
+    private void SearchChanged(string Value)
+    {
+        if (Value.EndsWith("."))
+        {
+            return;
+        }
+        _searchString = Value.ToString().ToLower();
+        try
+        {
+            if (_searchString.Length > 18)
+            {
+                DateTimeOffset dateTime = DateTime.Parse(_searchString);
+                _searchString = dateTime.ToString("yyyy-MM-ddTHH:mm:ssK");
+                //Console.WriteLine(_searchString);
+            }
+        }
+        catch
+        {
+            return;
+        }
+        grid?.ReloadServerData();
+    }
+
+    private async Task ExportAllToCSV()
+    {
+        AppService.ODataResult<SupportCase>? result = null;
+
+        try
+        {
+            // Fetch all data from the OData service without any filters or restrictions
+            result = await AppService.ListSupportCaseODataAsync(null, null, null, null, true, null);
+
+            if (result != null && result?.Value != null)
+            {
+                var ar = result?.Value.ToList().Select(x => new
+                {
+                        x.Id,
+    x.CustomerId,
+    x.ProductId,
+    x.ServiceId,
+    x.Status,
+    x.Description,
+    x.CreatedDateTime,
+    x.ModifiedDateTime,
+    x.UserId,
+    x.FollowupDate,
+    x.Icon,
+    x.Notes,
+
+                });
+
+                using var memoryStream = new MemoryStream();
+                using (var writer = new StreamWriter(memoryStream))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(ar); // use CSVHelper to write the records to the CSV file
+                }
+                // Convert MemoryStream to ByteArray
+                var byteArray = memoryStream.ToArray();
+
+                // Convert ByteArray to Base64String
+                var base64 = Convert.ToBase64String(byteArray);
+
+                // Trigger file download
+                await JSRuntime.InvokeVoidAsync("downloadFromBase64", base64, "SupportCase_"+ System.DateTime.Now.ToString("yyyyMMddHHmmss") +".csv");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

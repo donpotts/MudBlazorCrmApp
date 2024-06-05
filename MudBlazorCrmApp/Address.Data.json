@@ -1,0 +1,32 @@
+[
+  {
+    "Id": 901,
+    "Street": "100 Innovation Drive",
+    "City": "Techville",
+    "State": "TN",
+    "ZipCode": 37153,
+    "Country": "USA",
+    "Photo": "cybernetics_corp_headquarters.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 902,
+    "Street": "500 Tech Park",
+    "City": "Innovation City",
+    "State": "TN",
+    "ZipCode": 37153,
+    "Country": "USA",
+    "Photo": "tech_park_address.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 903,
+    "Street": "1234 Maple Street",
+    "City": "Rockvale",
+    "State": "TN",
+    "ZipCode": 37153,
+    "Country": "USA",
+    "Photo": "maple_street_address.jpg",
+    "Notes": ""
+  }
+]

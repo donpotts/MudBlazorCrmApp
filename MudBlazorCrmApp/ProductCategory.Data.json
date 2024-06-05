@@ -1,0 +1,66 @@
+[
+  {
+    "Id": 1,
+    "Name": "AI Software",
+    "Description": "Software solutions with integrated AI capabilities",
+    "Icon": "ai_software_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  },
+  {
+    "Id": 2,
+    "Name": "Autonomous Drones",
+    "Description": "Unmanned aerial vehicles with advanced AI navigation systems",
+    "Icon": "autonomous_drones_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  },
+  {
+    "Id": 3,
+    "Name": "AI Personal Assistants",
+    "Description": "Virtual assistants powered by artificial intelligence for personal use",
+    "Icon": "ai_personal_assistants_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  },
+  {
+    "Id": 4,
+    "Name": "Smart Home Devices",
+    "Description": "Home appliances and systems with AI for automation and control",
+    "Icon": "smart_home_devices_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  },
+  {
+    "Id": 5,
+    "Name": "AI Security Systems",
+    "Description": "Advanced security systems using AI for threat detection and response",
+    "Icon": "ai_security_systems_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  },
+  {
+    "Id": 6,
+    "Name": "Healthcare AI",
+    "Description": "AI applications for diagnostics, treatment planning, and patient management",
+    "Icon": "healthcare_ai_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  },
+  {
+    "Id": 7,
+    "Name": "AI Education Platforms",
+    "Description": "Educational platforms utilizing AI for personalized learning experiences",
+    "Icon": "ai_education_platforms_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  },
+  {
+    "Id": 8,
+    "Name": "AI Financial Tools",
+    "Description": "Financial tools and apps enhanced with AI for better decision making",
+    "Icon": "ai_financial_tools_icon.png",
+    "TaxRate": "0.01%",
+    "Notes": ""
+  }
+]

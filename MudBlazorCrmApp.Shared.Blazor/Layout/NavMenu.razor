@@ -1,0 +1,142 @@
+@using System.Security.Claims
+@using MudBlazorCrmApp.Shared.Blazor.Components.Themes
+@inject AppService AppService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IStorageService LocalStorageService
+
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
+<MudAppBar Color="Color.Inherit">
+    <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+    <MudText>CRM Sample</MudText>
+    <MudSpacer />
+    <ThemesMenu @bind-ThemingDrawerOpen="_themingDrawerOpen"
+            ThemeManager="_themeManager"
+            ThemeManagerChanged="ThemeManagerChanged" />
+
+    <MudLink OnClick="@(() => _themingDrawerOpen = true)" Color="Color.Inherit">
+        <MudTooltip Arrow="true"
+                    Placement="Placement.Left"
+                    Text="Themes">
+            <MudIcon Icon="@Icons.Material.Outlined.Brush"
+                    Color="Color.Inherit"
+                    Class="mr-5"/>
+        </MudTooltip>
+        </MudLink>
+    <MudLink Href="https://www.radendpoint.com/" Color="Color.Inherit">About</MudLink>
+</MudAppBar>
+<MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <AuthorizeView>
+        <MudNavLink Href="/customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Customer</MudNavLink>
+        <MudNavLink Href="/address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Address</MudNavLink>
+        <MudNavLink Href="/productcategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Product Category</MudNavLink>
+        <MudNavLink Href="/servicecategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Service Category</MudNavLink>
+        <MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Contact</MudNavLink>
+        <MudNavLink Href="/opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Opportunity</MudNavLink>
+        <MudNavLink Href="/lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Lead</MudNavLink>
+        <MudNavLink Href="/product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Product</MudNavLink>
+        <MudNavLink Href="/service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Service</MudNavLink>
+        <MudNavLink Href="/sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Sale</MudNavLink>
+        <MudNavLink Href="/vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Vendor</MudNavLink>
+        <MudNavLink Href="/supportcase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Support Case</MudNavLink>
+        <MudNavLink Href="/todotask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Todo Task</MudNavLink>
+        <MudNavLink Href="/reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Contact Rewards</MudNavLink>
+
+    </AuthorizeView>
+    <AuthorizeView Roles="Administrator">
+        <MudNavLink Href="/user" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">User</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="/account/changePassword" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Change Password</MudNavLink>
+            <MudNavLink Href="/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
+        </Authorized>
+        <NotAuthorized>
+            <MudNavLink Href="/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Register</MudNavLink>
+            <MudNavLink Href="/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudDrawer>
+
+@code {
+    bool _dark = true;
+    private bool isDarkMode;
+    private MudThemeProvider? mudThemeProvider;
+    private bool drawerOpen = true;
+
+    private bool _themingDrawerOpen;
+
+    private MudTheme _theme = new();
+    private bool _isDarkMode = false;
+
+    private ThemeManagerModel _themeManager = new()
+    {
+        IsDarkMode = false,
+        PrimaryColor = "#594AE2",
+    };
+
+    private async Task UpdateThemeManagerLocalStorage()
+    {
+        await LocalStorageService.SetAsync("themeManager", _themeManager);
+    }
+
+    private async Task ThemeManagerChanged(ThemeManagerModel themeManager)
+    {
+        _themeManager = themeManager;
+
+        _isDarkMode = _themeManager.IsDarkMode;
+
+        _theme = new MudTheme()
+        {
+            Palette = new PaletteLight()
+            {
+                Primary = _themeManager.PrimaryColor,
+                AppbarBackground = _themeManager.PrimaryColor,
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = _themeManager.PrimaryColor,
+            }
+        };
+
+        await UpdateThemeManagerLocalStorage();
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _themeManager = await LocalStorageService.GetAsync<ThemeManagerModel>("themeManager")
+            ?? new()
+            {
+                IsDarkMode = false,
+                PrimaryColor = "#594AE2",
+            };
+
+        await ThemeManagerChanged(_themeManager);
+
+    }
+                            
+    private void DrawerToggle()
+    {
+        drawerOpen = !drawerOpen;
+    }
+                                                        
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && mudThemeProvider != null)
+        {
+            isDarkMode = await mudThemeProvider.GetSystemPreference();
+            StateHasChanged();
+
+            await mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+        }
+    }
+
+    protected Task OnSystemPreferenceChanged(bool isDarkMode)
+    {
+        this.isDarkMode = isDarkMode;
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+}

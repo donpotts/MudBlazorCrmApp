@@ -1,0 +1,146 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+@attribute [Authorize]
+
+@if (user == null)
+{
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Update User</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudText>Loading...</MudText>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Disabled="true">Update</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+else
+{
+    <EditForm Model="@updateUser" OnValidSubmit="@OnSubmit">
+        <DataAnnotationsValidator />
+        <MudDialog>
+            <TitleContent>
+                <MudText Typo="Typo.h6">Update User</MudText>
+            </TitleContent>
+            <DialogContent>
+                <MudNumericField @bind-Value="user.Id" For="@(() => user.Id)" Label="User Id" ReadOnly="true" HideSpinButtons="true" />
+                <MudTextField @bind-Value="user.Email" For="@(() => user.Email)" Label="User Name" ReadOnly="true" />
+                <MudTextField @bind-Value="user.PhoneNumber" For="@(() => user.PhoneNumber)" Label="Phone Number" ReadOnly="true" />
+                <MudTextField @bind-Value="updateUser.FirstName" For="@(() => updateUser.FirstName)" Label="First Name" />
+                <MudTextField @bind-Value="updateUser.LastName" For="@(() => updateUser.LastName)" Label="Last Name" />
+                <MudTextField @bind-Value="updateUser.Title" For="@(() => updateUser.Title)" Label="Title" />
+                <MudTextField @bind-Value="updateUser.CompanyName" For="@(() => updateUser.CompanyName)" Label="Company Name" />
+                <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => updateUser.Photo = await UploadImageAsync(args))" Accept=".png,.jpg,.jpeg">
+                    <ButtonTemplate Context="btnContext">
+                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
+                            Upload Photo
+                        </MudButton>
+                    </ButtonTemplate>
+                </MudFileUpload>
+                @if (!string.IsNullOrEmpty(updateUser.Photo))
+                {
+                    <MudImage Src="@GetAbsoluteUri(updateUser.Photo)" Style="width:128px;height:128px;object-fit:contain;" Class="mt-1" />
+                }
+            </DialogContent>
+            <DialogActions>
+                <MudButton OnClick="OnCancel">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Update</MudButton>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = null!;
+
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private UpdateApplicationUserDto updateUser = new();
+    private ApplicationUserDto? user;
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            user = await AppService.GetUserByIdAsync(Id);
+
+            updateUser = new()
+            {
+                FirstName = user?.FirstName,
+                LastName = user?.LastName,
+                Title = user?.Title,
+                CompanyName = user?.CompanyName,
+                Photo = user?.Photo,
+            };
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            await AppService.UpdateUserAsync(Id, updateUser);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task<string?> UploadImageAsync(IBrowserFile file, int maxWidth = 256, int maxHeight = 256)
+    {
+        if (file.ContentType != "image/png" && file.ContentType != "image/jpeg")
+        {
+            Snackbar.Add("Only PNG or JPEG images can be uploaded.", Severity.Error);
+            return null;
+        }
+
+        var image = await file.RequestImageFileAsync("image/png", maxWidth, maxHeight);
+
+        try
+        {
+            return await AppService.UploadImageAsync(image);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return null;
+    }
+}

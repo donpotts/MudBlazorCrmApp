@@ -1,0 +1,232 @@
+[
+  {
+    "Id": 101,
+    "ProductCategoryId": 1,
+    "Name": "Quantum AI Processor",
+    "Description": "A next-generation processor for advanced AI computations",
+    "Price": 2499.99,
+    "StockQuantity": 50,
+    "Photo": "quantum_ai_processor.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 102,
+    "ProductCategoryId": 2,
+    "Name": "SkyNet Drone",
+    "Description": "A high-endurance drone with real-time AI analytics capabilities",
+    "Price": 4999.99,
+    "StockQuantity": 20,
+    "Photo": "skynet_drone.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 103,
+    "ProductCategoryId": 3,
+    "Name": "Home AI Butler",
+    "Description": "An AI-powered device that manages your smart home ecosystem",
+    "Price": 799.99,
+    "StockQuantity": 100,
+    "Photo": "home_ai_butler.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 104,
+    "ProductCategoryId": 1,
+    "Name": "AI Chipset Max",
+    "Description": "Advanced chipset designed for deep learning operations",
+    "Price": 1299.99,
+    "StockQuantity": 75,
+    "Photo": "ai_chipset_max.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 105,
+    "ProductCategoryId": 2,
+    "Name": "Eagle Eye Drone",
+    "Description": "Drone with enhanced vision AI for precision surveillance",
+    "Price": 3500.00,
+    "StockQuantity": 30,
+    "Photo": "eagle_eye_drone.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 106,
+    "ProductCategoryId": 3,
+    "Name": "AI Coffee Maker",
+    "Description": "Smart coffee maker with personalized AI taste calibration",
+    "Price": 299.99,
+    "StockQuantity": 200,
+    "Photo": "ai_coffee_maker.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 107,
+    "ProductCategoryId": 1,
+    "Name": "Neural Net Core",
+    "Description": "Processor that mimics human brain neural networks",
+    "Price": 3199.99,
+    "StockQuantity": 40,
+    "Photo": "neural_net_core.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 108,
+    "ProductCategoryId": 2,
+    "Name": "Aqua Scout Drone",
+    "Description": "Water-resistant drone with AI for marine research",
+    "Price": 2800.00,
+    "StockQuantity": 15,
+    "Photo": "aqua_scout_drone.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 109,
+    "ProductCategoryId": 3,
+    "Name": "AI Fitness Coach",
+    "Description": "Wearable device with AI for personalized fitness coaching",
+    "Price": 499.99,
+    "StockQuantity": 150,
+    "Photo": "ai_fitness_coach.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 110,
+    "ProductCategoryId": 1,
+    "Name": "Quantum Data Server",
+    "Description": "High-speed server optimized for quantum AI calculations",
+    "Price": 10000.00,
+    "StockQuantity": 10,
+    "Photo": "quantum_data_server.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 111,
+    "ProductCategoryId": 2,
+    "Name": "Strato Climber Drone",
+    "Description": "High-altitude drone with AI for atmospheric studies",
+    "Price": 4200.00,
+    "StockQuantity": 25,
+    "Photo": "strato_climber_drone.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 112,
+    "ProductCategoryId": 3,
+    "Name": "AI Smart Lock",
+    "Description": "Home security lock with facial recognition AI technology",
+    "Price": 249.99,
+    "StockQuantity": 300,
+    "Photo": "ai_smart_lock.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 113,
+    "ProductCategoryId": 1,
+    "Name": "AI Dev Kit",
+    "Description": "Development kit with AI modules for tech enthusiasts",
+    "Price": 599.99,
+    "StockQuantity": 120,
+    "Photo": "ai_dev_kit.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 114,
+    "ProductCategoryId": 2,
+    "Name": "Night Hawk Drone",
+    "Description": "Stealth drone with AI for nocturnal monitoring",
+    "Price": 3800.00,
+    "StockQuantity": 18,
+    "Photo": "night_hawk_drone.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 115,
+    "ProductCategoryId": 3,
+    "Name": "AI Pet Companion",
+    "Description": "AI device that interacts and cares for your pets",
+    "Price": 349.99,
+    "StockQuantity": 80,
+    "Photo": "ai_pet_companion.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 116,
+    "ProductCategoryId": 1,
+    "Name": "AI Supercomputer",
+    "Description": "Supercomputer with AI for complex problem solving",
+    "Price": 15000.00,
+    "StockQuantity": 5,
+    "Photo": "ai_supercomputer.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 117,
+    "ProductCategoryId": 2,
+    "Name": "Recon Scout Drone",
+    "Description": "Compact drone with AI for tactical reconnaissance",
+    "Price": 3100.00,
+    "StockQuantity": 22,
+    "Photo": "recon_scout_drone.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 118,
+    "ProductCategoryId": 3,
+    "Name": "AI Thermostat",
+    "Description": "Intelligent thermostat with AI for energy optimization",
+    "Price": 199.99,
+    "StockQuantity": 250,
+    "Photo": "ai_thermostat.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 119,
+    "ProductCategoryId": 1,
+    "Name": "AI Crypto Miner",
+    "Description": "Dedicated AI system for efficient cryptocurrency mining",
+    "Price": 4500.00,
+    "StockQuantity": 60,
+    "Photo": "ai_crypto_miner.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 120,
+    "ProductCategoryId": 2,
+    "Name": "Forest Ranger Drone",
+    "Description": "AI drone for monitoring wildlife and forest health",
+    "Price": 3600.00,
+    "StockQuantity": 28,
+    "Photo": "forest_ranger_drone.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 121,
+    "ProductCategoryId": 3,
+    "Name": "AI Language Tutor",
+    "Description": "AI-powered device for learning new languages",
+    "Price": 399.99,
+    "StockQuantity": 90,
+    "Photo": "ai_language_tutor.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 122,
+    "ProductCategoryId": 1,
+    "Name": "AI Genome Analyzer",
+    "Description": "AI system for rapid genome sequencing and analysis",
+    "Price": 7500.00,
+    "StockQuantity": 35,
+    "Photo": "ai_genome_analyzer.jpg",
+    "Notes": ""
+  },
+  {
+    "Id": 123,
+    "ProductCategoryId": 2,
+    "Name": "Urban Explorer Drone",
+    "Description": "Drone with AI for urban mapping and exploration",
+    "Price": 3300.00,
+    "StockQuantity": 12,
+    "Photo": "urban_explorer_drone.jpg",
+    "Notes": ""
+  }
+]

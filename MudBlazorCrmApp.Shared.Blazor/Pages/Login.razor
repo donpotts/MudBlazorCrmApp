@@ -1,0 +1,50 @@
+@page "/login"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<PageTitle>Login</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Login</MudText>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <EditForm Model="@loginModel" OnValidSubmit="@OnValidSubmit">
+        <DataAnnotationsValidator />
+        <MudCard>
+            <MudCardContent>
+                <MudTextField @bind-Value="loginModel.Email" For="@(() => loginModel.Email)" Label="Email" />
+                <MudTextField @bind-Value="loginModel.Password" For="@(() => loginModel.Password)" Label="Password" InputType="InputType.Password" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Login</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </EditForm>
+    <div class="my-3">
+        <MudText Align="Align.Center">
+            Don't have an account yet? <MudLink href="register">Sign up</MudLink>
+        </MudText>
+    </div>
+</MudContainer>
+
+@code {
+    private LoginModel loginModel = new();
+
+    private async Task OnValidSubmit()
+    {
+        try
+        {
+            await ((IdentityAuthenticationStateProvider)AuthenticationStateProvider)
+                .LoginAsync(loginModel);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            return;
+        }
+
+        Navigation.NavigateTo("");
+    }
+}

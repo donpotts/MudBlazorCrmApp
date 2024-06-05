@@ -1,0 +1,58 @@
+[
+  {
+    "Id": 601,
+    "EstimatedCloseDate": "2024-12-31T00:00:00",
+    "Stage": "Negotiation",
+    "Icon": "opportunity_stage_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 602,
+    "EstimatedCloseDate": "2024-11-30T00:00:00",
+    "Stage": "Proposal",
+    "Icon": "opportunity_proposal_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 603,
+    "EstimatedCloseDate": "2024-10-15T00:00:00",
+    "Stage": "Qualification",
+    "Icon": "opportunity_qualification_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 604,
+    "EstimatedCloseDate": "2024-09-20T00:00:00",
+    "Stage": "Presentation",
+    "Icon": "opportunity_presentation_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 605,
+    "EstimatedCloseDate": "2024-08-25T00:00:00",
+    "Stage": "Discovery",
+    "Icon": "opportunity_discovery_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 606,
+    "EstimatedCloseDate": "2024-07-30T00:00:00",
+    "Stage": "Analysis",
+    "Icon": "opportunity_analysis_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 607,
+    "EstimatedCloseDate": "2024-06-15T00:00:00",
+    "Stage": "Value Proposition",
+    "Icon": "opportunity_value_proposition_icon.png",
+    "Notes": ""
+  },
+  {
+    "Id": 608,
+    "EstimatedCloseDate": "2024-05-10T00:00:00",
+    "Stage": "Decision Making",
+    "Icon": "opportunity_decision_making_icon.png",
+    "Notes": ""
+  }
+]

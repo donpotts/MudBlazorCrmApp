@@ -1,0 +1,20 @@
+@page "/logout"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Logout</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Logout</MudText>
+</div>
+
+<MudText>Logging out...</MudText>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ((IdentityAuthenticationStateProvider)AuthenticationStateProvider).LogoutAsync();
+
+        Navigation.NavigateTo("");
+    }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "Id": 1,
+    "Name": "Follow up with lead",
+    "Description": "Call John Doe to discuss Widget A",
+    "AssignedTo": 1,
+    "Status": "Open",
+    "DueDate": "2024-12-31T00:00:00",
+    "CreatedDateTime": "2024-01-27T00:00:00",
+    "ModifiedDateTime": "2024-01-28T00:00:00",
+    "UserId": 1,
+    "FollowupDate": "2024-02-27T00:00:00",
+    "Icon": "",
+    "Notes": ""
+  },
+  {
+    "Id": 2,
+    "Name": "Send proposal",
+    "Description": "Email proposal for Gadget B to Jane Smith",
+    "AssignedTo": 2,
+    "Status": "In Progress",
+    "DueDate": "2024-12-31T00:00:00",
+    "CreatedDateTime": "2024-01-29T00:00:00",
+    "ModifiedDateTime": "2024-01-30T00:00:00",
+    "UserId": 2,
+    "FollowupDate": "2024-02-29T00:00:00",
+    "Icon": "",
+    "Notes": ""
+  },
+  {
+    "Id": 3,
+    "Name": "Check in with customer",
+    "Description": "Call Jim Brown to discuss Device C",
+    "AssignedTo": 3,
+    "Status": "Open",
+    "DueDate": "2024-12-31T00:00:00",
+    "CreatedDateTime": "2024-01-31T00:00:00",
+    "ModifiedDateTime": "2024-02-01T00:00:00",
+    "UserId": 3,
+    "FollowupDate": "2024-03-01T00:00:00",
+    "Icon": "",
+    "Notes": ""
+  }
+]
