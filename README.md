@@ -3,7 +3,7 @@ Blazor WASM Sample CRM application using MudBlazor
 
 ## Overview
 
-This repository contains an ASP.NET Core application with a Blazor WebAssembly (WASM) UI in .NET 8. It also includes user authentication using ASP.NET Core 8 Identity, uses Entity Framework Core SQLite as the database, and supports OData for efficient querying.
+This repository contains an ASP.NET Core application with a Blazor WebAssembly (WASM) UI in .NET 9. It also includes user authentication using ASP.NET Core 9 Identity, uses Entity Framework Core SQLite as the database, and supports OData for efficient querying.
 
 ## Features
 
@@ -11,7 +11,7 @@ This repository contains an ASP.NET Core application with a Blazor WebAssembly (
 - Blazor WASM UI: A modern web UI framework for .NET.
 - MudBlazor components: Using side navigation.
 - Swagger UI: An interactive documentation for your API.
-- ASP.NET Core 8 Identity: A membership system that adds login functionality to your application.
+- ASP.NET Core 9 Identity: A membership system that adds login functionality to your application.
 - Entity Framework Core SQLite: A lightweight database provider for Entity Framework Core.
 - OData Support: A standard for building and consuming RESTful APIs.
 
@@ -20,11 +20,11 @@ This repository contains an ASP.NET Core application with a Blazor WebAssembly (
 ### Prerequisites
 
 - Visual Studio 2022
-- .NET 8
+- .NET 9
 - ASP.NET Core
 - Blazor WASM
 - Swagger UI
-- ASP.NET Core 8 Identity
+- ASP.NET Core 9 Identity
 - MudBlazor Components
 - Entity Framework Core SQLite
 - OData
@@ -40,7 +40,7 @@ This repository contains an ASP.NET Core application with a Blazor WebAssembly (
    
 ## Authentication
 
-This application uses ASP.NET Core 8 Identity for user authentication. To log in, navigate to the login page and enter your credentials.
+This application uses ASP.NET Core 9 Identity for user authentication. To log in, navigate to the login page and enter your credentials.
 
 Administrator
 
