@@ -32,11 +32,11 @@ else
                 <MudNumericField @bind-Value="record.Price" For="@(() => record.Price)" Label="Price" />
                 <MudNumericField @bind-Value="record.StockQuantity" For="@(() => record.StockQuantity)" Label="StockQuantity" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Photo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
-                    <ButtonTemplate Context="btnContext">
-                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
-                            Upload Photo
-                        </MudButton>
-                    </ButtonTemplate>
+                    <ActivatorContent>
+                        <MudIconButton Color="Color.Info"
+                                       Icon="@Icons.Material.Filled.PhotoCamera">
+                        </MudIconButton>
+                    </ActivatorContent>
                 </MudFileUpload>
                 @if (!string.IsNullOrEmpty(record.Photo))
                 {

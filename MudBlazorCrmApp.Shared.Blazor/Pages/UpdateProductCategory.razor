@@ -31,9 +31,11 @@ else
                 <MudTextField @bind-Value="record.Description" For="@(() => record.Description)" Label="Description" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Icon = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                     <ButtonTemplate Context="btnContext">
-                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
-                            Upload Icon
-                        </MudButton>
+                        <ActivatorContent>
+        <MudIconButton Color="Color.Info"
+                       Icon="@Icons.Material.Filled.PhotoCamera">
+        </MudIconButton>
+    </ActivatorContent>
                     </ButtonTemplate>
                 </MudFileUpload>
                 @if (!string.IsNullOrEmpty(record.Icon))

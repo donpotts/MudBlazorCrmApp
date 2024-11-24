@@ -16,11 +16,11 @@
             <MudNumericField @bind-Value="record.TotalAmount" For="@(() => record.TotalAmount)" Label="TotalAmount" />
             <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.SaleDate" For="@(() => record.SaleDate)" Label="SaleDate" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.ReceiptPhoto = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
-                <ButtonTemplate Context="btnContext">
-                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
-                        Upload ReceiptPhoto
-                    </MudButton>
-                </ButtonTemplate>
+                <ActivatorContent>
+                    <MudIconButton Color="Color.Info"
+                                   Icon="@Icons.Material.Filled.PhotoCamera">
+                    </MudIconButton>
+                </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(record.ReceiptPhoto))
             {

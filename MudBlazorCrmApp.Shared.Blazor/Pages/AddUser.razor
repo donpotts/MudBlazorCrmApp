@@ -18,11 +18,11 @@
             <MudTextField @bind-Value="registerModel.Title" For="@(() => registerModel.Title)" Label="Title" />
             <MudTextField @bind-Value="registerModel.CompanyName" For="@(() => registerModel.CompanyName)" Label="Company Name" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => registerModel.Photo = await UploadImageAsync(args))" Accept=".png,.jpg,.jpeg">
-                <ButtonTemplate Context="btnContext">
-                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
-                        Upload Photo
-                    </MudButton>
-                </ButtonTemplate>
+                <ActivatorContent>
+                    <MudIconButton Color="Color.Info"
+                                   Icon="@Icons.Material.Filled.PhotoCamera">
+                    </MudIconButton>
+                </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(registerModel.Photo))
             {

@@ -19,11 +19,11 @@
             <MudNumericField @bind-Value="record.UserId" For="@(() => record.UserId)" Label="UserId" />
             <MudTextField @bind-Value="record.FollowupDate" For="@(() => record.FollowupDate)" Label="FollowupDate" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Icon = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
-                <ButtonTemplate Context="btnContext">
-                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload" for="@btnContext">
-                        Upload Icon
-                    </MudButton>
-                </ButtonTemplate>
+                <ActivatorContent>
+                    <MudIconButton Color="Color.Info"
+                                   Icon="@Icons.Material.Filled.PhotoCamera">
+                    </MudIconButton>
+                </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(record.Icon))
             {

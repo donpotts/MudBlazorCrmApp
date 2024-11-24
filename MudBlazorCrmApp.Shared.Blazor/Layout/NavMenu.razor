@@ -22,7 +22,7 @@
                     Class="mr-5"/>
         </MudTooltip>
         </MudLink>
-    <MudLink Href="https://www.radendpoint.com/" Color="Color.Inherit">About</MudLink>
+    <MudLink Href="https://www.donpotts.com/" Color="Color.Inherit">About</MudLink>
 </MudAppBar>
 <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
@@ -88,7 +88,7 @@
 
         _theme = new MudTheme()
         {
-            Palette = new PaletteLight()
+            PaletteLight = new PaletteLight()
             {
                 Primary = _themeManager.PrimaryColor,
                 AppbarBackground = _themeManager.PrimaryColor,

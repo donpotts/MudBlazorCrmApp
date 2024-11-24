@@ -15,7 +15,7 @@ public partial class ThemesMenu
         "#594AE2",
         Colors.Green.Default,
         Colors.Blue.Default,
-        Colors.BlueGrey.Default,
+        Colors.BlueGray.Default,
         Colors.Purple.Default,
         Colors.Orange.Default,
         Colors.Red.Default,
