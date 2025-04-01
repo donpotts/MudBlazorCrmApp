@@ -1,3 +1,4 @@
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/donpotts/mudblazorcrmapp/mudblazorcrmapp.yml?logo=github)
 # MudBlazor CRM App
 Blazor WASM Sample CRM application using MudBlazor
 
