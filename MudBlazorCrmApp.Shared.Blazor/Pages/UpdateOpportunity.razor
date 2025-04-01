@@ -56,7 +56,7 @@ else
     public long Id { get; set; }
 
     [CascadingParameter]
-    MudDialogInstance? MudDialog { get; set; }
+    IMudDialogInstance? MudDialog { get; set; }
 
     private Opportunity? record;
 

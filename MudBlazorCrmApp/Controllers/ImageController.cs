@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using MudBlazorCrmApp.Data;
 using MudBlazorCrmApp.Services;
 
 namespace MudBlazorCrmApp.Controllers;
@@ -9,10 +10,13 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class ImageController(ImageService imageService) : ControllerBase
+public class ImageController(ImageService _imageService, ILogger<ImageController> _logger) : ControllerBase
 {
+    private readonly ILogger<ImageController> logger = _logger;
+    private readonly ImageService imageService = _imageService;
+
     [HttpPost]
-    public async Task<IActionResult> PostAsync([FromForm] IFormFile image)
+    public async Task<IActionResult> PostAsync(IFormFile image)
     {
         var extension = image.ContentType switch
         {

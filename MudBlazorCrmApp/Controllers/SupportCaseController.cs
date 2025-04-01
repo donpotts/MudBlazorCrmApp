@@ -14,8 +14,11 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class SupportCaseController(ApplicationDbContext ctx) : ControllerBase
+public class SupportCaseController(ApplicationDbContext _ctx, ILogger<SupportCaseController> _logger) : ControllerBase
 {
+    private readonly ILogger<SupportCaseController> logger = _logger;
+    private readonly ApplicationDbContext ctx = _ctx;
+
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]

@@ -59,7 +59,7 @@ else
     public string Id { get; set; } = null!;
 
     [CascadingParameter]
-    MudDialogInstance? MudDialog { get; set; }
+    IMudDialogInstance? MudDialog { get; set; }
 
     private UpdateApplicationUserDto updateUser = new();
     private ApplicationUserDto? user;

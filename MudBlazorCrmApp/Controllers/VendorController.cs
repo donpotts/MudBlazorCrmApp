@@ -14,8 +14,11 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class VendorController(ApplicationDbContext ctx) : ControllerBase
+public class VendorController(ApplicationDbContext _ctx, ILogger<VendorController> _logger) : ControllerBase
 {
+    private readonly ILogger<VendorController> logger = _logger;
+    private readonly ApplicationDbContext ctx = _ctx;
+
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]

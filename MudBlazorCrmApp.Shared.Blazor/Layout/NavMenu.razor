@@ -27,21 +27,21 @@
 <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <AuthorizeView>
-        <MudNavLink Href="/customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Customer</MudNavLink>
-        <MudNavLink Href="/address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Address</MudNavLink>
-        <MudNavLink Href="/productcategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Product Category</MudNavLink>
-        <MudNavLink Href="/servicecategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Service Category</MudNavLink>
-        <MudNavLink Href="/contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Contact</MudNavLink>
-        <MudNavLink Href="/opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Opportunity</MudNavLink>
-        <MudNavLink Href="/lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Lead</MudNavLink>
-        <MudNavLink Href="/product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Product</MudNavLink>
-        <MudNavLink Href="/service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Service</MudNavLink>
-        <MudNavLink Href="/sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Sale</MudNavLink>
-        <MudNavLink Href="/vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Vendor</MudNavLink>
-        <MudNavLink Href="/supportcase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Support Case</MudNavLink>
-        <MudNavLink Href="/todotask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Todo Task</MudNavLink>
-        <MudNavLink Href="/reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Contact Rewards</MudNavLink>
-
+        <MudNavLink Href="/Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PeopleAlt">Customers</MudNavLink>
+        <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeWork">Addresses</MudNavLink>
+        <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>
+        <MudNavLink Href="/ServiceCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeRepairService">Service Categories</MudNavLink>
+        <MudNavLink Href="/Contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ContactMail">Contacts</MudNavLink>
+        <MudNavLink Href="/Opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Newspaper">Opportunities</MudNavLink>
+        <MudNavLink Href="/Lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Leaderboard">Leads</MudNavLink>
+        <MudNavLink Href="/Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ProductionQuantityLimits">Products</MudNavLink>
+        <MudNavLink Href="/Service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Services</MudNavLink>
+        <MudNavLink Href="/Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PointOfSale">Sales</MudNavLink>
+        <MudNavLink Href="/Vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Store">Vendors</MudNavLink>
+        <MudNavLink Href="/SupportCase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Support">Support Cases</MudNavLink>
+        <MudNavLink Href="/TodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Todo Tasks</MudNavLink>
+        <MudNavLink Href="/KanbanTodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Kanban Todo Tasks</MudNavLink>
+        <MudNavLink Href="/Reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Rewards</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="Administrator">
         <MudNavLink Href="/user" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">User</MudNavLink>

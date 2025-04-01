@@ -14,6 +14,7 @@ using MudBlazorCrmApp.Data;
 using MudBlazorCrmApp.Models;
 using MudBlazorCrmApp.Services;
 using MudBlazorCrmApp.Shared.Models;
+using Serilog;
 
 Environment.CurrentDirectory = AppContext.BaseDirectory;
 
@@ -172,13 +173,28 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddScoped<ImageService>();
 
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File(
+        path: "logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30 // Keep logs for 30 days
+    )
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MudBlazor CRM API V1");
+    });
 }
 
 app.UseHttpsRedirection();
