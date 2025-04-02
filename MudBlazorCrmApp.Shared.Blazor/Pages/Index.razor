@@ -1,7 +1,83 @@
 @page "/"
 
-<div class="mb-3">
-    <MudText Typo="Typo.h3">Sample CRM Application</MudText>
-</div>
+<MudText Typo="Typo.h3" Class="mb-4">CRM Dashboard - Last 6 Months</MudText>
+<MudText Class="mb-4">Blazor WASM application using MudBlazor components.</MudText>
 
-<MudText>Blazor WASM application using MudBlazor components.</MudText>
+<!-- Responsive Grid for Charts -->
+<MudGrid Class="gap-6 d-flex justify-center">
+    <MudItem Style="min-width: 300px; height: auto;">
+        <MudPaper Class="pa-4">
+            <!-- Bar Chart for Sales -->
+            <MudChart ChartType="ChartType.Bar" ChartSeries="@salesSeries" XAxisLabels="@salesLabels" Width="100%" Height="300px" />
+            <MudText Typo="Typo.h6" Class="mt-2">Sales Data</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem Style="min-width: 300px; height: auto;">
+        <MudPaper Class="pa-4">
+            <!-- Line Chart for Opportunities -->
+            <MudChart ChartType="ChartType.Line" ChartSeries="@opportunitySeries" XAxisLabels="@opportunityLabels" Width="100%" Height="300px" />
+            <MudText Typo="Typo.h6" Class="mt-2">Opportunities</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem Style="min-width: 300px; height: auto;">
+        <MudPaper Class="pa-4">
+            <!-- Donut Chart for Leads -->
+            <MudChart ChartType="ChartType.Donut" InputData="@leadsData" InputLabels="@leadsLabels" Width="100%" Height="300px" />
+            <MudText Typo="Typo.h6" Class="mt-2">Leads Distribution</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem Style="min-width: 300px; height: auto;">
+        <MudPaper Class="pa-4">
+            <!-- Stacked Bar Chart for Contacts -->
+            <MudChart ChartType="ChartType.StackedBar" ChartSeries="@contactsSeries" XAxisLabels="@contactsLabels" Width="100%" Height="300px" />
+            <MudText Typo="Typo.h6" Class="mt-2">Contacts Growth</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem Style="min-width: 300px; height: auto;">
+        <MudPaper Class="pa-4">
+            <!-- Pie Chart for Support Cases -->
+            <MudChart ChartType="ChartType.Pie" InputData="@supportCasesData" InputLabels="@supportCasesLabels" Width="100%" Height="300px" />
+            <MudText Typo="Typo.h6" Class="mt-2">Support Cases Overview</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4 mt-4 d-flex justify-center">
+    <MudButton OnClick="RandomizeData" Variant="Variant.Filled" Color="Color.Primary">Randomize Data</MudButton>
+</MudPaper>
+
+@code {
+    private string[] salesLabels = { "January", "February", "March", "April", "May", "June" };
+    private string[] opportunityLabels = { "January", "February", "March", "April", "May", "June" };
+    private string[] leadsLabels = { "January", "February", "March", "April", "May", "June" };
+    private string[] contactsLabels = { "January", "February", "March", "April", "May", "June" };
+    private string[] supportCasesLabels = { "January", "February", "March", "April", "May", "June" };
+
+    private double[] leadsData = { 50, 75, 60, 89, 76, 85 };
+    private double[] supportCasesData = { 10, 15, 20, 25, 18, 22 };
+
+    private List<ChartSeries> salesSeries = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Sales", Data = new double[] { 5000, 7500, 6200, 8900, 7600, 8500 } },
+    };
+
+    private List<ChartSeries> opportunitySeries = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Opportunities", Data = new double[] { 15, 20, 12, 18, 25, 22 } },
+    };
+
+    private List<ChartSeries> contactsSeries = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Contacts", Data = new double[] { 30, 45, 55, 40, 50, 60 } },
+    };
+
+    Random random = new Random();
+    void RandomizeData()
+    {
+        salesSeries.First().Data = salesSeries.First().Data.Select(_ => (double)random.Next(4000, 10000)).ToArray();
+        opportunitySeries.First().Data = opportunitySeries.First().Data.Select(_ => (double)random.Next(10, 30)).ToArray();
+        leadsData = leadsData.Select(_ => (double)random.Next(40, 100)).ToArray();
+        contactsSeries.First().Data = contactsSeries.First().Data.Select(_ => (double)random.Next(20, 70)).ToArray();
+        supportCasesData = supportCasesData.Select(_ => (double)random.Next(10, 30)).ToArray();
+    }
+}
