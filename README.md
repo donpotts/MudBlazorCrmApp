@@ -14,6 +14,7 @@ This repository contains an ASP.NET Core application with a Blazor WebAssembly (
 - ASP.NET Core 9 Identity: A membership system that adds login functionality to your application.
 - Entity Framework Core SQLite: A lightweight database provider for Entity Framework Core.
 - OData Support: A standard for building and consuming RESTful APIs.
+- Kanban Todo Tasks: A simple Kanban board to manage tasks.
 
 ## Getting Started
 

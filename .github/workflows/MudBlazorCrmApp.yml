@@ -1,10 +1,10 @@
-name: Build and deploy .NET Core application to Web App MudBlazorCrm
+name: Build and deploy .NET Core application to Web App MudBlazorCrmApp
 on:
   push:
     branches:
     - main
 env:
-  AZURE_WEBAPP_NAME: MudBlazorCrm
+  AZURE_WEBAPP_NAME: MudBlazorCrmApp
   AZURE_WEBAPP_PACKAGE_PATH: MudBlazorCrmApp\publish
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 9.0.x
@@ -43,7 +43,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.MUDBLAZORCRM_SPN }}
+        creds: ${{ secrets.MudBlazorCrmApp_SPN }}
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:

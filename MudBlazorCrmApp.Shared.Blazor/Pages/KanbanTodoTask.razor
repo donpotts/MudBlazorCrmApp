@@ -212,7 +212,7 @@
     private async Task OpenDialog(KanbanTaskItem item)
     {
         DialogOptions dialogOptions = new DialogOptions() { CloseOnEscapeKey = true };
-        TodoTask dataToPass = new() { Name = item.Name, Status = item.Status, FollowupDate = item.FollowupDate, DueDate = item.DueDate, Notes = item.Notes, CreatedDateTime = item.CreatedDateTime, ModifiedDateTime = item.ModifiedDateTime };
+        TodoTask dataToPass = new() { Id = item.Id, Name = item.Name, Status = item.Status, Description = item.Description, FollowupDate = item.FollowupDate, DueDate = item.DueDate, Notes = item.Notes, CreatedDateTime = item.CreatedDateTime, ModifiedDateTime = item.ModifiedDateTime };
         DialogParameters dialogParamters = new()
             {
                 ["PassedData"] = dataToPass
@@ -228,9 +228,9 @@
                 CustomSnackbar.ShowMessage("Task name cannot be empty!", Severity.Error);
                 return;
             }
-            var updatedItem = new KanbanTaskItem((int)_returnedData.Id, _returnedData.Name, _returnedData.Status, _returnedData.Description, _returnedData.DueDate ?? DateTime.Now.AddDays(7)
-            , _returnedData.CreatedDateTime ?? DateTime.Now, _returnedData.ModifiedDateTime ?? DateTime.Now, _returnedData.FollowupDate ?? DateTime.Now.AddDays(3), _returnedData.Notes);
+            
 
+            var updatedItem = new KanbanTaskItem((int)_returnedData.Id, _returnedData.Name, _returnedData.Status, _returnedData.Description, _returnedData.DueDate ?? DateTime.Now.AddDays(7), _returnedData.CreatedDateTime ?? DateTime.Now, _returnedData.ModifiedDateTime ?? DateTime.Now, _returnedData.FollowupDate ?? DateTime.Now.AddDays(3), _returnedData.Notes);
             int taskIndex = _tasks.IndexOf(item);
             if (taskIndex != -1)
             {
