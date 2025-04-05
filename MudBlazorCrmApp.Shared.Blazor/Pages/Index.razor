@@ -1,7 +1,8 @@
 @page "/"
-
-<MudText Typo="Typo.h3" Class="mb-4">CRM Dashboard - Last 6 Months</MudText>
 <MudText Class="mb-4">Blazor WASM application using MudBlazor components.</MudText>
+
+<AuthorizeView>
+    <MudText Typo="Typo.h3" Class="mb-4">CRM Dashboard</MudText>
 
 <!-- Responsive Grid for Charts -->
 <MudGrid Class="gap-6 d-flex justify-center">
@@ -45,7 +46,7 @@
 <MudPaper Class="pa-4 mt-4 d-flex justify-center">
     <MudButton OnClick="RandomizeData" Variant="Variant.Filled" Color="Color.Primary">Randomize Data</MudButton>
 </MudPaper>
-
+</AuthorizeView>
 @code {
     private string[] salesLabels = { "January", "February", "March", "April", "May", "June" };
     private string[] opportunityLabels = { "January", "February", "March", "April", "May", "June" };

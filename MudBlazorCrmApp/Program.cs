@@ -234,7 +234,7 @@ using (var scope = app.Services.CreateScope())
     var databaseExisted = ctx.Database.GetAppliedMigrations().Any();
 
     //Uncomment to delete and create database
-    ctx.Database.EnsureDeleted();
+    //ctx.Database.EnsureDeleted();
     //ctx.Database.EnsureCreated();
 
     ctx.Database.Migrate();
