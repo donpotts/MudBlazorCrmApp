@@ -253,6 +253,10 @@ public class AppService(
 
     public async Task UpdateCustomerAsync(long key, Customer data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -267,6 +271,10 @@ public class AppService(
 
     public async Task<Customer?> InsertCustomerAsync(Customer data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -337,6 +345,10 @@ public class AppService(
 
     public async Task UpdateAddressAsync(long key, Address data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -351,6 +363,10 @@ public class AppService(
 
     public async Task<Address?> InsertAddressAsync(Address data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -421,6 +437,10 @@ public class AppService(
 
     public async Task UpdateProductCategoryAsync(long key, ProductCategory data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -435,6 +455,10 @@ public class AppService(
 
     public async Task<ProductCategory?> InsertProductCategoryAsync(ProductCategory data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -505,6 +529,10 @@ public class AppService(
 
     public async Task UpdateServiceCategoryAsync(long key, ServiceCategory data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -519,6 +547,10 @@ public class AppService(
 
     public async Task<ServiceCategory?> InsertServiceCategoryAsync(ServiceCategory data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -589,6 +621,10 @@ public class AppService(
 
     public async Task UpdateContactAsync(long key, Contact data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -603,6 +639,10 @@ public class AppService(
 
     public async Task<Contact?> InsertContactAsync(Contact data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -673,6 +713,10 @@ public class AppService(
 
     public async Task UpdateOpportunityAsync(long key, Opportunity data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -687,6 +731,10 @@ public class AppService(
 
     public async Task<Opportunity?> InsertOpportunityAsync(Opportunity data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -757,6 +805,10 @@ public class AppService(
 
     public async Task UpdateLeadAsync(long key, Lead data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -771,6 +823,10 @@ public class AppService(
 
     public async Task<Lead?> InsertLeadAsync(Lead data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -841,6 +897,10 @@ public class AppService(
 
     public async Task UpdateProductAsync(long key, Product data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -855,6 +915,10 @@ public class AppService(
 
     public async Task<Product?> InsertProductAsync(Product data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -925,6 +989,10 @@ public class AppService(
 
     public async Task UpdateServiceAsync(long key, Service data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -939,6 +1007,10 @@ public class AppService(
 
     public async Task<Service?> InsertServiceAsync(Service data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1009,6 +1081,10 @@ public class AppService(
 
     public async Task UpdateSaleAsync(long key, Sale data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1023,6 +1099,10 @@ public class AppService(
 
     public async Task<Sale?> InsertSaleAsync(Sale data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1093,6 +1173,10 @@ public class AppService(
 
     public async Task UpdateVendorAsync(long key, Vendor data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1107,6 +1191,10 @@ public class AppService(
 
     public async Task<Vendor?> InsertVendorAsync(Vendor data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1177,6 +1265,10 @@ public class AppService(
 
     public async Task UpdateSupportCaseAsync(long key, SupportCase data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1191,6 +1283,10 @@ public class AppService(
 
     public async Task<SupportCase?> InsertSupportCaseAsync(SupportCase data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1261,6 +1357,10 @@ public class AppService(
 
     public async Task UpdateTodoTaskAsync(long key, TodoTask data)
     {
+        if (data.CreatedDateTime == null)
+            data.CreatedDateTime = DateTime.UtcNow;
+        data.ModifiedDateTime = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1275,6 +1375,10 @@ public class AppService(
 
     public async Task<TodoTask?> InsertTodoTaskAsync(TodoTask data)
     {
+        if (data.CreatedDateTime == null)
+            data.CreatedDateTime = DateTime.UtcNow;
+        data.ModifiedDateTime = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1345,6 +1449,10 @@ public class AppService(
 
     public async Task UpdateRewardAsync(long key, Reward data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 
@@ -1359,6 +1467,10 @@ public class AppService(
 
     public async Task<Reward?> InsertRewardAsync(Reward data)
     {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
         var token = await authenticationStateProvider.GetBearerTokenAsync()
             ?? throw new Exception("Not authorized");
 

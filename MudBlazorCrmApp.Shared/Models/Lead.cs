@@ -44,4 +44,11 @@ public class Lead
 
     [DataMember]
     public Contact? Contact { get; set; }
+
+    [DataMember]
+    public DateTime? CreatedDate { get; set; }
+
+    [DataMember]
+    public DateTime ModifiedDate { get; set; }
+    
 }

@@ -40,6 +40,8 @@
         <PropertyColumn @ref="addressColumn" Property="x => x!.Address != null ? x.Address.City : null" Title="Address" />
         <PropertyColumn @ref="opportunityColumn" Property="x => x!.Opportunity != null ? x.Opportunity.Stage : null" Title="Opportunity" />
         <PropertyColumn @ref="contactColumn" Property="x => x!.Contact != null ? x.Contact.Name : null" Title="Contact" />
+        <PropertyColumn Property="x => x!.CreatedDate" Title="Created Date" />
+        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified Date" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">

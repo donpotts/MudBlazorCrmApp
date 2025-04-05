@@ -30,8 +30,6 @@
         <PropertyColumn Property="x => x!.AssignedTo" Title="AssignedTo" />
         <PropertyColumn Property="x => x!.Status" Title="Status" />
         <PropertyColumn Property="x => x!.DueDate" Title="DueDate" />
-        <PropertyColumn Property="x => x!.CreatedDateTime" Title="CreatedDateTime" />
-        <PropertyColumn Property="x => x!.ModifiedDateTime" Title="ModifiedDateTime" />
         <PropertyColumn Property="x => x!.UserId" Title="UserId" />
         <PropertyColumn Property="x => x!.FollowupDate" Title="FollowupDate" />
         <TemplateColumn Title="Icon" Sortable="false" Filterable="false">
@@ -43,6 +41,8 @@
             </CellTemplate>
         </TemplateColumn>
         <PropertyColumn Property="x => x!.Notes" Title="Notes" />
+        <PropertyColumn Property="x => x!.CreatedDateTime" Title="Created Date Time" />
+        <PropertyColumn Property="x => x!.ModifiedDateTime" Title="Modified Date Time" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">

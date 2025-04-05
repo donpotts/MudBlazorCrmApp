@@ -47,4 +47,11 @@ public class Vendor
 
     [DataMember]
     public List<Service>? Service { get; set; }
+
+    [DataMember]
+    public DateTime? CreatedDate { get; set; }
+
+    [DataMember]
+    public DateTime ModifiedDate { get; set; }
+
 }

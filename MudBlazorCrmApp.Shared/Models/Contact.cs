@@ -41,4 +41,11 @@ public class Contact
 
     [DataMember]
     public List<Reward>? Reward { get; set; }
+
+    [DataMember]
+    public DateTime? CreatedDate { get; set; }
+
+    [DataMember]
+    public DateTime ModifiedDate { get; set; }
+
 }

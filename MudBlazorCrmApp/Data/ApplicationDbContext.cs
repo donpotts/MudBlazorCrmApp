@@ -9,6 +9,37 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Customer> Customer => Set<Customer>();
+
+    public override int SaveChanges()
+    {
+        UpdateTimestamps();
+        return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateTimestamps();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void UpdateTimestamps()
+    {
+        var entries = ChangeTracker.Entries()
+            .Where(e => e.Entity is Customer && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+        foreach (var entry in entries)
+        {
+            var customer = (Customer)entry.Entity;
+
+            if (entry.State == EntityState.Added)
+            {
+                customer.CreatedDate ??= DateTime.UtcNow; // Set only if null
+            }
+
+            customer.ModifiedDate = DateTime.UtcNow; // Always set for both Added and Modified
+        }
+    }
+
     public DbSet<Address> Address => Set<Address>();
     public DbSet<ProductCategory> ProductCategory => Set<ProductCategory>();
     public DbSet<ServiceCategory> ServiceCategory => Set<ServiceCategory>();

@@ -23,4 +23,11 @@ public class Opportunity
 
     [DataMember]
     public string? Notes { get; set; }
+
+    [DataMember]
+    public DateTime? CreatedDate { get; set; }
+
+    [DataMember]
+    public DateTime ModifiedDate { get; set; }
+
 }

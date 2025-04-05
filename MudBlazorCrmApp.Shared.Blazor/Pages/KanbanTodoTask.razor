@@ -45,6 +45,12 @@
                                 <MudTextField @bind-Value="item.Notes" Label="Notes" Placeholder="Notes" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
                             </MudItem>
                             <MudItem xs="12">
+                                <MudTextField @bind-Value="item.CreatedDateTime" Label="Created Date Time" Placeholder="CreatedDateTime" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField @bind-Value="item.ModifiedDateTime" Label="Modified Date Time" Placeholder="ModifiedDateTime" DisableUnderLine="true" Margin="Margin.Dense" Class="mx-2 mt-n2"></MudTextField>
+                            </MudItem>
+                            <MudItem xs="12">
                                 <MudButton OnClick="@(() => AddTask(item))" Size="Size.Small" Color="Color.Primary" FullWidth="true">Add Task</MudButton>
                             </MudItem>
                             <MudItem xs="12">

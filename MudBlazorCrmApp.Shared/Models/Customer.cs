@@ -38,4 +38,11 @@ public class Customer
 
     [DataMember]
     public List<Contact>? Contact { get; set; }
+
+     [DataMember]
+    public DateTime? CreatedDate { get; set; }
+
+    [DataMember]
+    public DateTime ModifiedDate { get; set; }
+
 }
