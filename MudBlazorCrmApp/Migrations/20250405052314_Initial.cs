@@ -23,7 +23,9 @@ namespace MudBlazorCrmApp.Migrations
                     ZipCode = table.Column<long>(type: "INTEGER", nullable: true),
                     Country = table.Column<string>(type: "TEXT", nullable: true),
                     Photo = table.Column<string>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,7 +85,9 @@ namespace MudBlazorCrmApp.Migrations
                     EstimatedCloseDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Stage = table.Column<string>(type: "TEXT", nullable: true),
                     Icon = table.Column<string>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -103,7 +107,9 @@ namespace MudBlazorCrmApp.Migrations
                     TotalAmount = table.Column<double>(type: "REAL", precision: 19, scale: 4, nullable: true),
                     SaleDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     ReceiptPhoto = table.Column<string>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,7 +132,9 @@ namespace MudBlazorCrmApp.Migrations
                     UserId = table.Column<long>(type: "INTEGER", nullable: true),
                     FollowupDate = table.Column<string>(type: "TEXT", nullable: true),
                     Icon = table.Column<string>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -168,7 +176,9 @@ namespace MudBlazorCrmApp.Migrations
                     AddressId = table.Column<long>(type: "INTEGER", nullable: true),
                     ContactId = table.Column<long>(type: "INTEGER", nullable: true),
                     Logo = table.Column<string>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -194,7 +204,9 @@ namespace MudBlazorCrmApp.Migrations
                     ProductId = table.Column<long>(type: "INTEGER", nullable: true),
                     ServiceId = table.Column<long>(type: "INTEGER", nullable: true),
                     Logo = table.Column<string>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -326,6 +338,8 @@ namespace MudBlazorCrmApp.Migrations
                     Photo = table.Column<string>(type: "TEXT", nullable: true),
                     RewardId = table.Column<long>(type: "INTEGER", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CustomerId = table.Column<long>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -356,6 +370,8 @@ namespace MudBlazorCrmApp.Migrations
                     StockQuantity = table.Column<long>(type: "INTEGER", nullable: true),
                     Photo = table.Column<string>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     VendorId = table.Column<long>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -380,6 +396,8 @@ namespace MudBlazorCrmApp.Migrations
                     Recurring = table.Column<string>(type: "TEXT", nullable: true),
                     Icon = table.Column<string>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     VendorId = table.Column<long>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -405,7 +423,9 @@ namespace MudBlazorCrmApp.Migrations
                     OpportunityId = table.Column<long>(type: "INTEGER", nullable: true),
                     AddressId = table.Column<long>(type: "INTEGER", nullable: true),
                     Photo = table.Column<string>(type: "TEXT", nullable: true),
-                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                    Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -438,6 +458,8 @@ namespace MudBlazorCrmApp.Migrations
                     ConversionRate = table.Column<double>(type: "REAL", precision: 19, scale: 4, nullable: true),
                     ExpirationDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ContactId = table.Column<long>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -461,6 +483,8 @@ namespace MudBlazorCrmApp.Migrations
                     Icon = table.Column<string>(type: "TEXT", nullable: true),
                     TaxRate = table.Column<string>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ProductId = table.Column<long>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
@@ -484,6 +508,8 @@ namespace MudBlazorCrmApp.Migrations
                     Icon = table.Column<string>(type: "TEXT", nullable: true),
                     TaxRate = table.Column<string>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ServiceId = table.Column<long>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>

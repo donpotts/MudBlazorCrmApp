@@ -11,8 +11,8 @@ using MudBlazorCrmApp.Data;
 namespace MudBlazorCrmApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250405031439_DateInfo")]
-    partial class DateInfo
+    [Migration("20250405052314_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
