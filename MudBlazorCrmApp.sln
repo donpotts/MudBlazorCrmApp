@@ -13,6 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MudBlazorCrmApp.Blazor", "M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6823D217-2010-4DA9-9518-DAD7780B98E0}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\MudBlazorCrmApp.yml = .github\workflows\MudBlazorCrmApp.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -41,5 +42,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A09C80A7-1519-4D5D-AC4E-D967298D84AB}
 	EndGlobalSection
 EndGlobal
