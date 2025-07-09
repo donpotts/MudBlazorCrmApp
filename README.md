@@ -100,6 +100,24 @@ Make sure you have the following tools installed:
 
 ---
 
+## Authentication
+
+This application uses ASP.NET Core Identity for user authentication. To log in, navigate to the login page and enter your credentials.
+
+Administrator
+
+Username: adminUser@example.com
+
+Password: testUser123!
+
+Normal user
+
+Username: normalUser@example.com
+
+Password: testUser123!
+
+---
+
 ## 📬 Contact
 
 Don Potts - Don.Potts@DonPotts.com
