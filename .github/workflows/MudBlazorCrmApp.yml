@@ -36,13 +36,6 @@ jobs:
     runs-on: windows-latest
     needs: build
     steps:
-    # - name: Stop Azure Web App
-    #   uses: azure/webapps-deploy@v2
-    #   with:
-    #     app-name: ${{ env.AZURE_WEBAPP_NAME }}
-    #     slot-name: Production
-    #     publish-profile: ${{ secrets.PUBLISH_PROFILE }}
-    #     action: 'Stop'
     - name: Download artifact from build job
       uses: azure/webapps-deploy@v2
       with:
@@ -53,11 +46,4 @@ jobs:
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         publish-profile: ${{ secrets.PUBLISH_PROFILE }}
-        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-    # - name: Start Azure WebApp
-    #   uses: azure/webapps-deploy@v2
-    #   with:
-    #     app-name: ${{ env.AZURE_WEBAPP_NAME }}
-    #     slot-name: Production
-    #     publish-profile: ${{ secrets.PUBLISH_PROFILE }}
-    #     action: 'Start'
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}   
