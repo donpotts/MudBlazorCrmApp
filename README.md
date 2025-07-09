@@ -11,14 +11,14 @@
   <p align="center">
     A feature-rich sample CRM application built with Blazor WASM and .NET, showcasing the power of MudBlazor and a modern ASP.NET Core backend.
     <br />
-    <br />
-    <a href="https://github.com/donpotts/MudBlazorCrmApp/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/donpotts/MudBlazorCrmApp/issues">Request Feature</a>
   </p>
 </p>
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/donpotts/MudBlazorCrmApp/MudBlazorCrmApp.yml?logo=github&style=for-the-badge)
+
+---
+
+![MudBlazor CRM](./MudBlazorCrmApp/Assets/MudBlazorCRM.png)
 
 ---
 
