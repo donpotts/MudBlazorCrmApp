@@ -1,5 +1,6 @@
 name: Build and deploy .NET Core application to Web App MudBlazorCrmApp
 on:
+  workflow_dispatch:
   push:
     branches:
     - main
