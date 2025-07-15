@@ -1,19 +1,18 @@
 ﻿@using MudBlazorCrmApp.Shared.Blazor.Models
 @inject IJSRuntime JSRuntime
+@inject IDialogService DialogService
 @implements IAsyncDisposable
 
 <div class="dashboard-wrapper">
     <div class="controls">
-        <button id="add-card-btn" @onclick="HandleAddCard"><i class="fas fa-plus"></i> Add Card</button>
-        <button id="reset-layout-btn" @onclick="HandleResetLayout"><i class="fas fa-trash-alt"></i> Reset Layout</button>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Color="Color.Success" OnClick="HandleAddCard">Add Card</MudButton>
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DeleteForever" Color="Color.Error" OnClick="HandleResetLayout">Reset Layout</MudButton>
     </div>
 
     <div class="dashboard-container">
-        @* The container is empty. JS will create the cards from data. *@
         <div class="grid-stack"></div>
     </div>
 
-    @* We render the content for each card inside a hidden placeholder div. *@
     <div style="display: none;" id="card-content-placeholders">
         @foreach (var card in _currentLayout)
         {
@@ -35,22 +34,6 @@
     </div>
 </div>
 
-@if (_cardToDelete != null)
-{
-    <div class="dialog-overlay show" @onclick="CancelDelete">
-        <div class="dialog-box" @onclick:stopPropagation>
-            <h3>Are you sure?</h3>
-            <p>This will permanently delete the "@_cardToDelete.Title" card.</p>
-            <div class="dialog-buttons">
-                <button id="dialog-cancel-btn" @onclick="CancelDelete">Cancel</button>
-                <button id="dialog-confirm-btn" @onclick="ConfirmDelete">Delete</button>
-            </div>
-        </div>
-    </div>
-}
-
-
-
 @code {
     [Parameter, EditorRequired]
     public string StorageKey { get; set; } = default!;
@@ -59,12 +42,11 @@
     [Parameter, EditorRequired]
     public RenderFragment<DashboardCard> CardRenderer { get; set; } = default!;
     [Parameter]
-    public Func<Task>? OnChartsNeedRerender { get; set; }
+    public EventCallback OnLayoutChanged { get; set; }
 
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<Dashboard>? _dotNetHelper;
     private List<DashboardCard> _currentLayout = new();
-    private DashboardCard? _cardToDelete;
     private bool _isGridJsInitialized = false;
     private int _cardCounter = 0;
 
@@ -104,10 +86,7 @@
             _currentLayout = InitialLayoutFactory.Invoke();
         }
 
-        // Set the card counter to avoid ID conflicts
-        _cardCounter = _currentLayout.Count;
-
-        // Render the hidden placeholders, then initialize the grid
+        _cardCounter = _currentLayout.Any() ? _currentLayout.Max(c => int.TryParse(c.Id.Split('-').Last(), out var num) ? num : 0) : 0;
         await InvokeAsync(StateHasChanged);
     
         if (_jsModule == null)
@@ -115,23 +94,14 @@
             _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/MudBlazorCrmApp.Shared.Blazor/js/dashboard-manager.js");
         }
         
-        // Use the dashboard wrapper selector to initialize the grid
         await _jsModule.InvokeVoidAsync("init", ".dashboard-wrapper", _dotNetHelper, _currentLayout);
-    
-        // Set up delete button event delegation
         await JSRuntime.InvokeVoidAsync("setupDeleteEventDelegation", _dotNetHelper);
     
-        // Render charts after the grid is initialized and content is populated
-        if (OnChartsNeedRerender != null)
-        {
-            await Task.Delay(100); // Give more time for the grid to populate
-            await OnChartsNeedRerender.Invoke();
-        }
+        await OnLayoutChanged.InvokeAsync();
     }
 
     private async Task HandleAddCard()
     {
-        // Calculate the next available position
         var (nextX, nextY) = CalculateNextCardPosition();
     
         var newCard = new DashboardCard 
@@ -146,102 +116,69 @@
         };
         _currentLayout.Add(newCard);
     
-        // Save the updated layout to localStorage
         var json = System.Text.Json.JsonSerializer.Serialize(_currentLayout);
         await JSRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
     
-        // Re-render to update the hidden placeholders
         await InvokeAsync(StateHasChanged);
     
-        // Add only the new card to the grid
         if (_jsModule != null)
         {
             await _jsModule.InvokeVoidAsync("addCard", newCard);
         }
     
-        // Give time for the grid to update, then re-render charts
-        if (OnChartsNeedRerender != null)
-        {
-            await Task.Delay(100);
-            await OnChartsNeedRerender.Invoke();
-        }
+        await OnLayoutChanged.InvokeAsync();
     }
 
     private (int x, int y) CalculateNextCardPosition()
     {
-        if (_currentLayout.Count == 0)
-            return (0, 0);
-    
-        const int gridWidth = 12; // Assuming 12-column grid
-        const int cardWidth = 4;  // Default card width
-    
-        // Find the bottom-most row
+        if (_currentLayout.Count == 0) return (0, 0);
+        const int gridWidth = 12; const int cardWidth = 4;
         int maxY = _currentLayout.Max(c => c.Y + c.H);
-    
-        // Check if we can fit the card to the right of existing cards in the bottom row
         var bottomRowCards = _currentLayout.Where(c => c.Y + c.H == maxY).ToList();
-    
         if (bottomRowCards.Any())
         {
-            // Try to place it to the right of the rightmost card in the bottom row
             var rightmostCard = bottomRowCards.OrderByDescending(c => c.X + c.W).First();
             int nextX = rightmostCard.X + rightmostCard.W;
-        
-            // Check if there's enough space to the right
-            if (nextX + cardWidth <= gridWidth)
-            {
-                return (nextX, rightmostCard.Y);
-            }
+            if (nextX + cardWidth <= gridWidth) { return (nextX, rightmostCard.Y); }
         }
-    
-        // If we can't fit to the right, place it on a new row at the left
         return (0, maxY);
     }
 
     [JSInvokable]
-    public void HandleDeleteCard(string cardId)
+    public async Task HandleDeleteCard(string cardId)
     {
         var cardToDelete = _currentLayout.FirstOrDefault(c => c.Id == cardId);
-        if (cardToDelete != null)
+        if (cardToDelete == null) return;
+
+        var parameters = new DialogParameters<ConfirmDeleteDialog>
         {
-            _cardToDelete = cardToDelete;
-            InvokeAsync(StateHasChanged);
+            { x => x.CardTitle, cardToDelete.Title }
+        };
+
+        var dialog = DialogService.Show<ConfirmDeleteDialog>("Confirm Deletion", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            _currentLayout.Remove(cardToDelete);
+    
+            var json = System.Text.Json.JsonSerializer.Serialize(_currentLayout);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
+    
+            await RerenderGrid();
+            await OnLayoutChanged.InvokeAsync();
         }
     }
     
     private async Task HandleResetLayout()
     {
         _currentLayout = InitialLayoutFactory.Invoke();
-        _cardCounter = _currentLayout.Count;
+        _cardCounter = _currentLayout.Any() ? _currentLayout.Max(c => int.TryParse(c.Id.Split('-').Last(), out var num) ? num : 0) : 0;
         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", StorageKey);
         await RerenderGrid();
-        
-        // Give time for the grid to update, then re-render charts
-        if (OnChartsNeedRerender != null)
-        {
-            await Task.Delay(100);
-            await OnChartsNeedRerender.Invoke();
-        }
-    }
-    
-    private void RequestDeleteCard(DashboardCard card) => _cardToDelete = card;
-    private void CancelDelete() => _cardToDelete = null;
-    
-    private async Task ConfirmDelete()
-    {
-        if (_cardToDelete == null) return;
-    
-        _currentLayout.Remove(_cardToDelete);
-        _cardToDelete = null;
-    
-        // Save the updated layout to localStorage
-        var json = System.Text.Json.JsonSerializer.Serialize(_currentLayout);
-        await JSRuntime.InvokeVoidAsync("localStorage.setItem", StorageKey, json);
-    
-        await RerenderGrid();
+        await OnLayoutChanged.InvokeAsync();
     }
 
-    // A central method to update the grid whenever the C# list changes
     private async Task RerenderGrid()
     {
         await InvokeAsync(StateHasChanged);
@@ -271,7 +208,21 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (_jsModule != null) await _jsModule.InvokeVoidAsync("destroy");
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("destroy");
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignore disconnect errors during disposal
+            }
+            finally
+            {
+                await _jsModule.DisposeAsync();
+            }
+        }
         _dotNetHelper?.Dispose();
     }
 }

@@ -14,7 +14,7 @@
 <Dashboard StorageKey="blazor-dashboard-final"
               InitialLayoutFactory="GetInitialLayout"
               CardRenderer="RenderCardContent"
-              OnChartsNeedRerender="HandleChartsRerender" />
+              OnLayoutChanged="HandleChartsRerender" />
 
 @code {
     private IJSObjectReference? _chartModule;
