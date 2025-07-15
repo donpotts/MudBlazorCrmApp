@@ -27,6 +27,7 @@
 <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <AuthorizeView>
+        <MudNavLink Href="/CrmDashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">CRM Dashboard</MudNavLink>
         <MudNavLink Href="/Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PeopleAlt">Customers</MudNavLink>
         <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeWork">Addresses</MudNavLink>
         <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>

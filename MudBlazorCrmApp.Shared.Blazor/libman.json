@@ -68,6 +68,35 @@
         "400.css",
         "LICENSE"
       ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "gridstack@9.3.0",
+      "destination": "wwwroot/lib/gridstack/",
+      "files": [
+        "dist/gridstack-all.js",
+        "dist/gridstack-all.js.map",
+        "dist/gridstack.min.css"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "Chart.js@4.4.0",
+      "destination": "wwwroot/lib/chart.js/",
+      "files": [
+        "chart.umd.js"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "font-awesome@6.4.2",
+      "destination": "wwwroot/lib/font-awesome/",
+      "files": [
+        "css/all.min.css",
+        "webfonts/fa-brands-400.woff2",
+        "webfonts/fa-regular-400.woff2",
+        "webfonts/fa-solid-900.woff2"
+      ]
     }
   ]
 }

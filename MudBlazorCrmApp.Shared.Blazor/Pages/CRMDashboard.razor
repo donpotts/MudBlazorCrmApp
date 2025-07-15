@@ -1,0 +1,155 @@
+﻿@page "/crmdashboard"
+@using MudBlazorCrmApp.Shared.Blazor.Components
+@using MudBlazorCrmApp.Shared.Blazor.Models
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+
+<PageTitle>CRM Dashboard</PageTitle>
+
+<MudText Typo="Typo.h3">Welcome to the CRM Dashboard</MudText>
+
+<Dashboard StorageKey="blazor-dashboard-final"
+              InitialLayoutFactory="GetInitialLayout"
+              CardRenderer="RenderCardContent"
+              OnChartsNeedRerender="HandleChartsRerender" />
+
+@code {
+    private IJSObjectReference? _chartModule;
+
+    private List<DashboardCard> GetInitialLayout() => new()
+    {
+        new DashboardCard { Id = "sales-chart", CardType = "sales-chart", Title = "Sales Over Time", X = 0, Y = 0, W = 6, H = 4 },
+        new DashboardCard { Id = "lead-chart", CardType = "lead-chart", Title = "Lead Sources", X = 6, Y = 0, W = 6, H = 4 },
+        new DashboardCard { Id = "kpi-leads", CardType = "kpi", Title = "New Leads (Q4)", X = 0, Y = 4, W = 6, H = 4 },
+        new DashboardCard { Id = "kpi-revenue", CardType = "kpi", Title = "Revenue (Q4)", X = 6, Y = 4, W = 6, H = 4 },
+        new DashboardCard { Id = "activity-feed", CardType = "activity", Title = "Recent Activity", X = 0, Y = 8, W = 12, H = 4 },
+    };
+
+    private RenderFragment<DashboardCard> RenderCardContent => card => __builder =>
+    {
+        switch (card.CardType)
+        {
+            case "sales-chart":
+                <canvas id="salesChartCanvas" style="pointer-events: none;"></canvas>
+                break;
+            case "lead-chart":
+                <canvas id="leadSourceChartCanvas" style="pointer-events: none;"></canvas>
+                break;
+            case "kpi":
+                <div class="kpi-card-body"><div class="kpi-number">@(card.Id == "kpi-leads" ? "1,284" : "$45.6k")</div></div>
+                break;
+            case "activity":
+                <ul class="activity-feed"><li><span class="icon"><i class="fas fa-user-plus"></i></span> New lead 'John Smith' assigned.</li><li><span class="icon"><i class="fas fa-check-circle"></i></span> Deal 'Project Phoenix' closed.</li></ul>
+                break;
+            case "notes":
+                <div class="notes-card">
+                    <div class="notes-header">
+                        <i class="fas fa-sticky-note"></i>
+                        <span>Quick Notes</span>
+                    </div>
+                    <div class="notes-content">
+                        <p>• Follow up with Marketing team about Q1 campaigns</p>
+                        <p>• Review customer feedback from last month</p>
+                        <p>• Prepare presentation for board meeting</p>
+                    </div>
+                </div>
+                break;
+            case "metrics":
+                <div class="metrics-card">
+                    <div class="metric-row">
+                        <span class="metric-label">Conversion Rate</span>
+                        <span class="metric-value">12.5%</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Avg. Deal Size</span>
+                        <span class="metric-value">$3,200</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Pipeline Value</span>
+                        <span class="metric-value">$127K</span>
+                    </div>
+                </div>
+                break;
+            case "tasks":
+                <div class="tasks-card">
+                    <div class="task-item">
+                        <input type="checkbox" checked /> 
+                        <span class="task-completed">Call client about renewal</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" /> 
+                        <span>Send proposal to prospect</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" /> 
+                        <span>Update records</span>
+                    </div>
+                    <div class="task-item">
+                        <input type="checkbox" /> 
+                        <span>Schedule team meeting</span>
+                    </div>
+                </div>
+                break;
+            default:
+                <div class="default-card">
+                    <div class="default-card-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="default-card-content">
+                        <h4>New Dashboard Card</h4>
+                        <p>This is a customizable dashboard card. You can modify this content to display any information you need.</p>
+                        <div class="default-card-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">42</span>
+                                <span class="stat-label">Items</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">98%</span>
+                                <span class="stat-label">Progress</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                break;
+        }
+    };
+
+    private async Task HandleChartsRerender()
+    {
+        Console.WriteLine("Home.razor: HandleChartsRerender called");
+        
+        // Add a delay to ensure the canvas elements are in the DOM
+        await Task.Delay(100);
+        
+        // Check if canvas elements exist
+        var salesCanvasExists = await JSRuntime.InvokeAsync<bool>("eval", "document.getElementById('salesChartCanvas') !== null");
+        var leadCanvasExists = await JSRuntime.InvokeAsync<bool>("eval", "document.getElementById('leadSourceChartCanvas') !== null");
+        
+        Console.WriteLine($"Sales canvas exists: {salesCanvasExists}, Lead canvas exists: {leadCanvasExists}");
+        
+        if (!salesCanvasExists || !leadCanvasExists)
+        {
+            Console.WriteLine("Canvas elements not found, retrying in 200ms...");
+            await Task.Delay(200);
+        }
+        
+        if (_chartModule == null)
+        {
+            _chartModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/MudBlazorCrmApp.Shared.Blazor/js/chart-renderer.js");
+        }
+        
+        try
+        {
+            await _chartModule.InvokeVoidAsync("renderSalesChart");
+            await _chartModule.InvokeVoidAsync("renderLeadSourceChart");
+            Console.WriteLine("Home.razor: Charts re-rendered successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error rendering charts: {ex.Message}");
+        }
+    }
+}

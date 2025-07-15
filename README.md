@@ -121,5 +121,3 @@ Password: testUser123!
 ## 📬 Contact
 
 Don Potts - Don.Potts@DonPotts.com
-
-Project Link: [https://github.com/donpotts/MudBlazorCrmApp](https://github.com/donpotts/MudBlazorCrmApp)
