@@ -17,9 +17,8 @@ public static class Extensions
             => new HttpClient { BaseAddress = new Uri(baseAddress) });
 
         services.AddAuthorizationCore();
-        services
-            .AddScoped<AuthenticationStateProvider, IdentityAuthenticationStateProvider>();
-
+        services.AddScoped<AuthenticationStateProvider, IdentityAuthenticationStateProvider>();
+        services.AddScoped<ThemeService>();
         services.AddMudServices();
     }
 

@@ -1,6 +1,7 @@
 ﻿@using MudBlazorCrmApp.Shared.Blazor.Models
 @inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
+@inject ThemeService ThemeService
 @implements IAsyncDisposable
 
 <div class="dashboard-wrapper">
@@ -53,6 +54,13 @@
     protected override void OnInitialized()
     {
         _dotNetHelper = DotNetObjectReference.Create(this);
+        ThemeService.OnChange += UpdateCharts;
+    }
+
+    private async void UpdateCharts()
+    {        
+        await OnLayoutChanged.InvokeAsync();
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

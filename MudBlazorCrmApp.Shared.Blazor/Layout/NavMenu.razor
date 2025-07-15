@@ -3,6 +3,7 @@
 @inject AppService AppService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IStorageService LocalStorageService
+@inject ThemeService ThemeService
 
 <MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
 <MudAppBar Color="Color.Inherit">
@@ -86,6 +87,8 @@
         _themeManager = themeManager;
 
         _isDarkMode = _themeManager.IsDarkMode;
+
+        ThemeService.SetDarkMode(_isDarkMode);
 
         _theme = new MudTheme()
         {
