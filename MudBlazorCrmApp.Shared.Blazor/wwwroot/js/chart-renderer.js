@@ -6,75 +6,68 @@
     return { textColor, gridColor };
 }
 
-export function renderSalesChart() {
-    const canvas = document.getElementById('salesChartCanvas');
-    if (!canvas) return;
+// Generic function to render any chart with configuration
+export function renderChart(canvasId, chartConfig) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) {
+        console.error(`Canvas with ID ${canvasId} not found`);
+        return;
+    }
 
+    // Destroy existing chart if it exists
     Chart.getChart(canvas)?.destroy();
 
     const { textColor, gridColor } = getThemeColors();
 
-    new Chart(canvas, {
-        type: 'line',
+    // Apply theme colors to chart configuration
+    const config = {
+        type: chartConfig.type || 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Sales ($k)',
-                data: [12, 19, 9, 17, 22, 15],
-                borderColor: '#007bff',
-                tension: 0.3
-            }]
+            labels: chartConfig.labels || [],
+            datasets: chartConfig.datasets || []
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    ticks: { color: textColor },
-                    grid: { color: gridColor }
-                },
-                x: {
-                    ticks: { color: textColor },
-                    grid: { color: gridColor }
-                }
-            },
+            responsive: chartConfig.options?.responsive ?? true,
+            maintainAspectRatio: chartConfig.options?.maintainAspectRatio ?? false,
             plugins: {
                 legend: {
-                    labels: { color: textColor }
-                }
-            }
-        }
-    });
-}
-
-export function renderLeadSourceChart() {
-    const canvas = document.getElementById('leadSourceChartCanvas');
-    if (!canvas) return;
-
-    Chart.getChart(canvas)?.destroy();
-
-    const { textColor } = getThemeColors();
-
-    new Chart(canvas, {
-        type: 'doughnut',
-        data: {
-            labels: ['Organic', 'Referral', 'Paid Ads'],
-            datasets: [{
-                data: [300, 50, 100],
-                backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-                plugins: {
-                legend: {
-                    position: 'top',
+                    display: chartConfig.options?.legend?.display ?? true,
+                    position: chartConfig.options?.legend?.position || 'top',
                     labels: {
                         color: textColor
                     }
                 }
             }
         }
-    });
+    };
+
+    // Add scales configuration for charts that support it
+    if (['line', 'bar', 'scatter'].includes(config.type)) {
+        config.options.scales = {
+            y: {
+                ticks: { color: textColor },
+                grid: { color: gridColor }
+            },
+            x: {
+                ticks: { color: textColor },
+                grid: { color: gridColor }
+            }
+        };
+    }
+
+    // Apply any custom options
+    if (chartConfig.options?.scales) {
+        config.options.scales = {
+            ...config.options.scales,
+            ...chartConfig.options.scales
+        };
+    }
+
+    new Chart(canvas, config);
+}
+
+// Render chart by card ID
+export function renderChartByCardId(cardId, chartConfig) {
+    const canvasId = `${cardId}Canvas`;
+    renderChart(canvasId, chartConfig);
 }

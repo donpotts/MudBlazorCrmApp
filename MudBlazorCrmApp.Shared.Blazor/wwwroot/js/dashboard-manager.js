@@ -136,6 +136,7 @@ export function init(containerSelector, dotNetHelperRef, layoutData) {
     });
 
     grid.on('change', (event, items) => {
+        if (!items) return; 
         const newLayout = items.map(item => ({
             id: item.id,
             x: item.x, y: item.y, w: item.w, h: item.h
