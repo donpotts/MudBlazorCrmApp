@@ -1,0 +1,9 @@
+Id,Name,Description,Icon,TaxRate,Notes
+1,"AI Software","Software solutions with integrated AI capabilities",ai_software_icon.png,0.01%,
+2,"Autonomous Drones","Unmanned aerial vehicles with advanced AI navigation systems",autonomous_drones_icon.png,0.01%,
+3,"AI Personal Assistants","Virtual assistants powered by artificial intelligence for personal use",ai_personal_assistants_icon.png,0.01%,
+4,"Smart Home Devices","Home appliances and systems with AI for automation and control",smart_home_devices_icon.png,0.01%,
+5,"AI Security Systems","Advanced security systems using AI for threat detection and response",ai_security_systems_icon.png,0.01%,
+6,"Healthcare AI","AI applications for diagnostics, treatment planning, and patient management",healthcare_ai_icon.png,0.01%,
+7,"AI Education Platforms","Educational platforms utilizing AI for personalized learning experiences",ai_education_platforms_icon.png,0.01%,
+8,"AI Financial Tools","Financial tools and apps enhanced with AI for better decision making",ai_financial_tools_icon.png,0.01%,

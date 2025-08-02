@@ -15,9 +15,9 @@
             <MudTextField @bind-Value="record.Email" For="@(() => record.Email)" Label="Email" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Logo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                 <ActivatorContent>
-                    <MudIconButton Color="Color.Info"
-                                   Icon="@Icons.Material.Filled.PhotoCamera">
-                    </MudIconButton>
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload Logo
+                    </MudButton>
                 </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(record.Logo))
@@ -25,11 +25,10 @@
                 <MudImage Src="@GetAbsoluteUri(record.Logo)" Style="width:128px;height:128px;object-fit:contain;" Class="mt-1" />
             }
             <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
-            <MudSelect @bind-Value="record.AddressId" For="@(() => record.AddressId)" Label="Address" AnchorOrigin="Origin.BottomCenter">
-                <MudSelectItem T="long?" Value="null" />
+            <MudSelect T="long?" Label="Address" MultiSelection="true" @bind-SelectedValues="addressValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => addressArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.City)))" AnchorOrigin="Origin.BottomCenter">
                 @foreach (var address in addressArray ?? Enumerable.Empty<Address>())
                 {
-                    <MudSelectItem Value="@address.Id">@address.City</MudSelectItem>
+                    <MudSelectItem T="long?" Value="@address.Id">@address.City</MudSelectItem>
                 }
             </MudSelect>
             <MudSelect T="long?" Label="Product" MultiSelection="true" @bind-SelectedValues="productValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => productArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.Name)))" AnchorOrigin="Origin.BottomCenter">
@@ -55,9 +54,10 @@
 
 @code {
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private Address[]? addressArray;
+    private IEnumerable<long?>? addressValues;
     private Product[]? productArray;
     private IEnumerable<long?>? productValues;
     private Service[]? serviceArray;
@@ -92,6 +92,7 @@
             addressArray = await AppService.ListAddressAsync();
             productArray = await AppService.ListProductAsync();
             serviceArray = await AppService.ListServiceAsync();
+            addressValues = record?.Address?.Select(x => x.Id).ToHashSet() ?? [];
             productValues = record?.Product?.Select(x => x.Id).ToHashSet() ?? [];
             serviceValues = record?.Service?.Select(x => x.Id).ToHashSet() ?? [];
         }
@@ -110,6 +111,7 @@
     {
         try
         {
+            record.Address = addressValues?.Select(x => new Address { Id = x }).ToList();
             record.Product = productValues?.Select(x => new Product { Id = x }).ToList();
             record.Service = serviceValues?.Select(x => new Service { Id = x }).ToList();
             await AppService.InsertVendorAsync(record);

@@ -15,11 +15,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class UserController(UserManager<ApplicationUser> userManager, ILogger<UserController> logger) : ControllerBase
+public class UserController(UserManager<ApplicationUser> userManager) : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager = userManager;
-    private readonly ILogger<UserController> _logger = logger;
-
     [HttpGet("")]
     [EnableQuery]
     [Authorize(Roles = "Administrator")]
@@ -28,7 +25,7 @@ public class UserController(UserManager<ApplicationUser> userManager, ILogger<Us
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public ActionResult<IQueryable<ApplicationUserDto>> Get()
     {
-        var users = userManager.Users.Select(x => new ApplicationUserDto
+        return Ok(userManager.Users.Select(x => new ApplicationUserDto
         {
             Id = x.Id,
             Email = x.Email,
@@ -40,14 +37,7 @@ public class UserController(UserManager<ApplicationUser> userManager, ILogger<Us
             Title = x.Title,
             CompanyName = x.CompanyName,
             Photo = x.Photo,
-        });
-
-        foreach (var user in users)
-        {
-            _logger.LogInformation("User Info: Id={Id}, Email={Email}, FirstName={FirstName}, LastName={LastName}", user.Id, user.Email, user.FirstName, user.LastName);
-        }
-        
-        return Ok(users);
+        }));
     }
 
     [HttpGet("{key}")]

@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class CustomerController(ApplicationDbContext _ctx, ILogger<CustomerController> _logger) : ControllerBase
+public class CustomerController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<CustomerController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -59,10 +56,19 @@ public class CustomerController(ApplicationDbContext _ctx, ILogger<CustomerContr
             return Conflict();
         }
     
+        var address = customer.Address;
+        customer.Address = null;
+
         var contact = customer.Contact;
         customer.Contact = null;
 
         await ctx.Customer.AddAsync(customer);
+
+        if (address != null)
+        {
+            var newValues = await ctx.Address.Where(x => address.Select(y => y.Id).Contains(x.Id)).ToListAsync();
+            customer.Address = [..newValues];
+        }
 
         if (contact != null)
         {
@@ -81,7 +87,7 @@ public class CustomerController(ApplicationDbContext _ctx, ILogger<CustomerContr
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Customer>> PutAsync(long key, Customer update)
     {
-        var customer = await ctx.Customer.Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
+        var customer = await ctx.Customer.Include(x => x.Address).Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
 
         if (customer == null)
         {
@@ -89,6 +95,16 @@ public class CustomerController(ApplicationDbContext _ctx, ILogger<CustomerContr
         }
 
         ctx.Entry(customer).CurrentValues.SetValues(update);
+
+        if (update.Address != null)
+        {
+            var updateValues = update.Address.Select(x => x.Id);
+            customer.Address ??= [];
+            customer.Address.RemoveAll(x => !updateValues.Contains(x.Id));
+            var addValues = updateValues.Where(x => !customer.Address.Select(y => y.Id).Contains(x));
+            var newValues = await ctx.Address.Where(x => addValues.Contains(x.Id)).ToListAsync();
+            customer.Address.AddRange(newValues);
+        }
 
         if (update.Contact != null)
         {
@@ -111,7 +127,7 @@ public class CustomerController(ApplicationDbContext _ctx, ILogger<CustomerContr
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Customer>> PatchAsync(long key, Delta<Customer> delta)
     {
-        var customer = await ctx.Customer.Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
+        var customer = await ctx.Customer.Include(x => x.Address).Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
 
         if (customer == null)
         {

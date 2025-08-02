@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class TodoTaskController(ApplicationDbContext _ctx, ILogger<TodoTaskController> _logger) : ControllerBase
+public class TodoTaskController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<TodoTaskController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]

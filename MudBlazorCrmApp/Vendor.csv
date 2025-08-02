@@ -1,0 +1,4 @@
+Id,Name,ContactName,Phone,Email,AddressId,ProductId,ServiceId,Logo,Notes
+501,"AI Components Ltd.","John Smith","+1234567891","contact@aicomp.com",901,101,201,ai_components_ltd_logo.png,
+502,"DroneTech Innovations","Sarah Connor","+1234567894","s.connor@dronetech.com",902,102,202,dronetech_innovations_logo.png,
+503,"HomeTech Solutions","Alan Turing","+1234567895","alan.turing@hometechsolutions.com",903,103,203,hometech_solutions_logo.png,

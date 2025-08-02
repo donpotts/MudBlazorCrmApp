@@ -1,0 +1,9 @@
+Id,EstimatedCloseDate,Stage,Icon,Notes
+601,"2024-12-31","Negotiation",opportunity_stage_icon.png,
+602,"2024-11-30","Proposal",opportunity_proposal_icon.png,
+603,"2024-10-15","Qualification",opportunity_qualification_icon.png,
+604,"2024-09-20","Presentation",opportunity_presentation_icon.png,
+605,"2024-08-25","Discovery",opportunity_discovery_icon.png,
+606,"2024-07-30","Analysis",opportunity_analysis_icon.png,
+607,"2024-06-15","Value Proposition",opportunity_value_proposition_icon.png,
+608,"2024-05-10","Decision Making",opportunity_decision_making_icon.png,

@@ -14,7 +14,7 @@
     protected override async Task OnInitializedAsync()
     {
         await ((IdentityAuthenticationStateProvider)AuthenticationStateProvider).LogoutAsync();
-
+                     
         Navigation.NavigateTo("");
     }
 }

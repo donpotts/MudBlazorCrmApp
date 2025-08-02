@@ -31,7 +31,7 @@
 
 @code {
     private LoginModel loginModel = new();
-
+                    
     private async Task OnValidSubmit()
     {
         try
@@ -44,7 +44,7 @@
             Snackbar.Add(ex.Message, Severity.Error);
             return;
         }
-
+                    
         Navigation.NavigateTo("");
     }
 }

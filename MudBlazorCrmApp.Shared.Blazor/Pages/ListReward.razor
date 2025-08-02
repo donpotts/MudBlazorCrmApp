@@ -30,13 +30,11 @@
         <PropertyColumn Property="x => x!.ConversionRate" Title="ConversionRate" />
         <PropertyColumn Property="x => x!.ExpirationDate" Title="ExpirationDate" />
         <PropertyColumn Property="x => x!.Notes" Title="Notes" />
-        <PropertyColumn Property="x => x!.CreatedDate" Title="Created Date" />
-        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified Date" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
-                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
@@ -133,7 +131,7 @@
 
         var result = await DialogService.Show<AddReward>("Add Contact Rewards", dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -146,7 +144,7 @@
 
         var result = await DialogService.Show<UpdateReward>("Update Contact Rewards", dialogParams, dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }

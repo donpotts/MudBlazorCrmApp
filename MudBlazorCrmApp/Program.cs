@@ -14,7 +14,6 @@ using MudBlazorCrmApp.Data;
 using MudBlazorCrmApp.Models;
 using MudBlazorCrmApp.Services;
 using MudBlazorCrmApp.Shared.Models;
-using Serilog;
 
 Environment.CurrentDirectory = AppContext.BaseDirectory;
 
@@ -35,11 +34,10 @@ builder.Services.Configure<RouteOptions>(options =>
 
 // Add services to the container.
 ODataConventionModelBuilder modelBuilder = new();
-modelBuilder.EntitySet<Address>("Address");
-modelBuilder.EntitySet<Vendor>("Vendor");
 modelBuilder.EntitySet<Customer>("Customer");
 modelBuilder.EntitySet<Contact>("Contact");
 modelBuilder.EntitySet<Reward>("Reward");
+modelBuilder.EntitySet<Address>("Address");
 modelBuilder.EntitySet<ProductCategory>("ProductCategory");
 modelBuilder.EntitySet<ServiceCategory>("ServiceCategory");
 modelBuilder.EntitySet<Opportunity>("Opportunity");
@@ -47,6 +45,7 @@ modelBuilder.EntitySet<Lead>("Lead");
 modelBuilder.EntitySet<Product>("Product");
 modelBuilder.EntitySet<Service>("Service");
 modelBuilder.EntitySet<Sale>("Sale");
+modelBuilder.EntitySet<Vendor>("Vendor");
 modelBuilder.EntitySet<SupportCase>("SupportCase");
 modelBuilder.EntitySet<TodoTask>("TodoTask");
 modelBuilder.EntitySet<ApplicationUserDto>("User");
@@ -89,11 +88,23 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", // A new, more specific policy name
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000", "https://localhost:3000") // React's typical dev server URL
+                  .AllowAnyHeader()    // Allows any HTTP headers (e.g., 'Authorization', 'Content-Type')
+                  .AllowAnyMethod()    // Allows any HTTP method (GET, POST, PUT, DELETE, and OPTIONS for preflight)
+                  .AllowCredentials(); // REQUIRED if your client sends cookies or Authorization headers with the request
+        });
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlite(builder.Configuration.GetConnectionString("ApplicationDbContext"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContext"));
 });
 
 builder.Services.AddRazorPages();
@@ -173,28 +184,13 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddScoped<ImageService>();
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.File(
-        path: "logs/log-.txt",
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 30 // Keep logs for 30 days
-    )
-    .CreateLogger();
-
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MudBlazor CRM API V1");
-    });
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -218,6 +214,7 @@ app.UseRouting();
 
 app.MapRazorPages();
 
+app.UseCors("AllowLocalhost");
 app.UseAuthorization();
 
 app.MapGroup("/identity").MapIdentityApi<ApplicationUser>().WithTags("Identity");
@@ -280,50 +277,6 @@ using (var scope = app.Services.CreateScope())
         await userManager.CreateAsync(normalUser, "testUser123!");
         
 
-        if (File.Exists("Address.Data.json"))
-        {
-            var json = File.ReadAllText("Address.Data.json");
-            var data = JsonSerializer.Deserialize<Address[]>(json);
-
-            if (data != null)
-            {
-                foreach (var record in data)
-                {
-                    if ((record.Photo?.StartsWith("data:image/png;base64,") ?? false) || (record.Photo?.StartsWith("data:image/jpeg;base64,") ?? false))
-                    {
-                        var (extension, bytes) = ImageService.GetImageFromDataUri(record.Photo);
-                        using MemoryStream stream = new(bytes);
-                        var image = await imageService.SaveToUploadsAsync(extension, stream);
-
-                        record.Photo = image;
-                    }
-                }
-                ctx.Address.AddRange(data);
-                ctx.SaveChanges();
-            }
-        }
-        if (File.Exists("Vendor.Data.json"))
-        {
-            var json = File.ReadAllText("Vendor.Data.json");
-            var data = JsonSerializer.Deserialize<Vendor[]>(json);
-
-            if (data != null)
-            {
-                foreach (var record in data)
-                {
-                    if ((record.Logo?.StartsWith("data:image/png;base64,") ?? false) || (record.Logo?.StartsWith("data:image/jpeg;base64,") ?? false))
-                    {
-                        var (extension, bytes) = ImageService.GetImageFromDataUri(record.Logo);
-                        using MemoryStream stream = new(bytes);
-                        var image = await imageService.SaveToUploadsAsync(extension, stream);
-
-                        record.Logo = image;
-                    }
-                }
-                ctx.Vendor.AddRange(data);
-                ctx.SaveChanges();
-            }
-        }
         if (File.Exists("Customer.Data.json"))
         {
             var json = File.ReadAllText("Customer.Data.json");
@@ -342,8 +295,16 @@ using (var scope = app.Services.CreateScope())
                         record.Logo = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Customer ON");
+
                 ctx.Customer.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Customer OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("Contact.Data.json"))
@@ -364,8 +325,16 @@ using (var scope = app.Services.CreateScope())
                         record.Photo = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Contact ON");
+
                 ctx.Contact.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Contact OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("Reward.Data.json"))
@@ -375,8 +344,46 @@ using (var scope = app.Services.CreateScope())
 
             if (data != null)
             {
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Reward ON");
+
                 ctx.Reward.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Reward OFF");
+
+                ctx.Database.CommitTransaction();
+            }
+        }
+        if (File.Exists("Address.Data.json"))
+        {
+            var json = File.ReadAllText("Address.Data.json");
+            var data = JsonSerializer.Deserialize<Address[]>(json);
+
+            if (data != null)
+            {
+                foreach (var record in data)
+                {
+                    if ((record.Photo?.StartsWith("data:image/png;base64,") ?? false) || (record.Photo?.StartsWith("data:image/jpeg;base64,") ?? false))
+                    {
+                        var (extension, bytes) = ImageService.GetImageFromDataUri(record.Photo);
+                        using MemoryStream stream = new(bytes);
+                        var image = await imageService.SaveToUploadsAsync(extension, stream);
+
+                        record.Photo = image;
+                    }
+                }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Address ON");
+
+                ctx.Address.AddRange(data);
+                ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Address OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("ProductCategory.Data.json"))
@@ -397,8 +404,16 @@ using (var scope = app.Services.CreateScope())
                         record.Icon = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT ProductCategory ON");
+
                 ctx.ProductCategory.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT ProductCategory OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("ServiceCategory.Data.json"))
@@ -419,8 +434,16 @@ using (var scope = app.Services.CreateScope())
                         record.Icon = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT ServiceCategory ON");
+
                 ctx.ServiceCategory.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT ServiceCategory OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("Opportunity.Data.json"))
@@ -441,8 +464,16 @@ using (var scope = app.Services.CreateScope())
                         record.Icon = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Opportunity ON");
+
                 ctx.Opportunity.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Opportunity OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("Lead.Data.json"))
@@ -463,8 +494,16 @@ using (var scope = app.Services.CreateScope())
                         record.Photo = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Lead ON");
+
                 ctx.Lead.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Lead OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("Product.Data.json"))
@@ -485,8 +524,16 @@ using (var scope = app.Services.CreateScope())
                         record.Photo = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Product ON");
+
                 ctx.Product.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Product OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("Service.Data.json"))
@@ -507,8 +554,16 @@ using (var scope = app.Services.CreateScope())
                         record.Icon = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Service ON");
+
                 ctx.Service.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Service OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("Sale.Data.json"))
@@ -529,8 +584,46 @@ using (var scope = app.Services.CreateScope())
                         record.ReceiptPhoto = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Sale ON");
+
                 ctx.Sale.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Sale OFF");
+
+                ctx.Database.CommitTransaction();
+            }
+        }
+        if (File.Exists("Vendor.Data.json"))
+        {
+            var json = File.ReadAllText("Vendor.Data.json");
+            var data = JsonSerializer.Deserialize<Vendor[]>(json);
+
+            if (data != null)
+            {
+                foreach (var record in data)
+                {
+                    if ((record.Logo?.StartsWith("data:image/png;base64,") ?? false) || (record.Logo?.StartsWith("data:image/jpeg;base64,") ?? false))
+                    {
+                        var (extension, bytes) = ImageService.GetImageFromDataUri(record.Logo);
+                        using MemoryStream stream = new(bytes);
+                        var image = await imageService.SaveToUploadsAsync(extension, stream);
+
+                        record.Logo = image;
+                    }
+                }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Vendor ON");
+
+                ctx.Vendor.AddRange(data);
+                ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Vendor OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("SupportCase.Data.json"))
@@ -551,8 +644,16 @@ using (var scope = app.Services.CreateScope())
                         record.Icon = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT SupportCase ON");
+
                 ctx.SupportCase.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT SupportCase OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
         if (File.Exists("TodoTask.Data.json"))
@@ -573,8 +674,16 @@ using (var scope = app.Services.CreateScope())
                         record.Icon = image;
                     }
                 }
+                ctx.Database.BeginTransaction();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT TodoTask ON");
+
                 ctx.TodoTask.AddRange(data);
                 ctx.SaveChanges();
+
+                ctx.Database.ExecuteSqlRaw("SET IDENTITY_INSERT TodoTask OFF");
+
+                ctx.Database.CommitTransaction();
             }
         }
 

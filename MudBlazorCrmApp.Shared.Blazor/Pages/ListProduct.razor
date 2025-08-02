@@ -43,13 +43,11 @@
                 @string.Join(", ", context.Item.ProductCategory?.Select(x => x.Name?.ToString() ?? string.Empty) ?? [])
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x!.CreatedDate" Title="Created Date" />
-        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified Date" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
-                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
@@ -146,7 +144,7 @@
 
         var result = await DialogService.Show<AddProduct>("Add Product", dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -159,7 +157,7 @@
 
         var result = await DialogService.Show<UpdateProduct>("Update Product", dialogParams, dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }

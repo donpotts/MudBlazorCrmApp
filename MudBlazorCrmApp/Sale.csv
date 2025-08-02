@@ -1,0 +1,9 @@
+Id,ProductId,ServiceId,CustomerId,Quantity,TotalAmount,SaleDate,ReceiptPhoto,Notes
+701,101,201,301,10,24999.90,"2024-06-01",sale_receipt.jpg,
+702,102,NULL,302,5,24999.95,"2024-06-15",sale_receipt_702.jpg,
+703,NULL,202,303,1,199.99,"2024-06-20",sale_receipt_703.jpg,
+704,103,NULL,304,3,2399.97,"2024-07-05",sale_receipt_704.jpg,
+705,104,204,305,7,9099.93,"2024-07-12",sale_receipt_705.jpg,
+706,105,NULL,306,2,6999.98,"2024-07-19",sale_receipt_706.jpg,
+707,106,205,307,4,1199.96,"2024-07-26",sale_receipt_707.jpg,
+708,107,NULL,308,1,10000.00,"2024-08-02",sale_receipt_708.jpg,

@@ -1,0 +1,4 @@
+Id,Name,Type,Industry,AddressId,ContactId,Logo,Notes
+301,"Cybernetics Corp","B2B","Robotics",901,801,cybernetics_corp_logo.jpg,""
+302,"RoboTech Inc.","B2B","Manufacturing",902,802,robotech_inc_logo.jpg,""
+303,"Jane Engineering","B2C","N/A",903,803,jane_eng_profile.jpg,""

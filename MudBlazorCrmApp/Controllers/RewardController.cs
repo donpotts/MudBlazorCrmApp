@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class RewardController(ApplicationDbContext _ctx, ILogger<RewardController> _logger) : ControllerBase
+public class RewardController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<RewardController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]

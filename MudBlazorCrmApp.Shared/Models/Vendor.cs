@@ -40,18 +40,11 @@ public class Vendor
     public string? Notes { get; set; }
 
     [DataMember]
-    public Address? Address { get; set; }
+    public List<Address>? Address { get; set; }
 
     [DataMember]
     public List<Product>? Product { get; set; }
 
     [DataMember]
     public List<Service>? Service { get; set; }
-
-    [DataMember]
-    public DateTime? CreatedDate { get; set; }
-
-    [DataMember]
-    public DateTime ModifiedDate { get; set; }
-
 }

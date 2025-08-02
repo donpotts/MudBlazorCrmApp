@@ -43,7 +43,7 @@ else
     public string Id { get; set; } = null!;
 
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private ApplicationUserWithRolesDto? user;
     private ModifyRolesModel model = new();

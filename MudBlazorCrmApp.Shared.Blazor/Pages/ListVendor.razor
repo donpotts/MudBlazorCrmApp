@@ -38,7 +38,11 @@
             </CellTemplate>
         </TemplateColumn>
         <PropertyColumn Property="x => x!.Notes" Title="Notes" />
-        <PropertyColumn @ref="addressColumn" Property="x => x!.Address != null ? x.Address.City : null" Title="Address" />
+        <TemplateColumn Title="Address" Sortable="false" Filterable="false">
+            <CellTemplate>
+                @string.Join(", ", context.Item.Address?.Select(x => x.City?.ToString() ?? string.Empty) ?? [])
+            </CellTemplate>
+        </TemplateColumn>
         <TemplateColumn Title="Product" Sortable="false" Filterable="false">
             <CellTemplate>
                 @string.Join(", ", context.Item.Product?.Select(x => x.Name?.ToString() ?? string.Empty) ?? [])
@@ -49,13 +53,11 @@
                 @string.Join(", ", context.Item.Service?.Select(x => x.Name?.ToString() ?? string.Empty) ?? [])
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x!.CreatedDate" Title="Created Date" />
-        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified Date" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
-                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
@@ -87,8 +89,6 @@
 
 @code {
     private MudDataGrid<Vendor>? grid;
-    private PropertyColumn<Vendor, string?>? addressColumn;
-
     private string? _searchString;
     private string GetAbsoluteUri(string uri)
     {
@@ -115,12 +115,6 @@
         var skip = state.Page * state.PageSize;
         var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
         var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
-
-        if (!string.IsNullOrEmpty(addressColumn?.PropertyName))
-        {
-            orderby = orderby?.Replace(addressColumn.PropertyName, "Address/City");
-            filter = filter?.Replace(addressColumn.PropertyName, "Address/City");
-        }
 
         AppService.ODataResult<Vendor>? result = null;
 
@@ -160,7 +154,7 @@
 
         var result = await DialogService.Show<AddVendor>("Add Vendor", dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -173,7 +167,7 @@
 
         var result = await DialogService.Show<UpdateVendor>("Update Vendor", dialogParams, dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -244,7 +238,7 @@
     x.Email,
     x.Logo,
     x.Notes,
-     AddressCity = x.Address.City,
+Address = string.Join(", ", x.Address?.Select(x => x.City?.ToString() ?? string.Empty) ?? []),
 Product = string.Join(", ", x.Product?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
 Service = string.Join(", ", x.Service?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
 

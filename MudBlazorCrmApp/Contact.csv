@@ -1,0 +1,4 @@
+Id,Name,Email,Phone,Role,AddressId,Photo,RewardId,Notes
+801,"Alex Taylor","a.taylor@corporate.com","+1234567890","Chief Technology Officer",901,profile1.jpg,1,""
+802,"Jordan Lee","j.lee@techcompany.com","+1234567892","Procurement Manager",902,profile2.jpg,2,""
+803,"Casey Morgan","c.morgan@independent.com","+1234567893","Independent Researcher",903,profile3.jpg,3,""

@@ -1,0 +1,9 @@
+Id,ServiceCategoryId,Name,Description,Recurring,Icon,Notes
+201,1,"AI Predictive Maintenance","AI-driven service to predict and prevent equipment failures","Yes",ai_predictive_maintenance_icon.png,
+202,2,"AI Market Forecasting","Predictive market analysis service using AI to forecast trends","Yes",ai_market_forecasting_icon.png,
+203,3,"AI Cybersecurity Monitoring","Continuous monitoring and threat detection using AI","Yes",ai_cybersecurity_monitoring_icon.png,
+204,1,"AI Business Optimization","AI service to enhance business efficiency and productivity","Yes",ai_business_optimization_icon.png,
+205,2,"AI Personalized Marketing","Targeted marketing service using AI for customer engagement","Yes",ai_personalized_marketing_icon.png,
+206,3,"AI Fraud Detection","AI service for real-time financial fraud detection","Yes",ai_fraud_detection_icon.png,
+207,1,"AI Talent Acquisition","Automated recruitment service using AI to find the best candidates","Yes",ai_talent_acquisition_icon.png,
+208,2,"AI Content Creation","Content generation service using AI for various media formats","Yes",ai_content_creation_icon.png,

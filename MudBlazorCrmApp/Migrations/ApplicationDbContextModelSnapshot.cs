@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MudBlazorCrmApp.Data;
 
@@ -15,30 +16,35 @@ namespace MudBlazorCrmApp.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex");
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
                 });
@@ -47,17 +53,19 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -70,17 +78,19 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -92,17 +102,17 @@ namespace MudBlazorCrmApp.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -114,10 +124,10 @@ namespace MudBlazorCrmApp.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -129,16 +139,16 @@ namespace MudBlazorCrmApp.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -148,69 +158,69 @@ namespace MudBlazorCrmApp.Migrations
             modelBuilder.Entity("MudBlazorCrmApp.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("CompanyName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Photo")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -219,7 +229,8 @@ namespace MudBlazorCrmApp.Migrations
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -228,36 +239,52 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("City")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("ContactId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Country")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("CustomerId")
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("LeadId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Photo")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("VendorId")
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("ZipCode")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("LeadId");
+
+                    b.HasIndex("VendorId");
 
                     b.ToTable("Address");
                 });
@@ -266,46 +293,45 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("AddressId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("CustomerId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Email")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("LeadId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("Phone")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Photo")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("RewardId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Role")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId");
-
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("LeadId");
 
                     b.ToTable("Contact");
                 });
@@ -314,38 +340,32 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("AddressId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("ContactId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Industry")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Logo")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.ToTable("Customer");
                 });
@@ -354,46 +374,36 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("AddressId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("ContactId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("OpportunityId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Photo")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("PotentialValue")
+                    b.Property<decimal?>("PotentialValue")
                         .HasPrecision(19, 4)
-                        .HasColumnType("REAL");
+                        .HasColumnType("decimal(19,4)");
 
                     b.Property<string>("Source")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("ContactId");
-
-                    b.HasIndex("OpportunityId");
 
                     b.ToTable("Lead");
                 });
@@ -402,27 +412,28 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("EstimatedCloseDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("LeadId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Stage")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LeadId");
 
                     b.ToTable("Opportunity");
                 });
@@ -431,38 +442,34 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Photo")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("Price")
+                    b.Property<decimal?>("Price")
                         .HasPrecision(19, 4)
-                        .HasColumnType("REAL");
+                        .HasColumnType("decimal(19,4)");
 
                     b.Property<long?>("ProductCategoryId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("StockQuantity")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("VendorId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -475,31 +482,27 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("ProductId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("TaxRate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -512,33 +515,29 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("ContactId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<double?>("ConversionRate")
+                    b.Property<decimal?>("ConversionRate")
                         .HasPrecision(19, 4)
-                        .HasColumnType("REAL");
+                        .HasColumnType("decimal(19,4)");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<double?>("CreditsDollars")
+                    b.Property<decimal?>("CreditsDollars")
                         .HasPrecision(19, 4)
-                        .HasColumnType("REAL");
+                        .HasColumnType("decimal(19,4)");
 
                     b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("Rewardpoints")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -551,38 +550,34 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("CustomerId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("Quantity")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ReceiptPhoto")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("SaleDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ServiceId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("TotalAmount")
+                    b.Property<decimal?>("TotalAmount")
                         .HasPrecision(19, 4)
-                        .HasColumnType("REAL");
+                        .HasColumnType("decimal(19,4)");
 
                     b.HasKey("Id");
 
@@ -593,34 +588,30 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Recurring")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("ServiceCategoryId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("VendorId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -633,31 +624,27 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("ServiceId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("TaxRate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -670,46 +657,42 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime?>("CreatedDateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<long?>("CustomerId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FollowupDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("ProductId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ServiceId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -720,40 +703,42 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("AssignedTo")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("CreatedDateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DueDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FollowupDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Icon")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ModifiedDateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -764,44 +749,38 @@ namespace MudBlazorCrmApp.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("AddressId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ContactName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Logo")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("Phone")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("ProductId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.Property<long?>("ServiceId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.ToTable("Vendor");
                 });
@@ -857,47 +836,41 @@ namespace MudBlazorCrmApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Address", b =>
+                {
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Contact", null)
+                        .WithMany("Address")
+                        .HasForeignKey("ContactId");
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Customer", null)
+                        .WithMany("Address")
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Lead", null)
+                        .WithMany("Address")
+                        .HasForeignKey("LeadId");
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Vendor", null)
+                        .WithMany("Address")
+                        .HasForeignKey("VendorId");
+                });
+
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Contact", b =>
                 {
-                    b.HasOne("MudBlazorCrmApp.Shared.Models.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
-
                     b.HasOne("MudBlazorCrmApp.Shared.Models.Customer", null)
                         .WithMany("Contact")
                         .HasForeignKey("CustomerId");
 
-                    b.Navigation("Address");
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Lead", null)
+                        .WithMany("Contact")
+                        .HasForeignKey("LeadId");
                 });
 
-            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Customer", b =>
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Opportunity", b =>
                 {
-                    b.HasOne("MudBlazorCrmApp.Shared.Models.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
-
-                    b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Lead", b =>
-                {
-                    b.HasOne("MudBlazorCrmApp.Shared.Models.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
-
-                    b.HasOne("MudBlazorCrmApp.Shared.Models.Contact", "Contact")
-                        .WithMany()
-                        .HasForeignKey("ContactId");
-
-                    b.HasOne("MudBlazorCrmApp.Shared.Models.Opportunity", "Opportunity")
-                        .WithMany()
-                        .HasForeignKey("OpportunityId");
-
-                    b.Navigation("Address");
-
-                    b.Navigation("Contact");
-
-                    b.Navigation("Opportunity");
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Lead", null)
+                        .WithMany("Opportunity")
+                        .HasForeignKey("LeadId");
                 });
 
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Product", b =>
@@ -935,23 +908,27 @@ namespace MudBlazorCrmApp.Migrations
                         .HasForeignKey("ServiceId");
                 });
 
-            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Vendor", b =>
-                {
-                    b.HasOne("MudBlazorCrmApp.Shared.Models.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
-
-                    b.Navigation("Address");
-                });
-
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Contact", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("Reward");
                 });
 
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Customer", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("Contact");
+                });
+
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Lead", b =>
+                {
+                    b.Navigation("Address");
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Opportunity");
                 });
 
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Product", b =>
@@ -966,6 +943,8 @@ namespace MudBlazorCrmApp.Migrations
 
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Vendor", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("Product");
 
                     b.Navigation("Service");

@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class ContactController(ApplicationDbContext _ctx, ILogger<ContactController> _logger) : ControllerBase
+public class ContactController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<ContactController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -59,10 +56,19 @@ public class ContactController(ApplicationDbContext _ctx, ILogger<ContactControl
             return Conflict();
         }
     
+        var address = contact.Address;
+        contact.Address = null;
+
         var reward = contact.Reward;
         contact.Reward = null;
 
         await ctx.Contact.AddAsync(contact);
+
+        if (address != null)
+        {
+            var newValues = await ctx.Address.Where(x => address.Select(y => y.Id).Contains(x.Id)).ToListAsync();
+            contact.Address = [..newValues];
+        }
 
         if (reward != null)
         {
@@ -81,7 +87,7 @@ public class ContactController(ApplicationDbContext _ctx, ILogger<ContactControl
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Contact>> PutAsync(long key, Contact update)
     {
-        var contact = await ctx.Contact.Include(x => x.Reward).FirstOrDefaultAsync(x => x.Id == key);
+        var contact = await ctx.Contact.Include(x => x.Address).Include(x => x.Reward).FirstOrDefaultAsync(x => x.Id == key);
 
         if (contact == null)
         {
@@ -89,6 +95,16 @@ public class ContactController(ApplicationDbContext _ctx, ILogger<ContactControl
         }
 
         ctx.Entry(contact).CurrentValues.SetValues(update);
+
+        if (update.Address != null)
+        {
+            var updateValues = update.Address.Select(x => x.Id);
+            contact.Address ??= [];
+            contact.Address.RemoveAll(x => !updateValues.Contains(x.Id));
+            var addValues = updateValues.Where(x => !contact.Address.Select(y => y.Id).Contains(x));
+            var newValues = await ctx.Address.Where(x => addValues.Contains(x.Id)).ToListAsync();
+            contact.Address.AddRange(newValues);
+        }
 
         if (update.Reward != null)
         {
@@ -111,7 +127,7 @@ public class ContactController(ApplicationDbContext _ctx, ILogger<ContactControl
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Contact>> PatchAsync(long key, Delta<Contact> delta)
     {
-        var contact = await ctx.Contact.Include(x => x.Reward).FirstOrDefaultAsync(x => x.Id == key);
+        var contact = await ctx.Contact.Include(x => x.Address).Include(x => x.Reward).FirstOrDefaultAsync(x => x.Id == key);
 
         if (contact == null)
         {

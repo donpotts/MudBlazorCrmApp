@@ -18,7 +18,7 @@
 
 <MudDataGrid T="ServiceCategory" @ref="grid" ServerData="(new Func<GridState<ServiceCategory>, Task<GridData<ServiceCategory>>>(ServerReload))" Filterable="true">
     <ToolBarContent>
-         <MudText Typo="Typo.h6">Service Category</MudText>
+         <MudText Typo="Typo.h6">ServiceCategory</MudText>
          <MudSpacer />
          <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
          <MudButton Color="Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
@@ -37,13 +37,11 @@
         </TemplateColumn>
         <PropertyColumn Property="x => x!.TaxRate" Title="TaxRate" />
         <PropertyColumn Property="x => x!.Notes" Title="Notes" />
-        <PropertyColumn Property="x => x!.CreatedDate" Title="Created Date" />
-        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified Date" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
-                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
@@ -140,7 +138,7 @@
 
         var result = await DialogService.Show<AddServiceCategory>("Add Service Category", dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -153,7 +151,7 @@
 
         var result = await DialogService.Show<UpdateServiceCategory>("Update Service Category", dialogParams, dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }

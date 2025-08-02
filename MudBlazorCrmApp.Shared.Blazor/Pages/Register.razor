@@ -36,7 +36,7 @@
 
 @code {
     private RegisterModel registerModel = new();
-
+                       
     private async void OnValidSubmit()
     {
         if (registerModel.Password != registerModel.ConfirmPassword)
@@ -44,11 +44,11 @@
             Snackbar.Add("Password and Confirm Password do not match.", Severity.Error);
             return;
         }
-
+                       
         try
         {
             var errors = await AppService.RegisterUserAsync(registerModel);
-
+                       
             if (errors.Any())
             {
                 Snackbar.Add($"<ul>{string.Join(string.Empty, errors.Values.SelectMany(x => x).Select(x => $"<li>{x}</li>"))}</ul>", Severity.Error);
@@ -59,7 +59,7 @@
         {
             Snackbar.Add(ex.Message, Severity.Error);
         }
-
+                       
         Navigation.NavigateTo("login");
     }
 }

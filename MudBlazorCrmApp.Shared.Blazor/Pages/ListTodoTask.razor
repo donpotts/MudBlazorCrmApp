@@ -18,7 +18,7 @@
 
 <MudDataGrid T="TodoTask" @ref="grid" ServerData="(new Func<GridState<TodoTask>, Task<GridData<TodoTask>>>(ServerReload))" Filterable="true">
     <ToolBarContent>
-         <MudText Typo="Typo.h6">Todo Task</MudText>
+         <MudText Typo="Typo.h6">TodoTask</MudText>
          <MudSpacer />
          <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
          <MudButton Color="Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
@@ -30,6 +30,8 @@
         <PropertyColumn Property="x => x!.AssignedTo" Title="AssignedTo" />
         <PropertyColumn Property="x => x!.Status" Title="Status" />
         <PropertyColumn Property="x => x!.DueDate" Title="DueDate" />
+        <PropertyColumn Property="x => x!.CreatedDateTime" Title="CreatedDateTime" />
+        <PropertyColumn Property="x => x!.ModifiedDateTime" Title="ModifiedDateTime" />
         <PropertyColumn Property="x => x!.UserId" Title="UserId" />
         <PropertyColumn Property="x => x!.FollowupDate" Title="FollowupDate" />
         <TemplateColumn Title="Icon" Sortable="false" Filterable="false">
@@ -41,13 +43,11 @@
             </CellTemplate>
         </TemplateColumn>
         <PropertyColumn Property="x => x!.Notes" Title="Notes" />
-        <PropertyColumn Property="x => x!.CreatedDateTime" Title="Created Date Time" />
-        <PropertyColumn Property="x => x!.ModifiedDateTime" Title="Modified Date Time" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
-                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
@@ -144,7 +144,7 @@
 
         var result = await DialogService.Show<AddTodoTask>("Add Todo Task", dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -157,7 +157,7 @@
 
         var result = await DialogService.Show<UpdateTodoTask>("Update Todo Task", dialogParams, dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }

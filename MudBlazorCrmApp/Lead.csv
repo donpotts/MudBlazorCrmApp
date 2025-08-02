@@ -1,0 +1,4 @@
+Id,ContactId,Source,Status,PotentialValue,OpportunityId,AddressId,Photo,Notes
+401,801,"Online Webinar","Interested",15000.00,601,901,lead_profile_pic.jpg,
+402,802,"Tech Expo","Evaluating",25000.00,602,902,tech_expo_booth.jpg,
+403,803,"Social Media","Contacted",5000.00,603,903,social_media_ad.jpg,

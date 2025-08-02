@@ -33,9 +33,9 @@ else
                 <MudNumericField @bind-Value="record.StockQuantity" For="@(() => record.StockQuantity)" Label="StockQuantity" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Photo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                     <ActivatorContent>
-                        <MudIconButton Color="Color.Info"
-                                       Icon="@Icons.Material.Filled.PhotoCamera">
-                        </MudIconButton>
+                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Upload Photo
+                        </MudButton>
                     </ActivatorContent>
                 </MudFileUpload>
                 @if (!string.IsNullOrEmpty(record.Photo))
@@ -64,7 +64,7 @@ else
     public long Id { get; set; }
 
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private ProductCategory[]? productCategoryArray;
     private IEnumerable<long?>? productCategoryValues;

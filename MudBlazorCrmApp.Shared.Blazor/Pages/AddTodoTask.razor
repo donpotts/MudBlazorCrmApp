@@ -14,13 +14,15 @@
             <MudNumericField @bind-Value="record.AssignedTo" For="@(() => record.AssignedTo)" Label="AssignedTo" />
             <MudTextField @bind-Value="record.Status" For="@(() => record.Status)" Label="Status" />
             <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.DueDate" For="@(() => record.DueDate)" Label="DueDate" />
+            <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.CreatedDateTime" For="@(() => record.CreatedDateTime)" Label="CreatedDateTime" />
+            <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.ModifiedDateTime" For="@(() => record.ModifiedDateTime)" Label="ModifiedDateTime" />
             <MudNumericField @bind-Value="record.UserId" For="@(() => record.UserId)" Label="UserId" />
             <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.FollowupDate" For="@(() => record.FollowupDate)" Label="FollowupDate" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Icon = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                 <ActivatorContent>
-                    <MudIconButton Color="Color.Info"
-                                   Icon="@Icons.Material.Filled.PhotoCamera">
-                    </MudIconButton>
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload Icon
+                    </MudButton>
                 </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(record.Icon))
@@ -39,7 +41,7 @@
 
 @code {
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private TodoTask record = new();
 

@@ -17,9 +17,9 @@
             <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.SaleDate" For="@(() => record.SaleDate)" Label="SaleDate" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.ReceiptPhoto = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                 <ActivatorContent>
-                    <MudIconButton Color="Color.Info"
-                                   Icon="@Icons.Material.Filled.PhotoCamera">
-                    </MudIconButton>
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload ReceiptPhoto
+                    </MudButton>
                 </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(record.ReceiptPhoto))
@@ -38,7 +38,7 @@
 
 @code {
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private Sale record = new();
 

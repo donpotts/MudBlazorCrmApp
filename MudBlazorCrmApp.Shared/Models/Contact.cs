@@ -37,15 +37,8 @@ public class Contact
     public string? Notes { get; set; }
 
     [DataMember]
-    public Address? Address { get; set; }
+    public List<Address>? Address { get; set; }
 
     [DataMember]
     public List<Reward>? Reward { get; set; }
-
-    [DataMember]
-    public DateTime? CreatedDate { get; set; }
-
-    [DataMember]
-    public DateTime ModifiedDate { get; set; }
-
 }

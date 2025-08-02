@@ -1,0 +1,4 @@
+Id,Name,Description,AssignedTo,Status,DueDate,CreatedDateTime,ModifiedDateTime,UserId,FollowupDate,Icon,Notes
+1,Follow up with lead,Call John Doe to discuss Widget A,1,Open,12/31/2024,1/27/2024 0:00,1/28/2024 0:00,1,2/27/2024,,
+2,Send proposal,Email proposal for Gadget B to Jane Smith,2,In Progress,12/31/2024,1/29/2024 0:00,1/30/2024 0:00,2,2/29/2024,,
+3,Check in with customer,Call Jim Brown to discuss Device C,3,Open,12/31/2024,1/31/2024 0:00,2/1/2024 0:00,3,3/1/2024,,

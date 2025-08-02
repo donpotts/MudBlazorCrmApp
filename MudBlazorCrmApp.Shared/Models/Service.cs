@@ -32,11 +32,4 @@ public class Service
 
     [DataMember]
     public List<ServiceCategory>? ServiceCategory { get; set; }
-
-    [DataMember]
-    public DateTime? CreatedDate { get; set; }
-
-    [DataMember]
-    public DateTime ModifiedDate { get; set; }
-
 }

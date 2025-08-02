@@ -14,9 +14,9 @@
             <MudNumericField @bind-Value="record.PotentialValue" For="@(() => record.PotentialValue)" Label="PotentialValue" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Photo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                 <ActivatorContent>
-                    <MudIconButton Color="Color.Info"
-                                   Icon="@Icons.Material.Filled.PhotoCamera">
-                    </MudIconButton>
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload Photo
+                    </MudButton>
                 </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(record.Photo))
@@ -24,25 +24,22 @@
                 <MudImage Src="@GetAbsoluteUri(record.Photo)" Style="width:128px;height:128px;object-fit:contain;" Class="mt-1" />
             }
             <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
-            <MudSelect @bind-Value="record.AddressId" For="@(() => record.AddressId)" Label="Address" AnchorOrigin="Origin.BottomCenter">
-                <MudSelectItem T="long?" Value="null" />
+            <MudSelect T="long?" Label="Address" MultiSelection="true" @bind-SelectedValues="addressValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => addressArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.City)))" AnchorOrigin="Origin.BottomCenter">
                 @foreach (var address in addressArray ?? Enumerable.Empty<Address>())
                 {
-                    <MudSelectItem Value="@address.Id">@address.City</MudSelectItem>
+                    <MudSelectItem T="long?" Value="@address.Id">@address.City</MudSelectItem>
                 }
             </MudSelect>
-            <MudSelect @bind-Value="record.OpportunityId" For="@(() => record.OpportunityId)" Label="Opportunity" AnchorOrigin="Origin.BottomCenter">
-                <MudSelectItem T="long?" Value="null" />
+            <MudSelect T="long?" Label="Opportunity" MultiSelection="true" @bind-SelectedValues="opportunityValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => opportunityArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.Stage)))" AnchorOrigin="Origin.BottomCenter">
                 @foreach (var opportunity in opportunityArray ?? Enumerable.Empty<Opportunity>())
                 {
-                    <MudSelectItem Value="@opportunity.Id">@opportunity.Stage</MudSelectItem>
+                    <MudSelectItem T="long?" Value="@opportunity.Id">@opportunity.Stage</MudSelectItem>
                 }
             </MudSelect>
-            <MudSelect @bind-Value="record.ContactId" For="@(() => record.ContactId)" Label="Contact" AnchorOrigin="Origin.BottomCenter">
-                <MudSelectItem T="long?" Value="null" />
+            <MudSelect T="long?" Label="Contact" MultiSelection="true" @bind-SelectedValues="contactValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => contactArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.Name)))" AnchorOrigin="Origin.BottomCenter">
                 @foreach (var contact in contactArray ?? Enumerable.Empty<Contact>())
                 {
-                    <MudSelectItem Value="@contact.Id">@contact.Name</MudSelectItem>
+                    <MudSelectItem T="long?" Value="@contact.Id">@contact.Name</MudSelectItem>
                 }
             </MudSelect>
 
@@ -56,11 +53,14 @@
 
 @code {
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private Address[]? addressArray;
+    private IEnumerable<long?>? addressValues;
     private Opportunity[]? opportunityArray;
+    private IEnumerable<long?>? opportunityValues;
     private Contact[]? contactArray;
+    private IEnumerable<long?>? contactValues;
     private Lead record = new();
 
     private string GetAbsoluteUri(string uri)
@@ -91,6 +91,9 @@
             addressArray = await AppService.ListAddressAsync();
             opportunityArray = await AppService.ListOpportunityAsync();
             contactArray = await AppService.ListContactAsync();
+            addressValues = record?.Address?.Select(x => x.Id).ToHashSet() ?? [];
+            opportunityValues = record?.Opportunity?.Select(x => x.Id).ToHashSet() ?? [];
+            contactValues = record?.Contact?.Select(x => x.Id).ToHashSet() ?? [];
         }
         catch(Exception ex)
         {
@@ -107,6 +110,9 @@
     {
         try
         {
+            record.Address = addressValues?.Select(x => new Address { Id = x }).ToList();
+            record.Opportunity = opportunityValues?.Select(x => new Opportunity { Id = x }).ToList();
+            record.Contact = contactValues?.Select(x => new Contact { Id = x }).ToList();
             await AppService.InsertLeadAsync(record);
             MudDialog?.Close();
         }

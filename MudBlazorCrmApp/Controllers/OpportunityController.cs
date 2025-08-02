@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class OpportunityController(ApplicationDbContext _ctx, ILogger<OpportunityController> _logger) : ControllerBase
+public class OpportunityController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<OpportunityController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]

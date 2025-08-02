@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class ProductController(ApplicationDbContext _ctx, ILogger<ProductController> _logger) : ControllerBase
+public class ProductController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<ProductController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]

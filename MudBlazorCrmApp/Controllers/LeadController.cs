@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class LeadController(ApplicationDbContext _ctx, ILogger<LeadController> _logger) : ControllerBase
+public class LeadController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<LeadController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -59,7 +56,34 @@ public class LeadController(ApplicationDbContext _ctx, ILogger<LeadController> _
             return Conflict();
         }
     
+        var address = lead.Address;
+        lead.Address = null;
+
+        var opportunity = lead.Opportunity;
+        lead.Opportunity = null;
+
+        var contact = lead.Contact;
+        lead.Contact = null;
+
         await ctx.Lead.AddAsync(lead);
+
+        if (address != null)
+        {
+            var newValues = await ctx.Address.Where(x => address.Select(y => y.Id).Contains(x.Id)).ToListAsync();
+            lead.Address = [..newValues];
+        }
+
+        if (opportunity != null)
+        {
+            var newValues = await ctx.Opportunity.Where(x => opportunity.Select(y => y.Id).Contains(x.Id)).ToListAsync();
+            lead.Opportunity = [..newValues];
+        }
+
+        if (contact != null)
+        {
+            var newValues = await ctx.Contact.Where(x => contact.Select(y => y.Id).Contains(x.Id)).ToListAsync();
+            lead.Contact = [..newValues];
+        }
 
         await ctx.SaveChangesAsync();
 
@@ -72,7 +96,7 @@ public class LeadController(ApplicationDbContext _ctx, ILogger<LeadController> _
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Lead>> PutAsync(long key, Lead update)
     {
-        var lead = await ctx.Lead.FirstOrDefaultAsync(x => x.Id == key);
+        var lead = await ctx.Lead.Include(x => x.Address).Include(x => x.Opportunity).Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
 
         if (lead == null)
         {
@@ -80,6 +104,36 @@ public class LeadController(ApplicationDbContext _ctx, ILogger<LeadController> _
         }
 
         ctx.Entry(lead).CurrentValues.SetValues(update);
+
+        if (update.Address != null)
+        {
+            var updateValues = update.Address.Select(x => x.Id);
+            lead.Address ??= [];
+            lead.Address.RemoveAll(x => !updateValues.Contains(x.Id));
+            var addValues = updateValues.Where(x => !lead.Address.Select(y => y.Id).Contains(x));
+            var newValues = await ctx.Address.Where(x => addValues.Contains(x.Id)).ToListAsync();
+            lead.Address.AddRange(newValues);
+        }
+
+        if (update.Opportunity != null)
+        {
+            var updateValues = update.Opportunity.Select(x => x.Id);
+            lead.Opportunity ??= [];
+            lead.Opportunity.RemoveAll(x => !updateValues.Contains(x.Id));
+            var addValues = updateValues.Where(x => !lead.Opportunity.Select(y => y.Id).Contains(x));
+            var newValues = await ctx.Opportunity.Where(x => addValues.Contains(x.Id)).ToListAsync();
+            lead.Opportunity.AddRange(newValues);
+        }
+
+        if (update.Contact != null)
+        {
+            var updateValues = update.Contact.Select(x => x.Id);
+            lead.Contact ??= [];
+            lead.Contact.RemoveAll(x => !updateValues.Contains(x.Id));
+            var addValues = updateValues.Where(x => !lead.Contact.Select(y => y.Id).Contains(x));
+            var newValues = await ctx.Contact.Where(x => addValues.Contains(x.Id)).ToListAsync();
+            lead.Contact.AddRange(newValues);
+        }
 
         await ctx.SaveChangesAsync();
 
@@ -92,7 +146,7 @@ public class LeadController(ApplicationDbContext _ctx, ILogger<LeadController> _
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Lead>> PatchAsync(long key, Delta<Lead> delta)
     {
-        var lead = await ctx.Lead.FirstOrDefaultAsync(x => x.Id == key);
+        var lead = await ctx.Lead.Include(x => x.Address).Include(x => x.Opportunity).Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
 
         if (lead == null)
         {

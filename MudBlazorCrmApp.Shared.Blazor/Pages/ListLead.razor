@@ -37,16 +37,26 @@
             </CellTemplate>
         </TemplateColumn>
         <PropertyColumn Property="x => x!.Notes" Title="Notes" />
-        <PropertyColumn @ref="addressColumn" Property="x => x!.Address != null ? x.Address.City : null" Title="Address" />
-        <PropertyColumn @ref="opportunityColumn" Property="x => x!.Opportunity != null ? x.Opportunity.Stage : null" Title="Opportunity" />
-        <PropertyColumn @ref="contactColumn" Property="x => x!.Contact != null ? x.Contact.Name : null" Title="Contact" />
-        <PropertyColumn Property="x => x!.CreatedDate" Title="Created Date" />
-        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified Date" />
+        <TemplateColumn Title="Address" Sortable="false" Filterable="false">
+            <CellTemplate>
+                @string.Join(", ", context.Item.Address?.Select(x => x.City?.ToString() ?? string.Empty) ?? [])
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Opportunity" Sortable="false" Filterable="false">
+            <CellTemplate>
+                @string.Join(", ", context.Item.Opportunity?.Select(x => x.Stage?.ToString() ?? string.Empty) ?? [])
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Title="Contact" Sortable="false" Filterable="false">
+            <CellTemplate>
+                @string.Join(", ", context.Item.Contact?.Select(x => x.Name?.ToString() ?? string.Empty) ?? [])
+            </CellTemplate>
+        </TemplateColumn>
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
-                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
                 </MudStack>
             </CellTemplate>
         </TemplateColumn>
@@ -78,12 +88,6 @@
 
 @code {
     private MudDataGrid<Lead>? grid;
-    private PropertyColumn<Lead, string?>? addressColumn;
-
-    private PropertyColumn<Lead, string?>? opportunityColumn;
-
-    private PropertyColumn<Lead, string?>? contactColumn;
-
     private string? _searchString;
     private string GetAbsoluteUri(string uri)
     {
@@ -110,24 +114,6 @@
         var skip = state.Page * state.PageSize;
         var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
         var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
-
-        if (!string.IsNullOrEmpty(addressColumn?.PropertyName))
-        {
-            orderby = orderby?.Replace(addressColumn.PropertyName, "Address/City");
-            filter = filter?.Replace(addressColumn.PropertyName, "Address/City");
-        }
-
-        if (!string.IsNullOrEmpty(opportunityColumn?.PropertyName))
-        {
-            orderby = orderby?.Replace(opportunityColumn.PropertyName, "Opportunity/Stage");
-            filter = filter?.Replace(opportunityColumn.PropertyName, "Opportunity/Stage");
-        }
-
-        if (!string.IsNullOrEmpty(contactColumn?.PropertyName))
-        {
-            orderby = orderby?.Replace(contactColumn.PropertyName, "Contact/Name");
-            filter = filter?.Replace(contactColumn.PropertyName, "Contact/Name");
-        }
 
         AppService.ODataResult<Lead>? result = null;
 
@@ -167,7 +153,7 @@
 
         var result = await DialogService.Show<AddLead>("Add Lead", dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -180,7 +166,7 @@
 
         var result = await DialogService.Show<UpdateLead>("Update Lead", dialogParams, dialogOptions).Result;
 
-        if (!result.Canceled)
+        if (result != null && !result.Canceled)
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -250,9 +236,9 @@
     x.PotentialValue,
     x.Photo,
     x.Notes,
-     AddressCity = x.Address.City,
-     OpportunityStage = x.Opportunity.Stage,
-     ContactName = x.Contact.Name,
+Address = string.Join(", ", x.Address?.Select(x => x.City?.ToString() ?? string.Empty) ?? []),
+Opportunity = string.Join(", ", x.Opportunity?.Select(x => x.Stage?.ToString() ?? string.Empty) ?? []),
+Contact = string.Join(", ", x.Contact?.Select(x => x.Name?.ToString() ?? string.Empty) ?? []),
 
                 });
 

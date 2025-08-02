@@ -35,11 +35,4 @@ public class Product
 
     [DataMember]
     public List<ProductCategory>? ProductCategory { get; set; }
-
-    [DataMember]
-    public DateTime? CreatedDate { get; set; }
-
-    [DataMember]
-    public DateTime ModifiedDate { get; set; }
-
 }

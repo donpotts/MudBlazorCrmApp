@@ -32,9 +32,9 @@ else
                 <MudTextField @bind-Value="record.Industry" For="@(() => record.Industry)" Label="Industry" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Logo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                     <ActivatorContent>
-                        <MudIconButton Color="Color.Info"
-                                       Icon="@Icons.Material.Filled.PhotoCamera">
-                        </MudIconButton>
+                        <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                            Upload Logo
+                        </MudButton>
                     </ActivatorContent>
                 </MudFileUpload>
                 @if (!string.IsNullOrEmpty(record.Logo))
@@ -42,11 +42,10 @@ else
                     <MudImage Src="@GetAbsoluteUri(record.Logo)" Style="width:128px;height:128px;object-fit:contain;" Class="mt-1" />
                 }
                 <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
-                <MudSelect @bind-Value="record.AddressId" For="@(() => record.AddressId)" Label="Address" AnchorOrigin="Origin.BottomCenter">
-                    <MudSelectItem T="long?" Value="null" />
+                <MudSelect T="long?" Label="Address" MultiSelection="true" @bind-SelectedValues="addressValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => addressArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.City)))" AnchorOrigin="Origin.BottomCenter">
                     @foreach (var address in addressArray ?? Enumerable.Empty<Address>())
                     {
-                        <MudSelectItem Value="@address.Id">@address.City</MudSelectItem>
+                        <MudSelectItem T="long?" Value="@address.Id">@address.City</MudSelectItem>
                     }
                 </MudSelect>
                 <MudSelect T="long?" Label="Contact" MultiSelection="true" @bind-SelectedValues="contactValues" MultiSelectionTextFunc="@(x => string.Join(", ", x.Select(s => contactArray?.FirstOrDefault(i => i.Id?.ToString() == s)?.Name)))" AnchorOrigin="Origin.BottomCenter">
@@ -70,9 +69,10 @@ else
     public long Id { get; set; }
 
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private Address[]? addressArray;
+    private IEnumerable<long?>? addressValues;
     private Contact[]? contactArray;
     private IEnumerable<long?>? contactValues;
     private Customer? record;
@@ -103,6 +103,7 @@ else
             addressArray = await AppService.ListAddressAsync();
             contactArray = await AppService.ListContactAsync();
             record = await AppService.GetCustomerByIdAsync(Id);
+            addressValues = record?.Address?.Select(x => x.Id).ToHashSet() ?? [];
             contactValues = record?.Contact?.Select(x => x.Id).ToHashSet() ?? [];
         }
         catch (Exception ex)
@@ -125,6 +126,7 @@ else
 
         try
         {
+            record.Address = addressValues?.Select(x => new Address { Id = x }).ToList();
             record.Contact = contactValues?.Select(x => new Contact { Id = x }).ToList();
             await AppService.UpdateCustomerAsync(Id, record);
             MudDialog?.Close();

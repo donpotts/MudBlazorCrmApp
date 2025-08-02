@@ -14,11 +14,8 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class VendorController(ApplicationDbContext _ctx, ILogger<VendorController> _logger) : ControllerBase
+public class VendorController(ApplicationDbContext ctx) : ControllerBase
 {
-    private readonly ILogger<VendorController> logger = _logger;
-    private readonly ApplicationDbContext ctx = _ctx;
-
     [HttpGet("")]
     [EnableQuery]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -59,6 +56,9 @@ public class VendorController(ApplicationDbContext _ctx, ILogger<VendorControlle
             return Conflict();
         }
     
+        var address = vendor.Address;
+        vendor.Address = null;
+
         var product = vendor.Product;
         vendor.Product = null;
 
@@ -66,6 +66,12 @@ public class VendorController(ApplicationDbContext _ctx, ILogger<VendorControlle
         vendor.Service = null;
 
         await ctx.Vendor.AddAsync(vendor);
+
+        if (address != null)
+        {
+            var newValues = await ctx.Address.Where(x => address.Select(y => y.Id).Contains(x.Id)).ToListAsync();
+            vendor.Address = [..newValues];
+        }
 
         if (product != null)
         {
@@ -90,7 +96,7 @@ public class VendorController(ApplicationDbContext _ctx, ILogger<VendorControlle
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Vendor>> PutAsync(long key, Vendor update)
     {
-        var vendor = await ctx.Vendor.Include(x => x.Product).Include(x => x.Service).FirstOrDefaultAsync(x => x.Id == key);
+        var vendor = await ctx.Vendor.Include(x => x.Address).Include(x => x.Product).Include(x => x.Service).FirstOrDefaultAsync(x => x.Id == key);
 
         if (vendor == null)
         {
@@ -98,6 +104,16 @@ public class VendorController(ApplicationDbContext _ctx, ILogger<VendorControlle
         }
 
         ctx.Entry(vendor).CurrentValues.SetValues(update);
+
+        if (update.Address != null)
+        {
+            var updateValues = update.Address.Select(x => x.Id);
+            vendor.Address ??= [];
+            vendor.Address.RemoveAll(x => !updateValues.Contains(x.Id));
+            var addValues = updateValues.Where(x => !vendor.Address.Select(y => y.Id).Contains(x));
+            var newValues = await ctx.Address.Where(x => addValues.Contains(x.Id)).ToListAsync();
+            vendor.Address.AddRange(newValues);
+        }
 
         if (update.Product != null)
         {
@@ -130,7 +146,7 @@ public class VendorController(ApplicationDbContext _ctx, ILogger<VendorControlle
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Vendor>> PatchAsync(long key, Delta<Vendor> delta)
     {
-        var vendor = await ctx.Vendor.Include(x => x.Product).Include(x => x.Service).FirstOrDefaultAsync(x => x.Id == key);
+        var vendor = await ctx.Vendor.Include(x => x.Address).Include(x => x.Product).Include(x => x.Service).FirstOrDefaultAsync(x => x.Id == key);
 
         if (vendor == null)
         {

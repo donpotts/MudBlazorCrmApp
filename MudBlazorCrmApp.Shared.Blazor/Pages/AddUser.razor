@@ -19,9 +19,9 @@
             <MudTextField @bind-Value="registerModel.CompanyName" For="@(() => registerModel.CompanyName)" Label="Company Name" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => registerModel.Photo = await UploadImageAsync(args))" Accept=".png,.jpg,.jpeg">
                 <ActivatorContent>
-                    <MudIconButton Color="Color.Info"
-                                   Icon="@Icons.Material.Filled.PhotoCamera">
-                    </MudIconButton>
+                    <MudButton HtmlTag="label" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Upload Photo
+                    </MudButton>
                 </ActivatorContent>
             </MudFileUpload>
             @if (!string.IsNullOrEmpty(registerModel.Photo))
@@ -38,7 +38,7 @@
 
 @code {
     [CascadingParameter]
-    IMudDialogInstance? MudDialog { get; set; }
+    MudDialogInstance? MudDialog { get; set; }
 
     private RegisterModel registerModel = new();
 

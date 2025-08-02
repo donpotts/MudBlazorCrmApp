@@ -37,18 +37,11 @@ public class Lead
     public string? Notes { get; set; }
 
     [DataMember]
-    public Address? Address { get; set; }
+    public List<Address>? Address { get; set; }
 
     [DataMember]
-    public Opportunity? Opportunity { get; set; }
+    public List<Opportunity>? Opportunity { get; set; }
 
     [DataMember]
-    public Contact? Contact { get; set; }
-
-    [DataMember]
-    public DateTime? CreatedDate { get; set; }
-
-    [DataMember]
-    public DateTime ModifiedDate { get; set; }
-    
+    public List<Contact>? Contact { get; set; }
 }

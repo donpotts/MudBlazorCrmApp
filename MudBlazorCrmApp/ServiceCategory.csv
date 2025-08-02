@@ -1,0 +1,9 @@
+Id,Name,Description,Icon,TaxRate,Notes
+1,"AI Consultancy","Expert AI strategy and implementation services",ai_consultancy_icon.png,0.01%,
+2,"AI Data Analysis","In-depth data analysis services using AI algorithms",ai_data_analysis_icon.png,0.01%,
+3,"AI Security Services","Security services enhanced with AI for threat detection and response",ai_security_services_icon.png,0.01%,
+4,"AI Training Workshops","Workshops and seminars to educate teams on AI applications",ai_training_workshops_icon.png,0.01%,
+5,"AI Integration Services","Services to integrate AI into existing business systems",ai_integration_services_icon.png,0.01%,
+6,"AI Customer Support","Customer support services powered by AI for efficiency and accuracy",ai_customer_support_icon.png,0.01%,
+7,"AI Research and Development","R&D services for pioneering new AI technologies",ai_research_development_icon.png,0.01%,
+8,"AI Legal Advisory","Legal services utilizing AI for contract analysis and legal research",ai_legal_advisory_icon.png,0.01%,
