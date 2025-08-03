@@ -1,0 +1,55 @@
+<Project>
+  <PropertyGroup>
+    <!-- Common properties for all projects -->
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Don't treat warnings as errors for now to avoid breaking existing code -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    
+    <!-- Version information -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    
+    <!-- Company and product information -->
+    <Company>Don Potts</Company>
+    <Product>MudBlazor CRM Application</Product>
+    <Copyright>Copyright © 2024 Don Potts</Copyright>
+    
+    <!-- Build configuration -->
+    <Deterministic>true</Deterministic>
+    <!-- Disable documentation generation for now -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    
+    <!-- Enable basic analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-minimum</AnalysisLevel>
+  </PropertyGroup>
+
+  <!-- Conditional properties for Release builds -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <!-- Conditional properties for Debug builds -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <!-- Suppress specific warnings that are not critical for the current state -->
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CS8618</NoWarn> <!-- Nullable warnings for properties that are set by frameworks -->
+  </PropertyGroup>
+
+  <!-- Package reference versions for consistency -->
+  <ItemGroup>
+    <!-- Analysis packages -->
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
+</Project>
