@@ -4,15 +4,49 @@ on:
   push:
     branches:
     - main
+  pull_request:
+    branches:
+    - main
 env:
   AZURE_WEBAPP_NAME: MudBlazorCrmApp
   AZURE_WEBAPP_PACKAGE_PATH: MudBlazorCrmApp\publish
   CONFIGURATION: Release
-  DOTNET_CORE_VERSION: 9.0.x
+  DOTNET_CORE_VERSION: 8.0.x
+  DOTNET_TARGET_VERSION: 9.0.x
   WORKING_DIRECTORY: MudBlazorCrmApp
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet-version: ['8.0.x', '9.0.x']
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET SDK ${{ matrix.dotnet-version }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+    - name: Display .NET Version
+      run: dotnet --version
+    - name: Restore
+      run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+    - name: Build
+      run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+    - name: Test
+      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build --configuration ${{ env.CONFIGURATION }} --verbosity normal
+    - name: Publish (only for .NET 8.0.x)
+      if: matrix.dotnet-version == '8.0.x'
+      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+    - name: Publish Artifacts (only for .NET 8.0.x)
+      if: matrix.dotnet-version == '8.0.x'
+      uses: actions/upload-artifact@v4
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+  code-quality:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET SDK
@@ -21,20 +55,19 @@ jobs:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
-    - name: Build
+    - name: Build for Analysis
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Test
-      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
-    - name: Publish
-      run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
-    - name: Publish Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: webapp
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+    - name: Run Security Analysis
+      run: |
+        echo "Running security analysis..."
+        # Add security scanning tools here in the future
+    - name: Check Code Format
+      run: |
+        echo "Checking code format..."
+        # Add code formatting checks here
   deploy:
     runs-on: windows-latest
-    needs: build
+    needs: [build, code-quality]
     steps:
     - name: Download artifact from build job
       uses: actions/download-artifact@v4
