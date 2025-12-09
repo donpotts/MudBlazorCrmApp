@@ -32,7 +32,7 @@
         <PropertyColumn Property="x => x!.DueDate" Title="DueDate" />
         <PropertyColumn Property="x => x!.UserId" Title="UserId" />
         <PropertyColumn Property="x => x!.FollowupDate" Title="FollowupDate" />
-        <TemplateColumn Title="Icon" Sortable="false" Filterable="false">
+        <TemplateColumn Title="Photo" Sortable="false" Filterable="false">
             <CellTemplate>
                 @if (!string.IsNullOrEmpty(context.Item!.Icon))
                 {

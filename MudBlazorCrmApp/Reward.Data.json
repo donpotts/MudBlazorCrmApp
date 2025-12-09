@@ -1,26 +1,50 @@
 [
   {
     "Id": 1,
-    "Rewardpoints": 1200,
-    "CreditsDollars": 1.20,
-    "ConversionRate": 0.10,
-    "ExpirationDate": "2024-12-31T00:00:00",
-    "Notes": ""
+    "Rewardpoints": 12500,
+    "CreditsDollars": 125.00,
+    "ConversionRate": 0.01,
+    "ExpirationDate": "2025-12-31T00:00:00",
+    "Notes": "Gold tier customer"
   },
   {
     "Id": 2,
-    "Rewardpoints": 1500,
-    "CreditsDollars": 1.50,
-    "ConversionRate": 0.10,
-    "ExpirationDate": "2024-12-31T00:00:00",
-    "Notes": ""
+    "Rewardpoints": 8500,
+    "CreditsDollars": 85.00,
+    "ConversionRate": 0.01,
+    "ExpirationDate": "2025-12-31T00:00:00",
+    "Notes": "Silver tier customer"
   },
   {
     "Id": 3,
-    "Rewardpoints": 1800,
-    "CreditsDollars": 1.80,
-    "ConversionRate": 0.10,
-    "ExpirationDate": "2024-12-31T00:00:00",
-    "Notes": ""
+    "Rewardpoints": 3200,
+    "CreditsDollars": 32.00,
+    "ConversionRate": 0.01,
+    "ExpirationDate": "2025-12-31T00:00:00",
+    "Notes": "Bronze tier customer"
+  },
+  {
+    "Id": 4,
+    "Rewardpoints": 25000,
+    "CreditsDollars": 250.00,
+    "ConversionRate": 0.01,
+    "ExpirationDate": "2025-12-31T00:00:00",
+    "Notes": "Platinum tier customer"
+  },
+  {
+    "Id": 5,
+    "Rewardpoints": 15800,
+    "CreditsDollars": 158.00,
+    "ConversionRate": 0.01,
+    "ExpirationDate": "2025-12-31T00:00:00",
+    "Notes": "Gold tier customer"
+  },
+  {
+    "Id": 6,
+    "Rewardpoints": 45000,
+    "CreditsDollars": 450.00,
+    "ConversionRate": 0.01,
+    "ExpirationDate": "2025-12-31T00:00:00",
+    "Notes": "Diamond tier - top customer"
   }
 ]

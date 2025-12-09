@@ -8,7 +8,6 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    overflow: hidden; /* Prevent body scroll from interfering */
 }
 
 /* =================================================================== */
@@ -16,11 +15,12 @@ html, body {
 /* =================================================================== */
 
 .dashboard-wrapper {
-    height: 100vh;
+    height: calc(100vh - 64px); /* Account for header */
     display: flex;
     flex-direction: column;
     padding: 20px;
     background-color: var(--mud-palette-background);
+    overflow: hidden; /* Prevent scroll within dashboard wrapper */
 }
 
 .controls {
@@ -33,8 +33,7 @@ html, body {
 }
 
 .dashboard-container {
-    height: 80vh;
-    flex: unset;
+    flex: 1;
     border: 1px solid var(--mud-palette-lines-default);
     border-radius: 8px;
     background-color: var(--mud-palette-surface);

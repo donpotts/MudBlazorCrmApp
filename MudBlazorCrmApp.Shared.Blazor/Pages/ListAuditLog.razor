@@ -1,0 +1,255 @@
+@page "/auditlog"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<PageTitle>Audit Log</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Audit Log</MudText>
+</div>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect T="string" Label="Entity Type" @bind-Value="_filterEntityType" @bind-Value:after="OnFilterChanged" Clearable="true">
+                <MudSelectItem Value="@("Customer")">Customer</MudSelectItem>
+                <MudSelectItem Value="@("Contact")">Contact</MudSelectItem>
+                <MudSelectItem Value="@("Lead")">Lead</MudSelectItem>
+                <MudSelectItem Value="@("Opportunity")">Opportunity</MudSelectItem>
+                <MudSelectItem Value="@("Sale")">Sale</MudSelectItem>
+                <MudSelectItem Value="@("SupportCase")">Support Case</MudSelectItem>
+                <MudSelectItem Value="@("Communication")">Communication</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudSelect T="string" Label="Change Type" @bind-Value="_filterChangeType" @bind-Value:after="OnFilterChanged" Clearable="true">
+                <MudSelectItem Value="@("Insert")">Insert</MudSelectItem>
+                <MudSelectItem Value="@("Update")">Update</MudSelectItem>
+                <MudSelectItem Value="@("Delete")">Delete</MudSelectItem>
+                <MudSelectItem Value="@("SoftDelete")">Soft Delete</MudSelectItem>
+                <MudSelectItem Value="@("Restore")">Restore</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudDatePicker Label="Start Date" @bind-Date="_startDate" @bind-Date:after="OnFilterChanged" Clearable="true" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudDatePicker Label="End Date" @bind-Date="_endDate" @bind-Date:after="OnFilterChanged" Clearable="true" />
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<MudDataGrid T="AuditLog" @ref="grid" ServerData="(new Func<GridState<AuditLog>, Task<GridData<AuditLog>>>(ServerReload))" Filterable="true" Dense="true">
+    <ToolBarContent>
+         <MudText Typo="Typo.h6">Audit Trail</MudText>
+         <MudSpacer />
+         <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
+         <MudButton Color="Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x!.Id" Title="Id" />
+        <PropertyColumn Property="x => x!.Timestamp" Title="Timestamp" Format="yyyy-MM-dd HH:mm:ss" />
+        <PropertyColumn Property="x => x!.UserName" Title="User" />
+        <PropertyColumn Property="x => x!.EntityType" Title="Entity Type" />
+        <PropertyColumn Property="x => x!.EntityId" Title="Entity ID" />
+        <TemplateColumn Title="Change Type">
+            <CellTemplate>
+                <MudChip T="string" Size="Size.Small" Color="@GetChangeTypeColor(context.Item!.ChangeType)">
+                    @context.Item!.ChangeType
+                </MudChip>
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x!.ChangedProperties" Title="Changed Fields" />
+        <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudStack Row="true">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="@Size.Small" Title="View Details" OnClick="@(e => OnViewDetails(context.Item!))" />
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="AuditLog" />
+    </PagerContent>
+</MudDataGrid>
+
+<script>
+    window.downloadFromBase64 = function (base64, filename) {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        var byteCharacters = atob(base64);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], { type: "application/octet-stream" });
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+</script>
+
+@code {
+    private MudDataGrid<AuditLog>? grid;
+    private string? _searchString;
+    private string? _filterEntityType;
+    private string? _filterChangeType;
+    private DateTime? _startDate;
+    private DateTime? _endDate;
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    private Color GetChangeTypeColor(string changeType) => changeType switch
+    {
+        "Insert" => Color.Success,
+        "Update" => Color.Info,
+        "Delete" => Color.Error,
+        "SoftDelete" => Color.Warning,
+        "Restore" => Color.Tertiary,
+        _ => Color.Default
+    };
+
+    private async Task<GridData<AuditLog>> ServerReload(GridState<AuditLog> state)
+    {
+        var top = state.PageSize;
+        var skip = state.Page * state.PageSize;
+        var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
+        var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
+
+        AppService.ODataResult<AuditLog>? result = null;
+
+        try
+        {
+            var filters = new List<string>();
+
+            if (!string.IsNullOrEmpty(_searchString))
+            {
+                filters.Add($"(contains(tolower(EntityType), '{_searchString}') or contains(tolower(UserName), '{_searchString}') or contains(tolower(ChangeType), '{_searchString}'))");
+            }
+
+            if (!string.IsNullOrEmpty(_filterEntityType))
+            {
+                filters.Add($"EntityType eq '{_filterEntityType}'");
+            }
+
+            if (!string.IsNullOrEmpty(_filterChangeType))
+            {
+                filters.Add($"ChangeType eq '{_filterChangeType}'");
+            }
+
+            if (_startDate.HasValue)
+            {
+                filters.Add($"Timestamp ge {_startDate.Value:yyyy-MM-ddTHH:mm:ssZ}");
+            }
+
+            if (_endDate.HasValue)
+            {
+                filters.Add($"Timestamp le {_endDate.Value.AddDays(1):yyyy-MM-ddTHH:mm:ssZ}");
+            }
+
+            if (filters.Count > 0)
+            {
+                filter = string.Join(" and ", filters);
+            }
+
+            result = await AppService.ListAuditLogODataAsync(top, skip, orderby, filter, true, null);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return new() { TotalItems = result?.Count ?? 0, Items = result?.Value ?? Enumerable.Empty<AuditLog>() };
+    }
+
+    private async void OnViewDetails(AuditLog record)
+    {
+        DialogParameters<ViewAuditLogDetails> dialogParams = new() { { x => x.AuditLogRecord, record } };
+        DialogOptions dialogOptions = new() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true };
+
+        await DialogService.Show<ViewAuditLogDetails>("Audit Log Details", dialogParams, dialogOptions).Result;
+    }
+
+    private void OnFilterChanged()
+    {
+        grid?.ReloadServerData();
+    }
+    
+    private void SearchChanged(string Value)
+    {
+        if (Value.EndsWith("."))
+        {
+            return;
+        }
+        _searchString = Value.ToString().ToLower();
+        grid?.ReloadServerData();
+    }
+
+    private async Task ExportAllToCSV()
+    {
+        AppService.ODataResult<AuditLog>? result = null;
+
+        try
+        {
+            result = await AppService.ListAuditLogODataAsync(null, null, null, null, true, null);
+
+            if (result != null && result?.Value != null)
+            {
+                var ar = result?.Value.ToList().Select(x => new
+                {
+                    x.Id,
+                    x.Timestamp,
+                    x.UserId,
+                    x.UserName,
+                    x.EntityType,
+                    x.EntityId,
+                    x.ChangeType,
+                    x.TableName,
+                    x.ChangedProperties,
+                    x.OldValues,
+                    x.NewValues,
+                    x.CorrelationId
+                });
+
+                using var memoryStream = new MemoryStream();
+                using (var writer = new StreamWriter(memoryStream))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(ar);
+                }
+                var byteArray = memoryStream.ToArray();
+                var base64 = Convert.ToBase64String(byteArray);
+                await JSRuntime.InvokeVoidAsync("downloadFromBase64", base64, "AuditLog_"+ System.DateTime.Now.ToString("yyyyMMddHHmmss") +".csv");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

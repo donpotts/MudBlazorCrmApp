@@ -8,7 +8,7 @@
 <MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
 <MudAppBar Color="Color.Inherit">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-    <MudText>CRM Sample</MudText>
+    <MudText Typo="Typo.h6">MudBlazor CRM</MudText>
     <MudSpacer />
     <ThemesMenu @bind-ThemingDrawerOpen="_themingDrawerOpen"
             ThemeManager="_themeManager"
@@ -23,41 +23,69 @@
                     Class="mr-5"/>
         </MudTooltip>
         </MudLink>
+    <MudLink Href="https://github.com/donpotts/MudBlazorCrmApp" Target="_blank" Color="Color.Inherit" Class="mr-3">
+        <MudIcon Icon="@Icons.Custom.Brands.GitHub" />
+    </MudLink>
     <MudLink Href="https://www.radendpoint.com/" Color="Color.Inherit">About</MudLink>
 </MudAppBar>
-<MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
-    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <AuthorizeView>
-        <MudNavLink Href="/CrmDashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">CRM Dashboard</MudNavLink>
-        <MudNavLink Href="/Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PeopleAlt">Customers</MudNavLink>
-        <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeWork">Addresses</MudNavLink>
-        <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>
-        <MudNavLink Href="/ServiceCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeRepairService">Service Categories</MudNavLink>
-        <MudNavLink Href="/Contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ContactMail">Contacts</MudNavLink>
-        <MudNavLink Href="/Opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Newspaper">Opportunities</MudNavLink>
-        <MudNavLink Href="/Lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Leaderboard">Leads</MudNavLink>
-        <MudNavLink Href="/Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ProductionQuantityLimits">Products</MudNavLink>
-        <MudNavLink Href="/Service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Services</MudNavLink>
-        <MudNavLink Href="/Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PointOfSale">Sales</MudNavLink>
-        <MudNavLink Href="/Vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Store">Vendors</MudNavLink>
-        <MudNavLink Href="/SupportCase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Support">Support Cases</MudNavLink>
-        <MudNavLink Href="/TodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Todo Tasks</MudNavLink>
-        <MudNavLink Href="/KanbanTodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Kanban Todo Tasks</MudNavLink>
-        <MudNavLink Href="/Reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Rewards</MudNavLink>
-    </AuthorizeView>
-    <AuthorizeView Roles="Administrator">
-        <MudNavLink Href="/user" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">User</MudNavLink>
-    </AuthorizeView>
-    <AuthorizeView>
-        <Authorized>
-            <MudNavLink Href="/account/changePassword" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Change Password</MudNavLink>
-            <MudNavLink Href="/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
-        </Authorized>
-        <NotAuthorized>
-            <MudNavLink Href="/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Register</MudNavLink>
-            <MudNavLink Href="/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
-        </NotAuthorized>
-    </AuthorizeView>
+<MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit" Elevation="1">
+    <MudNavMenu Bordered="true" Class="pt-2">
+        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+        
+        <AuthorizeView>
+            <MudNavGroup Title="Sales" Icon="@Icons.Material.Filled.AttachMoney" Expanded="false">
+                <MudNavLink Href="/Lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Leaderboard">Leads</MudNavLink>
+                <MudNavLink Href="/Opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TrendingUp">Opportunities</MudNavLink>
+                <MudNavLink Href="/Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PointOfSale">Sales</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Customers" Icon="@Icons.Material.Filled.People" Expanded="false">
+                <MudNavLink Href="/Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Business">Companies</MudNavLink>
+                <MudNavLink Href="/Contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ContactMail">Contacts</MudNavLink>
+                <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.LocationOn">Addresses</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Products & Services" Icon="@Icons.Material.Filled.Inventory" Expanded="false">
+                <MudNavLink Href="/Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ShoppingCart">Products</MudNavLink>
+                <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>
+                <MudNavLink Href="/Service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Build">Services</MudNavLink>
+                <MudNavLink Href="/ServiceCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeRepairService">Service Categories</MudNavLink>
+                <MudNavLink Href="/Vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Store">Vendors</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Support" Icon="@Icons.Material.Filled.SupportAgent" Expanded="false">
+                <MudNavLink Href="/SupportCase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.BugReport">Support Cases</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Tasks" Icon="@Icons.Material.Filled.CheckCircle" Expanded="false">
+                <MudNavLink Href="/TodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FormatListBulleted">Task List</MudNavLink>
+                <MudNavLink Href="/KanbanTodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ViewKanban">Kanban Board</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavLink Href="/Reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CardGiftcard">Rewards</MudNavLink>
+        </AuthorizeView>
+        
+        <AuthorizeView Roles="Administrator">
+            <MudDivider Class="my-2" />
+            <MudNavGroup Title="Administration" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="false">
+                <MudNavLink Href="/user" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ManageAccounts">Users</MudNavLink>
+                <MudNavLink Href="/auditlog" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.History">Audit Log</MudNavLink>
+            </MudNavGroup>
+        </AuthorizeView>
+        
+        <MudDivider Class="my-2" />
+        
+        <AuthorizeView>
+            <Authorized>
+                <MudNavLink Href="/account/changePassword" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Change Password</MudNavLink>
+                <MudNavLink Href="/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavLink Href="/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+                <MudNavLink Href="/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudNavMenu>
 </MudDrawer>
 
 @code {

@@ -67,8 +67,7 @@
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_content/MudBlazorCrmApp.Shared.Blazor/lib/gridstack/dist/gridstack-all.js"></script>
     <script src="_content/MudBlazorCrmApp.Shared.Blazor/lib/chart.js/chart.umd.js"></script>
-    <script src="_content/MudBlazorCrmApp.Shared.Blazor/js/chart-renderer.js"></script>
-    <script src="_content/MudBlazorCrmApp.Shared.Blazor/js/dashboard-manager.js"></script>
+    <!-- chart-renderer.js and dashboard-manager.js are loaded as ES6 modules via Blazor's JSRuntime.InvokeAsync("import", ...) -->
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>

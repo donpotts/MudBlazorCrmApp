@@ -50,6 +50,9 @@ modelBuilder.EntitySet<Sale>("Sale");
 modelBuilder.EntitySet<SupportCase>("SupportCase");
 modelBuilder.EntitySet<TodoTask>("TodoTask");
 modelBuilder.EntitySet<ApplicationUserDto>("User");
+modelBuilder.EntitySet<ActivityLog>("ActivityLog");
+modelBuilder.EntitySet<AuditLog>("AuditLog");
+
 
 builder.Services.AddControllers()
     .AddOData(options => options.EnableQueryFeatures().AddRouteComponents("odata", modelBuilder.GetEdmModel()))

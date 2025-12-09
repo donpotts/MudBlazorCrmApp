@@ -6,7 +6,7 @@
     "State": "TN",
     "ZipCode": 37153,
     "Country": "USA",
-    "Photo": "cybernetics_corp_headquarters.jpg",
+    "Photo": "",
     "Notes": ""
   },
   {
@@ -16,7 +16,7 @@
     "State": "TN",
     "ZipCode": 37153,
     "Country": "USA",
-    "Photo": "tech_park_address.jpg",
+    "Photo": "",
     "Notes": ""
   },
   {
@@ -26,7 +26,97 @@
     "State": "TN",
     "ZipCode": 37153,
     "Country": "USA",
-    "Photo": "maple_street_address.jpg",
+    "Photo": "",
     "Notes": ""
+  },
+  {
+    "Id": 904,
+    "Street": "789 Startup Lane",
+    "City": "San Francisco",
+    "State": "CA",
+    "ZipCode": 94102,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "TechVentures main office"
+  },
+  {
+    "Id": 905,
+    "Street": "1 Corporate Plaza",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": 10001,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "Global Solutions headquarters"
+  },
+  {
+    "Id": 906,
+    "Street": "200 Wall Street",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": 10005,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "FinanceFirst headquarters"
+  },
+  {
+    "Id": 907,
+    "Street": "500 Medical Center Drive",
+    "City": "Boston",
+    "State": "MA",
+    "ZipCode": 2115,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "HealthCare Plus main campus"
+  },
+  {
+    "Id": 908,
+    "Street": "1000 Retail Boulevard",
+    "City": "Chicago",
+    "State": "IL",
+    "ZipCode": 60601,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "RetailMax corporate HQ"
+  },
+  {
+    "Id": 909,
+    "Street": "300 University Avenue",
+    "City": "Austin",
+    "State": "TX",
+    "ZipCode": 78701,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "EduTech main office"
+  },
+  {
+    "Id": 910,
+    "Street": "150 Solar Way",
+    "City": "Denver",
+    "State": "CO",
+    "ZipCode": 80202,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "GreenEnergy headquarters"
+  },
+  {
+    "Id": 911,
+    "Street": "800 Freight Road",
+    "City": "Memphis",
+    "State": "TN",
+    "ZipCode": 38103,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "LogiTrans distribution center"
+  },
+  {
+    "Id": 912,
+    "Street": "450 Studio Circle",
+    "City": "Los Angeles",
+    "State": "CA",
+    "ZipCode": 90028,
+    "Country": "USA",
+    "Photo": "",
+    "Notes": "MediaPro production facility"
   }
 ]

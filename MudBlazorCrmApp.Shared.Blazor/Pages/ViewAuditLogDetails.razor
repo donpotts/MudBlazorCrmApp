@@ -1,0 +1,142 @@
+@using MudBlazor
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.History" Class="mr-3 mb-n1"/>
+            Audit Log Details
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (AuditLogRecord != null)
+        {
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="ID" Variant="Variant.Outlined">@AuditLogRecord.Id</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="Timestamp" Variant="Variant.Outlined">@AuditLogRecord.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="User ID" Variant="Variant.Outlined">@(AuditLogRecord.UserId ?? "N/A")</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="User Name" Variant="Variant.Outlined">@(AuditLogRecord.UserName ?? "N/A")</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="Entity Type" Variant="Variant.Outlined">@AuditLogRecord.EntityType</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="Entity ID" Variant="Variant.Outlined">@AuditLogRecord.EntityId</MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="Change Type" Variant="Variant.Outlined">
+                        <MudChip T="string" Size="Size.Small" Color="@GetChangeTypeColor(AuditLogRecord.ChangeType)">
+                            @AuditLogRecord.ChangeType
+                        </MudChip>
+                    </MudField>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudField Label="Table Name" Variant="Variant.Outlined">@(AuditLogRecord.TableName ?? "N/A")</MudField>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudField Label="Correlation ID" Variant="Variant.Outlined">@(AuditLogRecord.CorrelationId ?? "N/A")</MudField>
+                </MudItem>
+                
+                @if (!string.IsNullOrEmpty(AuditLogRecord.ChangedProperties))
+                {
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Class="mb-2">Changed Properties</MudText>
+                        <MudPaper Class="pa-3" Elevation="0" Outlined="true">
+                            <MudText Style="font-family: monospace; white-space: pre-wrap; word-break: break-all;">@FormatJson(AuditLogRecord.ChangedProperties)</MudText>
+                        </MudPaper>
+                    </MudItem>
+                }
+                
+                @if (!string.IsNullOrEmpty(AuditLogRecord.OldValues))
+                {
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.subtitle1" Class="mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.RemoveCircle" Color="Color.Error" Size="Size.Small" Class="mr-1" />
+                            Old Values
+                        </MudText>
+                        <MudPaper Class="pa-3" Elevation="0" Outlined="true" Style="max-height: 400px; overflow-y: auto; background-color: #fff5f5;">
+                            <MudText Style="font-family: monospace; white-space: pre-wrap; word-break: break-all; font-size: 0.85rem;">@FormatJson(AuditLogRecord.OldValues)</MudText>
+                        </MudPaper>
+                    </MudItem>
+                }
+                
+                @if (!string.IsNullOrEmpty(AuditLogRecord.NewValues))
+                {
+                    <MudItem xs="12" md="@(!string.IsNullOrEmpty(AuditLogRecord.OldValues) ? 6 : 12)">
+                        <MudText Typo="Typo.subtitle1" Class="mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.AddCircle" Color="Color.Success" Size="Size.Small" Class="mr-1" />
+                            New Values
+                        </MudText>
+                        <MudPaper Class="pa-3" Elevation="0" Outlined="true" Style="max-height: 400px; overflow-y: auto; background-color: #f5fff5;">
+                            <MudText Style="font-family: monospace; white-space: pre-wrap; word-break: break-all; font-size: 0.85rem;">@FormatJson(AuditLogRecord.NewValues)</MudText>
+                        </MudPaper>
+                    </MudItem>
+                }
+
+                @if (!string.IsNullOrEmpty(AuditLogRecord.IpAddress))
+                {
+                    <MudItem xs="12" sm="6">
+                        <MudField Label="IP Address" Variant="Variant.Outlined">@AuditLogRecord.IpAddress</MudField>
+                    </MudItem>
+                }
+
+                @if (!string.IsNullOrEmpty(AuditLogRecord.UserAgent))
+                {
+                    <MudItem xs="12">
+                        <MudField Label="User Agent" Variant="Variant.Outlined">@AuditLogRecord.UserAgent</MudField>
+                    </MudItem>
+                }
+
+                @if (!string.IsNullOrEmpty(AuditLogRecord.AdditionalInfo))
+                {
+                    <MudItem xs="12">
+                        <MudField Label="Additional Info" Variant="Variant.Outlined">@AuditLogRecord.AdditionalInfo</MudField>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public AuditLog? AuditLogRecord { get; set; }
+
+    private Color GetChangeTypeColor(string changeType) => changeType switch
+    {
+        "Insert" => Color.Success,
+        "Update" => Color.Info,
+        "Delete" => Color.Error,
+        "SoftDelete" => Color.Warning,
+        "Restore" => Color.Tertiary,
+        _ => Color.Default
+    };
+
+    private string FormatJson(string json)
+    {
+        try
+        {
+            var obj = System.Text.Json.JsonSerializer.Deserialize<object>(json);
+            return System.Text.Json.JsonSerializer.Serialize(obj, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        }
+        catch
+        {
+            return json;
+        }
+    }
+
+    private void Close() => MudDialog?.Close();
+}

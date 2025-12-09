@@ -27,7 +27,7 @@
         <PropertyColumn Property="x => x!.Id" Title="Id" />
         <PropertyColumn Property="x => x!.Name" Title="Name" />
         <PropertyColumn Property="x => x!.Description" Title="Description" />
-        <TemplateColumn Title="Icon" Sortable="false" Filterable="false">
+        <TemplateColumn Title="Photo" Sortable="false" Filterable="false">
             <CellTemplate>
                 @if (!string.IsNullOrEmpty(context.Item!.Icon))
                 {
