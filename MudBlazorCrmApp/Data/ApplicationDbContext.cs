@@ -53,6 +53,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<SupportCase> SupportCase => Set<SupportCase>();
     public DbSet<TodoTask> TodoTask => Set<TodoTask>();
     public DbSet<Reward> Reward => Set<Reward>();
+    public DbSet<Activity> Activity => Set<Activity>();
+    public DbSet<Tag> Tag => Set<Tag>();
+    public DbSet<EntityTag> EntityTag => Set<EntityTag>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -112,5 +115,31 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.Entity<Reward>()
             .Property(e => e.ConversionRate)
             .HasPrecision(19, 4);
+
+        // Opportunity enrichment
+        modelBuilder.Entity<Opportunity>()
+            .Property(e => e.Value)
+            .HasConversion<double>();
+        modelBuilder.Entity<Opportunity>()
+            .Property(e => e.Value)
+            .HasPrecision(19, 4);
+        modelBuilder.Entity<Opportunity>()
+            .HasOne(x => x.Customer);
+        modelBuilder.Entity<Opportunity>()
+            .HasOne(x => x.Contact);
+
+        // Activity relationships
+        modelBuilder.Entity<Activity>()
+            .HasOne(x => x.Contact);
+        modelBuilder.Entity<Activity>()
+            .HasOne(x => x.Customer);
+        modelBuilder.Entity<Activity>()
+            .HasOne(x => x.Lead);
+        modelBuilder.Entity<Activity>()
+            .HasOne(x => x.Opportunity);
+
+        // EntityTag relationship
+        modelBuilder.Entity<EntityTag>()
+            .HasOne(x => x.Tag);
     }
 }

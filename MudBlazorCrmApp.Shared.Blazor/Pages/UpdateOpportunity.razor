@@ -27,8 +27,37 @@ else
             </TitleContent>
             <DialogContent>
                 <MudNumericField @bind-Value="record.Id" For="@(() => record.Id)" Label="Id" ReadOnly="true" />
-                <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.EstimatedCloseDate" For="@(() => record.EstimatedCloseDate)" Label="EstimatedCloseDate" />
-                <MudTextField @bind-Value="record.Stage" For="@(() => record.Stage)" Label="Stage" />
+                <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
+                <MudNumericField @bind-Value="record.Value" For="@(() => record.Value)" Label="Value ($)" />
+                <MudNumericField @bind-Value="record.Probability" For="@(() => record.Probability)" Label="Probability (%)" Min="0" Max="100" />
+                <MudTextField @bind-Value="record.Source" For="@(() => record.Source)" Label="Source" />
+                <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.EstimatedCloseDate" For="@(() => record.EstimatedCloseDate)" Label="Estimated Close Date" />
+                <MudSelect @bind-Value="record.Stage" Label="Stage" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem Value="@("Prospecting")">Prospecting</MudSelectItem>
+                    <MudSelectItem Value="@("Qualification")">Qualification</MudSelectItem>
+                    <MudSelectItem Value="@("Proposal")">Proposal</MudSelectItem>
+                    <MudSelectItem Value="@("Negotiation")">Negotiation</MudSelectItem>
+                    <MudSelectItem Value="@("Closed Won")">Closed Won</MudSelectItem>
+                    <MudSelectItem Value="@("Closed Lost")">Closed Lost</MudSelectItem>
+                </MudSelect>
+                <MudSelect T="long?" @bind-Value="record.CustomerId" Label="Customer" AnchorOrigin="Origin.BottomCenter" Clearable="true">
+                    @if (customers != null)
+                    {
+                        @foreach (var customer in customers)
+                        {
+                            <MudSelectItem T="long?" Value="@customer.Id">@customer.Name</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
+                <MudSelect T="long?" @bind-Value="record.ContactId" Label="Contact" AnchorOrigin="Origin.BottomCenter" Clearable="true">
+                    @if (contacts != null)
+                    {
+                        @foreach (var contact in contacts)
+                        {
+                            <MudSelectItem T="long?" Value="@contact.Id">@contact.Name</MudSelectItem>
+                        }
+                    }
+                </MudSelect>
                 <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Icon = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                     <ActivatorContent>
                         <MudIconButton Color="Color.Info"
@@ -42,6 +71,8 @@ else
                 }
                 <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
 
+                <TagSelector EntityType="Opportunity" EntityId="@(record.Id ?? 0)" />
+                <EntityTimeline EntityType="Opportunity" EntityId="@(record.Id ?? 0)" />
             </DialogContent>
             <DialogActions>
                 <MudButton OnClick="OnCancel">Cancel</MudButton>
@@ -59,6 +90,8 @@ else
     IMudDialogInstance? MudDialog { get; set; }
 
     private Opportunity? record;
+    private Customer[]? customers;
+    private Contact[]? contacts;
 
     private string GetAbsoluteUri(string uri)
     {
@@ -84,6 +117,8 @@ else
         try
         {
             record = await AppService.GetOpportunityByIdAsync(Id);
+            customers = await AppService.ListCustomerAsync();
+            contacts = await AppService.ListContactAsync();
         }
         catch (Exception ex)
         {

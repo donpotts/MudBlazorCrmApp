@@ -1,0 +1,74 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+
+@if (events == null)
+{
+    <MudProgressCircular Indeterminate="true" Class="my-4" />
+}
+else if (events.Count == 0)
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="my-4">No activity history yet.</MudText>
+}
+else
+{
+    <MudText Typo="Typo.h6" Class="mt-6 mb-2">Activity Timeline</MudText>
+    <MudTimeline TimelinePosition="TimelinePosition.Start">
+        @foreach (var evt in events)
+        {
+            <MudTimelineItem Color="@GetEventColor(evt.EventType)" Size="Size.Small">
+                <ItemOpposite>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@evt.Date?.ToString("MMM dd, yyyy h:mm tt")</MudText>
+                </ItemOpposite>
+                <ItemContent>
+                    <MudText Typo="Typo.subtitle2"><b>@evt.Title</b></MudText>
+                    <MudText Typo="Typo.caption">@evt.EventType</MudText>
+                    @if (!string.IsNullOrEmpty(evt.Description))
+                    {
+                        <MudText Typo="Typo.body2" Class="mt-1">@evt.Description</MudText>
+                    }
+                </ItemContent>
+            </MudTimelineItem>
+        }
+    </MudTimeline>
+}
+
+@code {
+    [Parameter]
+    public string EntityType { get; set; } = "";
+
+    [Parameter]
+    public long EntityId { get; set; }
+
+    private List<TimelineEventDto>? events;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(EntityType) && EntityId > 0)
+        {
+            try
+            {
+                events = await AppService.GetTimelineAsync(EntityType, EntityId);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+                events = new();
+            }
+        }
+    }
+
+    private Color GetEventColor(string? eventType)
+    {
+        return eventType switch
+        {
+            "Call" => Color.Info,
+            "Email" => Color.Primary,
+            "Meeting" => Color.Warning,
+            "Note" => Color.Default,
+            "Task" => Color.Secondary,
+            "Sale" => Color.Success,
+            "SupportCase" => Color.Error,
+            _ => Color.Default
+        };
+    }
+}

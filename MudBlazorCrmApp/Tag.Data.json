@@ -1,0 +1,10 @@
+[
+  { "Id": 1, "Name": "VIP", "Color": "#FF5722" },
+  { "Id": 2, "Name": "Hot Lead", "Color": "#F44336" },
+  { "Id": 3, "Name": "Enterprise", "Color": "#3F51B5" },
+  { "Id": 4, "Name": "SMB", "Color": "#009688" },
+  { "Id": 5, "Name": "Partner", "Color": "#FF9800" },
+  { "Id": 6, "Name": "At Risk", "Color": "#E91E63" },
+  { "Id": 7, "Name": "Upsell Target", "Color": "#4CAF50" },
+  { "Id": 8, "Name": "New Customer", "Color": "#2196F3" }
+]

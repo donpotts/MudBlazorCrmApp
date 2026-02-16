@@ -1,0 +1,119 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<EditForm Model="@record" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Add Activity</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudSelect @bind-Value="record.Type" Label="Type" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@("Call")">Call</MudSelectItem>
+                <MudSelectItem Value="@("Email")">Email</MudSelectItem>
+                <MudSelectItem Value="@("Meeting")">Meeting</MudSelectItem>
+                <MudSelectItem Value="@("Note")">Note</MudSelectItem>
+                <MudSelectItem Value="@("Task")">Task</MudSelectItem>
+            </MudSelect>
+            <MudTextField @bind-Value="record.Subject" For="@(() => record.Subject)" Label="Subject" />
+            <MudTextField @bind-Value="record.Description" For="@(() => record.Description)" Label="Description" Lines="3" />
+            <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.ActivityDate" For="@(() => record.ActivityDate)" Label="Date" />
+            <MudNumericField @bind-Value="record.DurationMinutes" For="@(() => record.DurationMinutes)" Label="Duration (minutes)" />
+            <MudSelect @bind-Value="record.Status" Label="Status" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@("Completed")">Completed</MudSelectItem>
+                <MudSelectItem Value="@("Scheduled")">Scheduled</MudSelectItem>
+                <MudSelectItem Value="@("Cancelled")">Cancelled</MudSelectItem>
+            </MudSelect>
+            <MudSelect @bind-Value="record.Direction" Label="Direction" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@("Inbound")">Inbound</MudSelectItem>
+                <MudSelectItem Value="@("Outbound")">Outbound</MudSelectItem>
+            </MudSelect>
+            <MudSelect T="long?" @bind-Value="record.CustomerId" Label="Customer" AnchorOrigin="Origin.BottomCenter" Clearable="true">
+                @if (customers != null)
+                {
+                    @foreach (var customer in customers)
+                    {
+                        <MudSelectItem T="long?" Value="@customer.Id">@customer.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+            <MudSelect T="long?" @bind-Value="record.ContactId" Label="Contact" AnchorOrigin="Origin.BottomCenter" Clearable="true">
+                @if (contacts != null)
+                {
+                    @foreach (var contact in contacts)
+                    {
+                        <MudSelectItem T="long?" Value="@contact.Id">@contact.Name</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+            <MudSelect T="long?" @bind-Value="record.LeadId" Label="Lead" AnchorOrigin="Origin.BottomCenter" Clearable="true">
+                @if (leads != null)
+                {
+                    @foreach (var lead in leads)
+                    {
+                        <MudSelectItem T="long?" Value="@lead.Id">@(lead.Contact?.Name ?? $"Lead #{lead.Id}")</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+            <MudSelect T="long?" @bind-Value="record.OpportunityId" Label="Opportunity" AnchorOrigin="Origin.BottomCenter" Clearable="true">
+                @if (opportunities != null)
+                {
+                    @foreach (var opp in opportunities)
+                    {
+                        <MudSelectItem T="long?" Value="@opp.Id">@(opp.Name ?? $"Opportunity #{opp.Id}")</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance? MudDialog { get; set; }
+
+    private Activity record = new() { ActivityDate = DateTime.Now, Status = "Completed" };
+    private Customer[]? customers;
+    private Contact[]? contacts;
+    private Lead[]? leads;
+    private Opportunity[]? opportunities;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        try
+        {
+            customers = await AppService.ListCustomerAsync();
+            contacts = await AppService.ListContactAsync();
+            leads = await AppService.ListLeadAsync();
+            opportunities = await AppService.ListOpportunityAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            await AppService.InsertActivityAsync(record);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

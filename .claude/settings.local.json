@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.aufaitux.com)",
+      "WebFetch(domain:marmelab.com)",
+      "WebFetch(domain:www.uschamber.com)",
+      "Bash(dir:*)",
+      "Bash(dotnet build:*)",
+      "Bash(findstr:*)",
+      "Bash(Select-String \"error CS\")",
+      "Bash(dotnet ef database:*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(Get-ChildItem -Path \"c:\\\\repos\\\\MudBlazorCrmApp\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(node -e:*)",
+      "Bash(printf:*)",
+      "Bash(xxd:*)"
+    ]
+  }
+}

@@ -29,6 +29,7 @@ export function renderChart(canvasId, chartConfig) {
         options: {
             responsive: chartConfig.options?.responsive ?? true,
             maintainAspectRatio: chartConfig.options?.maintainAspectRatio ?? false,
+            indexAxis: chartConfig.options?.scales?.indexAxis || 'x',
             plugins: {
                 legend: {
                     display: chartConfig.options?.legend?.display ?? true,
@@ -46,21 +47,26 @@ export function renderChart(canvasId, chartConfig) {
         config.options.scales = {
             y: {
                 ticks: { color: textColor },
-                grid: { color: gridColor }
+                grid: { color: gridColor },
+                beginAtZero: true
             },
             x: {
                 ticks: { color: textColor },
-                grid: { color: gridColor }
+                grid: { color: gridColor },
+                beginAtZero: true
             }
         };
     }
 
-    // Apply any custom options
+    // Apply any custom scale options (excluding indexAxis which is handled above)
     if (chartConfig.options?.scales) {
-        config.options.scales = {
-            ...config.options.scales,
-            ...chartConfig.options.scales
-        };
+        const { indexAxis, ...scaleOverrides } = chartConfig.options.scales;
+        if (Object.keys(scaleOverrides).length > 0) {
+            config.options.scales = {
+                ...config.options.scales,
+                ...scaleOverrides
+            };
+        }
     }
 
     new Chart(canvas, config);

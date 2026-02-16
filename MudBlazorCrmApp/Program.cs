@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
-using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
@@ -49,45 +49,16 @@ modelBuilder.EntitySet<Service>("Service");
 modelBuilder.EntitySet<Sale>("Sale");
 modelBuilder.EntitySet<SupportCase>("SupportCase");
 modelBuilder.EntitySet<TodoTask>("TodoTask");
+modelBuilder.EntitySet<Activity>("Activity");
+modelBuilder.EntitySet<Tag>("Tag");
+modelBuilder.EntitySet<EntityTag>("EntityTag");
 modelBuilder.EntitySet<ApplicationUserDto>("User");
 
 builder.Services.AddControllers()
     .AddOData(options => options.EnableQueryFeatures().AddRouteComponents("odata", modelBuilder.GetEdmModel()))
     .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "CRM Sample API",
-        Version = "v1"
-    });
-
-    options.AddSecurityDefinition("Bearer", new()
-    {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer"
-    });
-
-    options.AddSecurityRequirement(new()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
+builder.Services.AddOpenApi();
 
 builder.Services.AddAuthorization();
 
@@ -190,11 +161,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MudBlazor CRM API V1");
-    });
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
@@ -574,6 +542,30 @@ using (var scope = app.Services.CreateScope())
                     }
                 }
                 ctx.TodoTask.AddRange(data);
+                ctx.SaveChanges();
+            }
+        }
+
+        if (File.Exists("Activity.Data.json"))
+        {
+            var json = File.ReadAllText("Activity.Data.json");
+            var data = JsonSerializer.Deserialize<Activity[]>(json);
+
+            if (data != null)
+            {
+                ctx.Activity.AddRange(data);
+                ctx.SaveChanges();
+            }
+        }
+
+        if (File.Exists("Tag.Data.json"))
+        {
+            var json = File.ReadAllText("Tag.Data.json");
+            var data = JsonSerializer.Deserialize<Tag[]>(json);
+
+            if (data != null)
+            {
+                ctx.Tag.AddRange(data);
                 ctx.SaveChanges();
             }
         }

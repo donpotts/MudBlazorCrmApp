@@ -2,34 +2,123 @@
   {
     "Id": 401,
     "ContactId": 801,
-    "Source": "Online Webinar",
-    "Status": "Interested",
-    "PotentialValue": 15000.00,
-    "OpportunityId": 601,
+    "Source": "Website",
+    "Status": "Qualified",
+    "PotentialValue": 15000,
+    "OpportunityId": 603,
     "AddressId": 901,
-    "Photo": "lead_profile_pic.jpg",
-    "Notes": ""
+    "Notes": "Filled out contact form on pricing page"
   },
   {
     "Id": 402,
     "ContactId": 802,
-    "Source": "Tech Expo",
-    "Status": "Evaluating",
-    "PotentialValue": 25000.00,
+    "Source": "Trade Show",
+    "Status": "Converted",
+    "PotentialValue": 87000,
     "OpportunityId": 602,
     "AddressId": 902,
-    "Photo": "tech_expo_booth.jpg",
-    "Notes": ""
+    "Notes": "Met at CES 2026, very interested"
   },
   {
     "Id": 403,
     "ContactId": 803,
     "Source": "Social Media",
-    "Status": "Contacted",
-    "PotentialValue": 5000.00,
-    "OpportunityId": 603,
+    "Status": "New",
+    "PotentialValue": 5000,
     "AddressId": 903,
-    "Photo": "social_media_ad.jpg",
-    "Notes": ""
+    "Notes": "Engaged with LinkedIn ad campaign"
+  },
+  {
+    "Id": 404,
+    "Source": "Referral",
+    "Status": "Qualified",
+    "PotentialValue": 45000,
+    "OpportunityId": 607,
+    "Notes": "Referred by existing customer FinServ Group"
+  },
+  {
+    "Id": 405,
+    "Source": "Cold Call",
+    "Status": "Contacted",
+    "PotentialValue": 15000,
+    "OpportunityId": 605,
+    "Notes": "Showed interest during cold call outreach"
+  },
+  {
+    "Id": 406,
+    "Source": "Webinar",
+    "Status": "Qualified",
+    "PotentialValue": 110000,
+    "OpportunityId": 615,
+    "Notes": "Attended product demo webinar, requested trial"
+  },
+  {
+    "Id": 407,
+    "Source": "Website",
+    "Status": "New",
+    "PotentialValue": 22000,
+    "Notes": "Downloaded whitepaper on automation"
+  },
+  {
+    "Id": 408,
+    "Source": "Partner",
+    "Status": "Converted",
+    "PotentialValue": 175000,
+    "OpportunityId": 606,
+    "Notes": "Introduced by integration partner"
+  },
+  {
+    "Id": 409,
+    "Source": "Trade Show",
+    "Status": "Contacted",
+    "PotentialValue": 68000,
+    "OpportunityId": 609,
+    "Notes": "Scanned badge at booth, follow-up sent"
+  },
+  {
+    "Id": 410,
+    "Source": "Referral",
+    "Status": "Won",
+    "PotentialValue": 95000,
+    "OpportunityId": 608,
+    "Notes": "Referred by Cybernetics Corp, closed deal"
+  },
+  {
+    "Id": 411,
+    "Source": "Social Media",
+    "Status": "New",
+    "PotentialValue": 8000,
+    "Notes": "Responded to Twitter/X campaign"
+  },
+  {
+    "Id": 412,
+    "Source": "Website",
+    "Status": "Contacted",
+    "PotentialValue": 142000,
+    "OpportunityId": 610,
+    "Notes": "Requested demo via website chatbot"
+  },
+  {
+    "Id": 413,
+    "Source": "Cold Call",
+    "Status": "Lost",
+    "PotentialValue": 30000,
+    "Notes": "Not interested at this time"
+  },
+  {
+    "Id": 414,
+    "Source": "Webinar",
+    "Status": "New",
+    "PotentialValue": 53000,
+    "OpportunityId": 611,
+    "Notes": "Registered for upcoming product launch webinar"
+  },
+  {
+    "Id": 415,
+    "Source": "Referral",
+    "Status": "Qualified",
+    "PotentialValue": 78000,
+    "OpportunityId": 612,
+    "Notes": "Strong referral from logistics industry contact"
   }
 ]

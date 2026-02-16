@@ -1,0 +1,105 @@
+@page "/import"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<PageTitle>Import Data</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Import Data</MudText>
+</div>
+
+<MudPaper Class="pa-6" Elevation="3">
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudSelect T="string" @bind-Value="selectedEntity" Label="Entity Type" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@("contacts")">Contacts</MudSelectItem>
+                <MudSelectItem Value="@("customers")">Customers</MudSelectItem>
+                <MudSelectItem Value="@("leads")">Leads</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudFileUpload T="IBrowserFile" FilesChanged="OnFileSelected" Accept=".csv">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                        Select CSV File
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+            @if (selectedFile != null)
+            {
+                <MudText Typo="Typo.body2" Class="mt-2">Selected: @selectedFile.Name (@(selectedFile.Size / 1024) KB)</MudText>
+            }
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="DoImport" Disabled="@(selectedFile == null || string.IsNullOrEmpty(selectedEntity) || isImporting)" StartIcon="@Icons.Material.Filled.Upload">
+                @if (isImporting)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <span>Importing...</span>
+                }
+                else
+                {
+                    <span>Import</span>
+                }
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+
+    @if (importResult != null)
+    {
+        <MudAlert Severity="Severity.Success" Class="mt-4">
+            Successfully imported @importResult.Imported of @importResult.Total records.
+        </MudAlert>
+    }
+
+    <MudDivider Class="my-4" />
+    <MudText Typo="Typo.h6">CSV Format Guide</MudText>
+    <MudText Typo="Typo.body2" Class="mt-2">
+        <b>Contacts:</b> Name, Email, Phone, Role, Notes
+    </MudText>
+    <MudText Typo="Typo.body2">
+        <b>Customers:</b> Name, Type, Industry, Notes
+    </MudText>
+    <MudText Typo="Typo.body2">
+        <b>Leads:</b> Source, Status, PotentialValue, Notes
+    </MudText>
+</MudPaper>
+
+@code {
+    private string? selectedEntity;
+    private IBrowserFile? selectedFile;
+    private bool isImporting;
+    private ImportResult? importResult;
+
+    private void OnFileSelected(IBrowserFile file)
+    {
+        selectedFile = file;
+        importResult = null;
+    }
+
+    private async Task DoImport()
+    {
+        if (selectedFile == null || string.IsNullOrEmpty(selectedEntity)) return;
+
+        isImporting = true;
+        importResult = null;
+        StateHasChanged();
+
+        try
+        {
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            importResult = await AppService.ImportCsvAsync(selectedEntity, stream, selectedFile.Name);
+            Snackbar.Add($"Imported {importResult?.Imported} records successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            isImporting = false;
+            StateHasChanged();
+        }
+    }
+}

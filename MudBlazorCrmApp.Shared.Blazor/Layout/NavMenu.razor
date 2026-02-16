@@ -4,12 +4,16 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IStorageService LocalStorageService
 @inject ThemeService ThemeService
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
 <MudAppBar Color="Color.Inherit">
     <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-    <MudText>CRM Sample</MudText>
+    <MudText>CRM</MudText>
     <MudSpacer />
+    <AuthorizeView>
+        <MudAutocomplete T="SearchResultItem" SearchFunc="@SearchEntities" Placeholder="Search..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Dense="true" Class="mr-4" Style="max-width:300px;color:inherit;" ToStringFunc="@(item => item?.Name ?? "")" ValueChanged="@OnSearchItemSelected" ResetValueOnEmptyText="true" />
+    </AuthorizeView>
     <ThemesMenu @bind-ThemingDrawerOpen="_themingDrawerOpen"
             ThemeManager="_themeManager"
             ThemeManagerChanged="ThemeManagerChanged" />
@@ -28,21 +32,26 @@
 <MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <AuthorizeView>
-        <MudNavLink Href="/CrmDashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">CRM Dashboard</MudNavLink>
+        <MudNavLink Href="/CrmDashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink Href="/Pipeline" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ViewKanban">Pipeline</MudNavLink>
+        <MudNavLink Href="/Activity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.History">Activities</MudNavLink>
         <MudNavLink Href="/Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PeopleAlt">Customers</MudNavLink>
-        <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeWork">Addresses</MudNavLink>
-        <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>
-        <MudNavLink Href="/ServiceCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeRepairService">Service Categories</MudNavLink>
         <MudNavLink Href="/Contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ContactMail">Contacts</MudNavLink>
         <MudNavLink Href="/Opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Newspaper">Opportunities</MudNavLink>
         <MudNavLink Href="/Lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Leaderboard">Leads</MudNavLink>
+        <MudNavLink Href="/Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PointOfSale">Sales</MudNavLink>
         <MudNavLink Href="/Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ProductionQuantityLimits">Products</MudNavLink>
         <MudNavLink Href="/Service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Services</MudNavLink>
-        <MudNavLink Href="/Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PointOfSale">Sales</MudNavLink>
         <MudNavLink Href="/Vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Store">Vendors</MudNavLink>
         <MudNavLink Href="/SupportCase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Support">Support Cases</MudNavLink>
         <MudNavLink Href="/TodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Todo Tasks</MudNavLink>
-        <MudNavLink Href="/KanbanTodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Kanban Todo Tasks</MudNavLink>
+        <MudNavLink Href="/KanbanTodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ViewKanban">Kanban Tasks</MudNavLink>
+        <MudNavLink Href="/Reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Assessment">Reports</MudNavLink>
+        <MudNavLink Href="/Import" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CloudUpload">Import</MudNavLink>
+        <MudNavLink Href="/Tag" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Label">Tags</MudNavLink>
+        <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeWork">Addresses</MudNavLink>
+        <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>
+        <MudNavLink Href="/ServiceCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeRepairService">Service Categories</MudNavLink>
         <MudNavLink Href="/Reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Rewards</MudNavLink>
     </AuthorizeView>
     <AuthorizeView Roles="Administrator">
@@ -142,5 +151,44 @@
         StateHasChanged();
 
         return Task.CompletedTask;
+    }
+
+    private async Task<IEnumerable<SearchResultItem>> SearchEntities(string value, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
+            return Enumerable.Empty<SearchResultItem>();
+
+        try
+        {
+            var result = await AppService.SearchAsync(value);
+            if (result == null) return Enumerable.Empty<SearchResultItem>();
+
+            var items = new List<SearchResultItem>();
+            if (result.Customers != null) items.AddRange(result.Customers);
+            if (result.Contacts != null) items.AddRange(result.Contacts);
+            if (result.Opportunities != null) items.AddRange(result.Opportunities);
+            if (result.Leads != null) items.AddRange(result.Leads);
+            return items;
+        }
+        catch
+        {
+            return Enumerable.Empty<SearchResultItem>();
+        }
+    }
+
+    private void OnSearchItemSelected(SearchResultItem? item)
+    {
+        if (item == null) return;
+
+        var url = item.EntityType switch
+        {
+            "Customer" => "/Customer",
+            "Contact" => "/Contact",
+            "Opportunity" => "/Opportunity",
+            "Lead" => "/Lead",
+            _ => "/"
+        };
+
+        Navigation.NavigateTo(url);
     }
 }

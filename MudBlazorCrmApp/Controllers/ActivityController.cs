@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using MudBlazorCrmApp.Data;
@@ -14,9 +13,9 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class OpportunityController(ApplicationDbContext _ctx, ILogger<OpportunityController> _logger) : ControllerBase
+public class ActivityController(ApplicationDbContext _ctx, ILogger<ActivityController> _logger) : ControllerBase
 {
-    private readonly ILogger<OpportunityController> logger = _logger;
+    private readonly ILogger<ActivityController> logger = _logger;
     private readonly ApplicationDbContext ctx = _ctx;
 
     [HttpGet("")]
@@ -24,9 +23,9 @@ public class OpportunityController(ApplicationDbContext _ctx, ILogger<Opportunit
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult<IQueryable<Opportunity>> Get()
+    public ActionResult<IQueryable<Activity>> Get()
     {
-        return Ok(ctx.Opportunity.Include(x => x.Customer).Include(x => x.Contact));
+        return Ok(ctx.Activity.Include(x => x.Contact).Include(x => x.Customer).Include(x => x.Lead).Include(x => x.Opportunity));
     }
 
     [HttpGet("{key}")]
@@ -34,76 +33,76 @@ public class OpportunityController(ApplicationDbContext _ctx, ILogger<Opportunit
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Opportunity>> GetAsync(long key)
+    public async Task<ActionResult<Activity>> GetAsync(long key)
     {
-        var opportunity = await ctx.Opportunity.Include(x => x.Customer).Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
+        var activity = await ctx.Activity.Include(x => x.Contact).Include(x => x.Customer).Include(x => x.Lead).Include(x => x.Opportunity).FirstOrDefaultAsync(x => x.Id == key);
 
-        if (opportunity == null)
+        if (activity == null)
         {
             return NotFound();
         }
         else
         {
-            return Ok(opportunity);
+            return Ok(activity);
         }
     }
 
     [HttpPost("")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<Opportunity>> PostAsync(Opportunity opportunity)
+    public async Task<ActionResult<Activity>> PostAsync(Activity activity)
     {
-        var record = await ctx.Opportunity.FindAsync(opportunity.Id);
+        var record = await ctx.Activity.FindAsync(activity.Id);
         if (record != null)
         {
             return Conflict();
         }
-    
-        await ctx.Opportunity.AddAsync(opportunity);
+
+        await ctx.Activity.AddAsync(activity);
 
         await ctx.SaveChangesAsync();
 
-        return Created($"/opportunity/{opportunity.Id}", opportunity);
+        return Created($"/activity/{activity.Id}", activity);
     }
 
     [HttpPut("{key}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Opportunity>> PutAsync(long key, Opportunity update)
+    public async Task<ActionResult<Activity>> PutAsync(long key, Activity update)
     {
-        var opportunity = await ctx.Opportunity.FirstOrDefaultAsync(x => x.Id == key);
+        var activity = await ctx.Activity.FirstOrDefaultAsync(x => x.Id == key);
 
-        if (opportunity == null)
+        if (activity == null)
         {
             return NotFound();
         }
 
-        ctx.Entry(opportunity).CurrentValues.SetValues(update);
+        ctx.Entry(activity).CurrentValues.SetValues(update);
 
         await ctx.SaveChangesAsync();
 
-        return Ok(opportunity);
+        return Ok(activity);
     }
 
     [HttpPatch("{key}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Opportunity>> PatchAsync(long key, Delta<Opportunity> delta)
+    public async Task<ActionResult<Activity>> PatchAsync(long key, Delta<Activity> delta)
     {
-        var opportunity = await ctx.Opportunity.FirstOrDefaultAsync(x => x.Id == key);
+        var activity = await ctx.Activity.FirstOrDefaultAsync(x => x.Id == key);
 
-        if (opportunity == null)
+        if (activity == null)
         {
             return NotFound();
         }
 
-        delta.Patch(opportunity);
+        delta.Patch(activity);
 
         await ctx.SaveChangesAsync();
 
-        return Ok(opportunity);
+        return Ok(activity);
     }
 
     [HttpDelete("{key}")]
@@ -112,11 +111,11 @@ public class OpportunityController(ApplicationDbContext _ctx, ILogger<Opportunit
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(long key)
     {
-        var opportunity = await ctx.Opportunity.FindAsync(key);
+        var activity = await ctx.Activity.FindAsync(key);
 
-        if (opportunity != null)
+        if (activity != null)
         {
-            ctx.Opportunity.Remove(opportunity);
+            ctx.Activity.Remove(activity);
             await ctx.SaveChangesAsync();
         }
 

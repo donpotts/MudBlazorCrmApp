@@ -1,0 +1,97 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.subtitle2" Class="mt-4 mb-1">Tags</MudText>
+<MudChipSet T="string">
+    @if (entityTags != null)
+    {
+        @foreach (var et in entityTags)
+        {
+            <MudChip T="string" Style="@($"background-color:{et.Tag?.Color ?? "#594AE2"};color:white")" OnClose="@(async () => await RemoveTag(et))">
+                @et.Tag?.Name
+            </MudChip>
+        }
+    }
+</MudChipSet>
+
+<MudStack Row="true" AlignItems="AlignItems.End" Class="mt-2">
+    <MudSelect T="long?" @bind-Value="selectedTagId" Label="Add Tag" AnchorOrigin="Origin.BottomCenter" Dense="true" Style="max-width:200px;">
+        @if (availableTags != null)
+        {
+            @foreach (var tag in availableTags)
+            {
+                <MudSelectItem T="long?" Value="@tag.Id">@tag.Name</MudSelectItem>
+            }
+        }
+    </MudSelect>
+    <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Size="Size.Small" OnClick="AddTag" />
+</MudStack>
+
+@code {
+    [Parameter]
+    public string EntityType { get; set; } = "";
+
+    [Parameter]
+    public long EntityId { get; set; }
+
+    private EntityTag[]? entityTags;
+    private Tag[]? availableTags;
+    private long? selectedTagId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(EntityType) && EntityId > 0)
+        {
+            await LoadTags();
+        }
+    }
+
+    private async Task LoadTags()
+    {
+        try
+        {
+            entityTags = await AppService.ListEntityTagAsync(EntityType, EntityId);
+            availableTags = await AppService.ListTagAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task AddTag()
+    {
+        if (selectedTagId == null) return;
+
+        try
+        {
+            await AppService.InsertEntityTagAsync(new EntityTag
+            {
+                TagId = selectedTagId,
+                EntityType = EntityType,
+                EntityId = EntityId
+            });
+            selectedTagId = null;
+            await LoadTags();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task RemoveTag(EntityTag et)
+    {
+        try
+        {
+            await AppService.DeleteEntityTagAsync(et.Id!.Value);
+            await LoadTags();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

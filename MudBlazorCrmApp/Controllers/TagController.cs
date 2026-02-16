@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using MudBlazorCrmApp.Data;
@@ -14,9 +13,9 @@ namespace MudBlazorCrmApp.Controllers;
 [ApiController]
 [Authorize]
 [EnableRateLimiting("Fixed")]
-public class OpportunityController(ApplicationDbContext _ctx, ILogger<OpportunityController> _logger) : ControllerBase
+public class TagController(ApplicationDbContext _ctx, ILogger<TagController> _logger) : ControllerBase
 {
-    private readonly ILogger<OpportunityController> logger = _logger;
+    private readonly ILogger<TagController> logger = _logger;
     private readonly ApplicationDbContext ctx = _ctx;
 
     [HttpGet("")]
@@ -24,9 +23,9 @@ public class OpportunityController(ApplicationDbContext _ctx, ILogger<Opportunit
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult<IQueryable<Opportunity>> Get()
+    public ActionResult<IQueryable<Tag>> Get()
     {
-        return Ok(ctx.Opportunity.Include(x => x.Customer).Include(x => x.Contact));
+        return Ok(ctx.Tag);
     }
 
     [HttpGet("{key}")]
@@ -34,76 +33,73 @@ public class OpportunityController(ApplicationDbContext _ctx, ILogger<Opportunit
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Opportunity>> GetAsync(long key)
+    public async Task<ActionResult<Tag>> GetAsync(long key)
     {
-        var opportunity = await ctx.Opportunity.Include(x => x.Customer).Include(x => x.Contact).FirstOrDefaultAsync(x => x.Id == key);
+        var tag = await ctx.Tag.FirstOrDefaultAsync(x => x.Id == key);
 
-        if (opportunity == null)
+        if (tag == null)
         {
             return NotFound();
         }
         else
         {
-            return Ok(opportunity);
+            return Ok(tag);
         }
     }
 
     [HttpPost("")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<Opportunity>> PostAsync(Opportunity opportunity)
+    public async Task<ActionResult<Tag>> PostAsync(Tag tag)
     {
-        var record = await ctx.Opportunity.FindAsync(opportunity.Id);
+        var record = await ctx.Tag.FindAsync(tag.Id);
         if (record != null)
         {
             return Conflict();
         }
-    
-        await ctx.Opportunity.AddAsync(opportunity);
 
+        await ctx.Tag.AddAsync(tag);
         await ctx.SaveChangesAsync();
 
-        return Created($"/opportunity/{opportunity.Id}", opportunity);
+        return Created($"/tag/{tag.Id}", tag);
     }
 
     [HttpPut("{key}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Opportunity>> PutAsync(long key, Opportunity update)
+    public async Task<ActionResult<Tag>> PutAsync(long key, Tag update)
     {
-        var opportunity = await ctx.Opportunity.FirstOrDefaultAsync(x => x.Id == key);
+        var tag = await ctx.Tag.FirstOrDefaultAsync(x => x.Id == key);
 
-        if (opportunity == null)
+        if (tag == null)
         {
             return NotFound();
         }
 
-        ctx.Entry(opportunity).CurrentValues.SetValues(update);
-
+        ctx.Entry(tag).CurrentValues.SetValues(update);
         await ctx.SaveChangesAsync();
 
-        return Ok(opportunity);
+        return Ok(tag);
     }
 
     [HttpPatch("{key}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Opportunity>> PatchAsync(long key, Delta<Opportunity> delta)
+    public async Task<ActionResult<Tag>> PatchAsync(long key, Delta<Tag> delta)
     {
-        var opportunity = await ctx.Opportunity.FirstOrDefaultAsync(x => x.Id == key);
+        var tag = await ctx.Tag.FirstOrDefaultAsync(x => x.Id == key);
 
-        if (opportunity == null)
+        if (tag == null)
         {
             return NotFound();
         }
 
-        delta.Patch(opportunity);
-
+        delta.Patch(tag);
         await ctx.SaveChangesAsync();
 
-        return Ok(opportunity);
+        return Ok(tag);
     }
 
     [HttpDelete("{key}")]
@@ -112,11 +108,11 @@ public class OpportunityController(ApplicationDbContext _ctx, ILogger<Opportunit
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteAsync(long key)
     {
-        var opportunity = await ctx.Opportunity.FindAsync(key);
+        var tag = await ctx.Tag.FindAsync(key);
 
-        if (opportunity != null)
+        if (tag != null)
         {
-            ctx.Opportunity.Remove(opportunity);
+            ctx.Tag.Remove(tag);
             await ctx.SaveChangesAsync();
         }
 

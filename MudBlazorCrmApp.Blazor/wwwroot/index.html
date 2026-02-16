@@ -67,9 +67,17 @@
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_content/MudBlazorCrmApp.Shared.Blazor/lib/gridstack/dist/gridstack-all.js"></script>
     <script src="_content/MudBlazorCrmApp.Shared.Blazor/lib/chart.js/chart.umd.js"></script>
-    <script src="_content/MudBlazorCrmApp.Shared.Blazor/js/chart-renderer.js"></script>
-    <script src="_content/MudBlazorCrmApp.Shared.Blazor/js/dashboard-manager.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script>
+        // Only register service worker in production; unregister stale ones in development
+        if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            navigator.serviceWorker.register('service-worker.js');
+        } else {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(r => r.unregister());
+            });
+            caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+        }
+    </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 

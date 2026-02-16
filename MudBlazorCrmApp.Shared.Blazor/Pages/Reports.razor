@@ -1,0 +1,160 @@
+@page "/reports"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<PageTitle>Reports</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Reports</MudText>
+</div>
+
+<MudPaper Class="pa-4 mb-4" Elevation="3">
+    <MudGrid>
+        <MudItem xs="12" md="3">
+            <MudSelect T="string" @bind-Value="selectedReport" Label="Report Type" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@("sales")">Sales Report</MudSelectItem>
+                <MudSelectItem Value="@("pipeline")">Pipeline Report</MudSelectItem>
+                <MudSelectItem Value="@("activities")">Activity Report</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudDatePicker @bind-Date="fromDate" Label="From Date" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudDatePicker @bind-Date="toDate" Label="To Date" />
+        </MudItem>
+        <MudItem xs="12" md="3">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="RunReport" Class="mt-4" FullWidth="true">
+                Generate Report
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@if (isLoading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+
+@if (salesData != null && selectedReport == "sales")
+{
+    <MudPaper Class="pa-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h6" Class="mb-3">Sales Over Time</MudText>
+        <MudSimpleTable Dense="true" Bordered="true" Striped="true">
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Total Revenue</th>
+                    <th>Number of Sales</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in salesData)
+                {
+                    <tr>
+                        <td>@row.Month</td>
+                        <td>$@row.Total.ToString("N2")</td>
+                        <td>@row.Count</td>
+                    </tr>
+                }
+                <tr style="font-weight:bold;">
+                    <td>Total</td>
+                    <td>$@salesData.Sum(s => s.Total).ToString("N2")</td>
+                    <td>@salesData.Sum(s => s.Count)</td>
+                </tr>
+            </tbody>
+        </MudSimpleTable>
+    </MudPaper>
+}
+
+@if (pipelineData != null && selectedReport == "pipeline")
+{
+    <MudPaper Class="pa-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h6" Class="mb-3">Pipeline by Stage</MudText>
+        <MudSimpleTable Dense="true" Bordered="true" Striped="true">
+            <thead>
+                <tr>
+                    <th>Stage</th>
+                    <th>Count</th>
+                    <th>Total Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in pipelineData)
+                {
+                    <tr>
+                        <td>@row.Stage</td>
+                        <td>@row.Count</td>
+                        <td>$@row.TotalValue.ToString("N2")</td>
+                    </tr>
+                }
+                <tr style="font-weight:bold;">
+                    <td>Total</td>
+                    <td>@pipelineData.Sum(p => p.Count)</td>
+                    <td>$@pipelineData.Sum(p => p.TotalValue).ToString("N2")</td>
+                </tr>
+            </tbody>
+        </MudSimpleTable>
+    </MudPaper>
+}
+
+@if (activityData != null && selectedReport == "activities")
+{
+    <MudPaper Class="pa-4 mb-4" Elevation="3">
+        <MudText Typo="Typo.h6" Class="mb-3">Activity Summary</MudText>
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudText Typo="Typo.h4" Color="Color.Primary">@activityTotal</MudText>
+                <MudText Typo="Typo.body2">Total Activities</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+}
+
+@code {
+    private string selectedReport = "sales";
+    private DateTime? fromDate = DateTime.Now.AddMonths(-6);
+    private DateTime? toDate = DateTime.Now;
+    private bool isLoading;
+
+    private List<SalesOverTimeDto>? salesData;
+    private List<PipelineStageDto>? pipelineData;
+    private int activityTotal;
+    private object? activityData;
+
+    private async Task RunReport()
+    {
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            switch (selectedReport)
+            {
+                case "sales":
+                    salesData = await AppService.GetSalesReportAsync(fromDate, toDate);
+                    break;
+                case "pipeline":
+                    pipelineData = await AppService.GetPipelineReportAsync();
+                    break;
+                case "activities":
+                    // Simple activity count for now
+                    var activities = await AppService.ListActivityODataAsync(null, null, null, null, true, null);
+                    activityTotal = activities?.Count ?? 0;
+                    activityData = new { };
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,41 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+
+<EditForm Model="@record" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Add Tag</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
+            <MudColorPicker @bind-Text="record.Color" Label="Color" Style="@($"color: {record.Color};")" Placeholder="Select Color" />
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance? MudDialog { get; set; }
+
+    private Tag record = new() { Color = "#594AE2" };
+
+    private void OnCancel() => MudDialog?.Cancel();
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            await AppService.InsertTagAsync(record);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

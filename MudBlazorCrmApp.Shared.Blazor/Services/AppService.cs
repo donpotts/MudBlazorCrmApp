@@ -1553,4 +1553,377 @@ public class AppService(
 
         await HandleResponseErrorsAsync(response);
     }
+
+    // Activity CRUD
+    public async Task<Activity[]?> ListActivityAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/activity");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Activity[]>();
+    }
+
+    public Task<ODataResult<Activity>?> ListActivityODataAsync(
+        int? top = null, int? skip = null, string? orderby = null,
+        string? filter = null, bool count = false, string? expand = null)
+    {
+        return GetODataAsync<Activity>("Activity", top, skip, orderby, filter, count, expand);
+    }
+
+    public async Task<Activity?> GetActivityByIdAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/activity/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Activity>();
+    }
+
+    public async Task UpdateActivityAsync(long key, Activity data)
+    {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"/api/activity/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(data);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task<Activity?> InsertActivityAsync(Activity data)
+    {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/activity");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(data);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Activity>();
+    }
+
+    public async Task DeleteActivityAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"/api/activity/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    // Tag CRUD
+    public async Task<Tag[]?> ListTagAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/tag");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Tag[]>();
+    }
+
+    public Task<ODataResult<Tag>?> ListTagODataAsync(
+        int? top = null, int? skip = null, string? orderby = null,
+        string? filter = null, bool count = false, string? expand = null)
+    {
+        return GetODataAsync<Tag>("Tag", top, skip, orderby, filter, count, expand);
+    }
+
+    public async Task<Tag?> GetTagByIdAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/tag/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Tag>();
+    }
+
+    public async Task UpdateTagAsync(long key, Tag data)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"/api/tag/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(data);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task<Tag?> InsertTagAsync(Tag data)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/tag");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(data);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Tag>();
+    }
+
+    public async Task DeleteTagAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"/api/tag/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    // EntityTag
+    public async Task<EntityTag[]?> ListEntityTagAsync(string entityType, long entityId)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        var filter = $"EntityType eq '{entityType}' and EntityId eq {entityId}";
+        var result = await GetODataAsync<EntityTag>("EntityTag", filter: filter, expand: "Tag");
+        return result?.Value?.ToArray();
+    }
+
+    public async Task<EntityTag?> InsertEntityTagAsync(EntityTag data)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/entitytag");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(data);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<EntityTag>();
+    }
+
+    public async Task DeleteEntityTagAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"/api/entitytag/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    // Dashboard
+    public async Task<KpiSummaryDto?> GetDashboardKpisAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/dashboard/kpis");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<KpiSummaryDto>();
+    }
+
+    public async Task<List<SalesOverTimeDto>?> GetSalesOverTimeAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/dashboard/sales-over-time");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<SalesOverTimeDto>>();
+    }
+
+    public async Task<List<LeadSourceDto>?> GetLeadSourcesAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/dashboard/lead-sources");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<LeadSourceDto>>();
+    }
+
+    public async Task<List<PipelineStageDto>?> GetPipelineByStageAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/dashboard/pipeline-by-stage");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<PipelineStageDto>>();
+    }
+
+    public async Task<List<RecentActivityDto>?> GetRecentActivityAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/dashboard/recent-activity");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<RecentActivityDto>>();
+    }
+
+    public async Task<List<TopOpportunityDto>?> GetTopOpportunitiesAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/dashboard/top-opportunities");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<TopOpportunityDto>>();
+    }
+
+    public async Task<List<TimelineEventDto>?> GetTimelineAsync(string entityType, long entityId)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/dashboard/timeline/{entityType}/{entityId}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<TimelineEventDto>>();
+    }
+
+    // Search
+    public async Task<SearchResultDto?> SearchAsync(string query)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/search?q={Uri.EscapeDataString(query)}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<SearchResultDto>();
+    }
+
+    // Import
+    public async Task<ImportResult?> ImportCsvAsync(string entityType, Stream fileStream, string fileName)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(fileStream), "file", fileName);
+
+        HttpRequestMessage request = new(HttpMethod.Post, $"/api/import/{entityType}");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = content;
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<ImportResult>();
+    }
+
+    // Reports
+    public async Task<List<SalesOverTimeDto>?> GetSalesReportAsync(DateTime? from, DateTime? to, string groupBy = "month")
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        var queryParams = new List<string>();
+        if (from.HasValue) queryParams.Add($"from={from.Value:yyyy-MM-dd}");
+        if (to.HasValue) queryParams.Add($"to={to.Value:yyyy-MM-dd}");
+        queryParams.Add($"groupBy={groupBy}");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/report/sales?{string.Join("&", queryParams)}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<SalesOverTimeDto>>();
+    }
+
+    public async Task<List<PipelineStageDto>?> GetPipelineReportAsync(string? stage = null)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        var url = "/api/report/pipeline";
+        if (!string.IsNullOrEmpty(stage)) url += $"?stage={Uri.EscapeDataString(stage)}";
+
+        HttpRequestMessage request = new(HttpMethod.Get, url);
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<PipelineStageDto>>();
+    }
+}
+
+public class ImportResult
+{
+    public int Imported { get; set; }
+    public int Total { get; set; }
+    public List<string>? Errors { get; set; }
 }
