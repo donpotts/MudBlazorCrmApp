@@ -11,10 +11,16 @@
   <p align="center">
     A full-featured CRM application built with Blazor WASM and .NET 9, featuring a drag-and-drop dashboard, deal pipeline, activity tracking, reporting, and more.
     <br />
+    <a href="#-getting-started"><strong>Get Started »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/donpotts/MudBlazorCrmApp/issues">Request Feature</a>
   </p>
 </p>
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/donpotts/MudBlazorCrmApp/MudBlazorCrmApp.yml?logo=github&style=for-the-badge)
+![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet)
+![License](https://img.shields.io/github/license/donpotts/MudBlazorCrmApp?style=for-the-badge)
 
 ---
 
@@ -24,11 +30,15 @@
 
 ## About The Project
 
-MudBlazor CRM is a comprehensive Customer Relationship Management system built on the .NET 9 stack. It goes beyond simple data entry to provide a real-world CRM experience with visual pipeline management, interaction tracking, live dashboards, and reporting.
+This repository is a comprehensive, modern web application built on the latest .NET stack. It serves as a practical example of a Customer Relationship Management (CRM) system using a Blazor WASM client and an ASP.NET Core server.
 
-The application uses a Blazor WebAssembly frontend with a MudBlazor UI, backed by an ASP.NET Core API server with OData support and a SQLite database.
+The goal is to demonstrate best practices and the seamless integration of powerful open-source technologies to build a real-world, data-driven application.
 
----
+**Key highlights include:**
+*   A clean, responsive UI powered by **MudBlazor**.
+*   Secure user management with **ASP.NET Core Identity**.
+*   An efficient and queryable API using **OData**.
+*   A lightweight and cross-platform **SQLite** database.
 
 ## Features
 
@@ -87,175 +97,143 @@ The application uses a Blazor WebAssembly frontend with a MudBlazor UI, backed b
 
 ## Tech Stack
 
-| Technology | Description |
-|---|---|
-| .NET 9 | Core application framework |
-| ASP.NET Core | Web framework and API server |
-| Blazor WebAssembly | Frontend SPA framework |
-| MudBlazor | Material Design component library |
-| Entity Framework Core | ORM with code-first migrations |
-| SQLite | Embedded database |
-| OData | Queryable REST API standard |
-| Chart.js | Dashboard and report charts |
-| GridStack.js | Drag-and-drop dashboard layout |
-| Swagger/OpenAPI | API documentation |
+*   🖥️ **Modern Frontend**: A rich, single-page application (SPA) experience with **Blazor WASM**.
+*   🎨 **Beautiful UI Components**: Leverages the extensive and professional [MudBlazor](https://mudblazor.com/) component library.
+*   🔐 **Secure Authentication**: Full user registration and login system via **ASP.NET Core Identity**.
+*   🚀 **High-Performance Backend**: Built on the fast and reliable **ASP.NET Core Kestrel** web server.
+*   🗃️ **Flexible Data Queries**: **OData** support allows for powerful and efficient API queries directly from the client.
+*   📝 **Interactive API Docs**: Includes **Swagger (OpenAPI)** for easy API exploration and testing.
+*   📊 **Kanban Task Management**: A sample Kanban board to demonstrate dynamic UI and data interaction.
+*   🪶 **Lightweight Database**: Uses **Entity Framework Core** with **SQLite** for simple setup and development.
+
+### Technical Features
+- 🖥️ **Modern Frontend**: Single-page application with **Blazor WASM**
+- 🎨 **Beautiful UI**: Professional [MudBlazor](https://mudblazor.com/) components
+- 🔐 **Secure Authentication**: **ASP.NET Core Identity** with JWT tokens
+- 📊 **Interactive Dashboard**: Real-time KPIs and analytics charts
+- 🔍 **Advanced Querying**: **OData** for flexible data access
+- 📝 **API Documentation**: **Swagger/OpenAPI** integration
+- 📋 **Audit Logging**: Track all entity changes with Login/Logout events
+- 💬 **Communication Tracking**: Log all customer interactions
+- 📤 **Data Export**: CSV export functionality
+
+### Enterprise-Ready
+- ✅ Data validation with annotations
+- ✅ Proper entity relationships
+- ✅ Indexed database queries
+- ✅ Rate limiting protection
+- ✅ Role-based authorization
+- ✅ Automatic timestamp tracking
+- ✅ Soft delete support
+- ✅ Auditable entities (CreatedBy, ModifiedBy)
 
 ---
 
 ## Project Structure
 
-```
-MudBlazorCrmApp/
-├── MudBlazorCrmApp/                    # ASP.NET Core server
-│   ├── Controllers/                    # 23 API controllers
-│   │   ├── DashboardController.cs      # Aggregate KPI/chart endpoints
-│   │   ├── SearchController.cs         # Global search API
-│   │   ├── ImportController.cs         # CSV import API
-│   │   ├── ReportController.cs         # Date-filtered report API
-│   │   ├── ActivityController.cs       # Activity/interaction CRUD
-│   │   ├── TagController.cs            # Tag management
-│   │   ├── EntityTagController.cs      # Tag-to-entity associations
-│   │   └── ...                         # Entity CRUD controllers
-│   ├── Data/
-│   │   └── ApplicationDbContext.cs     # EF Core context with all entities
-│   └── Program.cs                      # App configuration and OData setup
-│
-├── MudBlazorCrmApp.Shared/             # Shared models and DTOs
-│   └── Models/                         # 24 model classes
-│       ├── Customer.cs, Contact.cs, Lead.cs, Opportunity.cs
-│       ├── Activity.cs                 # Interaction tracking entity
-│       ├── Tag.cs, EntityTag.cs        # Tagging system
-│       ├── DashboardDto.cs             # KPI, chart, and timeline DTOs
-│       ├── DashboardCard.cs            # Dashboard layout model
-│       └── ...                         # All CRM entities
-│
-├── MudBlazorCrmApp.Shared.Blazor/      # Blazor WASM UI
-│   ├── Pages/                          # 68 page components
-│   │   ├── CRMDashboard.razor          # Main dashboard with charts
-│   │   ├── PipelineBoard.razor         # Deal pipeline Kanban
-│   │   ├── KanbanTodoTask.razor        # Task Kanban board
-│   │   ├── Reports.razor               # Reporting page
-│   │   ├── ImportData.razor            # CSV import page
-│   │   └── ...                         # List/Add/Update pages per entity
-│   ├── Components/
-│   │   ├── Dashboard.razor             # Reusable GridStack dashboard
-│   │   ├── EntityTimeline.razor        # Chronological activity timeline
-│   │   ├── TagSelector.razor           # Tag management chip selector
-│   │   ├── Themes/ThemesMenu.razor     # Theme picker
-│   │   └── ConfirmDeleteDialog.razor   # Delete confirmation
-│   ├── Layout/
-│   │   └── NavMenu.razor               # Navigation with global search
-│   ├── Services/
-│   │   ├── AppService.cs               # Central HTTP client (1800+ lines)
-│   │   └── ThemeService.cs             # Dark mode state management
-│   └── wwwroot/
-│       ├── js/chart-renderer.js        # Chart.js rendering module
-│       ├── js/dashboard-manager.js     # GridStack layout management
-│       └── css/app.css                 # Application styles
-│
-└── MudBlazorCrmApp.Blazor/             # WASM host project
-    └── wwwroot/index.html              # Entry point with loading UI
-```
+This project is built with a curated set of modern technologies:
+
+| Technology                                                                                           | Description                              |
+| ---------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| ![.NET](https://img.shields.io/badge/.NET-512BD4?logo=dotnet)                                         | Core application framework               |
+| ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-512BD4?logo=dotnet)                         | Web framework for building the server    |
+| ![Blazor](https://img.shields.io/badge/Blazor-512BD4?logo=blazor)                                     | Frontend C# web framework                |
+| ![MudBlazor](https://img.shields.io/badge/MudBlazor-1E88E5?logo=M&logoColor=fff)                      | Material Design component library        |
+| ![Entity Framework Core](https://img.shields.io/badge/EF_Core-512BD4?logo=entityframework)           | Object-Relational Mapper (ORM)           |
+| ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)                     | Embedded database engine                 |
+| ![OData](https://img.shields.io/badge/OData-F26825?logo=odata&logoColor=white)                        | Standard for building RESTful APIs       |
+| ![Swagger](https://img.shields.io/badge/Swagger-85EA2D?logo=swagger&logoColor=black)                  | API documentation and testing            |
 
 ---
 
-## Getting Started
+## 🏁 Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing.
 
 ### Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
-- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with the **ASP.NET and web development** workload, or any code editor with .NET support
-- [Git](https://git-scm.com/)
+Make sure you have the following tools installed:
 
-### Installation & Running
+*   [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (or the latest version)
+*   [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) with the **ASP.NET and web development** workload installed.
+*   [Git](https://git-scm.com/)
 
-1. **Clone the repository**
+### Quick Start
+
+1.  **Clone the repository**
     ```sh
     git clone https://github.com/donpotts/MudBlazorCrmApp.git
     ```
 
-2. **Navigate to the project directory**
+2.  **Navigate to the project directory**
     ```sh
     cd MudBlazorCrmApp
     ```
 
-3. **Run the application**
-    ```sh
-    dotnet run --project MudBlazorCrmApp
-    ```
-    The application will launch and be available at `https://localhost:5001` (or the URL shown in the console). The SQLite database is created and seeded automatically on first run.
+3.  **Open the solution in Visual Studio**
+    *   Open `MudBlazorCrmApp.sln` with Visual Studio 2022.
 
-    Alternatively, open `MudBlazorCrmApp.sln` in Visual Studio, set `MudBlazorCrmApp` as the startup project, and press F5.
-
----
-
-## Authentication
-
-This application uses ASP.NET Core Identity for user authentication.
-
-### Default Accounts
-
-| Role | Username | Password |
-|---|---|---|
-| Administrator | adminUser@example.com | testUser123! |
-| Normal User | normalUser@example.com | testUser123! |
-
-The Administrator account has access to user management features.
+4.  **Run the application**
+    *   Set `MudBlazorCrmApp` as the startup project.
+    *   Press `F5` or the "Run" button to build and start the application.
+    *   The application will launch in your default web browser. The database will be created and seeded on the first run.
 
 ---
 
-## API
+## 🔌 API Endpoints
 
-The server exposes OData-enabled REST endpoints for all entities. Visit `/swagger` when running locally to explore the full API.
+### Dashboard API
+```
+GET /api/dashboard/kpis              # Key performance indicators
+GET /api/dashboard/sales-trend       # Sales over time
+GET /api/dashboard/lead-sources      # Lead source distribution
+GET /api/dashboard/pipeline-stages   # Sales pipeline data
+GET /api/dashboard/recent-activity   # Activity feed
+GET /api/dashboard/top-opportunities # Top deals
+```
 
-### Dashboard Endpoints
+### Audit & Activity APIs
+```
+GET    /api/auditlog                 # Entity change history
+GET    /api/auditlog/{id}            # Audit log details
+POST   /api/authactivity/login       # Log login event
+POST   /api/authactivity/logout      # Log logout event
+```
 
-| Endpoint | Description |
-|---|---|
-| `GET /api/dashboard/kpis` | Aggregate KPIs (leads, revenue, conversion, pipeline, deals) |
-| `GET /api/dashboard/sales-over-time` | Monthly sales totals |
-| `GET /api/dashboard/lead-sources` | Lead count by source |
-| `GET /api/dashboard/pipeline-by-stage` | Opportunity value/count by stage |
-| `GET /api/dashboard/recent-activity` | Latest logged activities |
-| `GET /api/dashboard/top-opportunities` | Highest-value open opportunities |
+### Core CRUD APIs
+```
+GET/POST       /api/customer
+GET/PUT/DELETE /api/customer/{id}
 
-### Other API Endpoints
+GET/POST       /api/lead
+GET/PUT/DELETE /api/lead/{id}
 
-| Endpoint | Description |
-|---|---|
-| `GET /api/search?q={query}` | Global search across entities |
-| `POST /api/import/{entityType}` | CSV import for any entity |
-| `GET /api/reports/...` | Date-filtered report data |
-| `GET /api/timeline/{entityType}/{entityId}` | Entity interaction timeline |
-| `GET /odata/{Entity}` | OData CRUD for all entities |
+This application uses ASP.NET Core Identity for user authentication. To log in, navigate to the login page and enter your credentials.
+
+Administrator
+
+Username: adminUser@example.com
 
 ---
 
-## Entities
+Normal user
 
-The CRM manages the following entities:
+Username: normalUser@example.com
 
-| Entity | Description |
-|---|---|
-| Customer | Companies or individuals you do business with |
-| Contact | People associated with customers |
-| Lead | Potential customers from various sources |
-| Opportunity | Deals in your sales pipeline with value and stage tracking |
-| Activity | Logged interactions (calls, emails, meetings, notes, tasks) |
-| Sale | Completed sales transactions |
-| Product | Products available for sale |
-| Service | Services offered |
-| Product Category | Product categorization |
-| Service Category | Service categorization |
-| Support Case | Customer support tickets |
-| Todo Task | Tasks with Kanban board support |
-| Vendor | Supplier/vendor records |
-| Address | Addresses linked to customers |
-| Reward | Customer reward records |
-| Tag | Color-coded labels for categorizing any entity |
+Password: testUser123!
 
 ---
 
 ## Contact
 
 Don Potts - Don.Potts@DonPotts.com
+
+Project Link: [https://github.com/donpotts/MudBlazorCrmApp](https://github.com/donpotts/MudBlazorCrmApp)
+
+---
+
+## 🙏 Acknowledgments
+
+- [MudBlazor](https://mudblazor.com/) - Amazing Blazor component library
+- [Chart.js](https://www.chartjs.org/) - Beautiful charts
+- [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) - Robust backend framework

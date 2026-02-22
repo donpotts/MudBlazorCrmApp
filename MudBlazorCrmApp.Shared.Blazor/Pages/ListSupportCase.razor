@@ -6,10 +6,10 @@
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
 
-<PageTitle>Support Case</PageTitle>
+<PageTitle>Support Cases</PageTitle>
 
 <div class="mb-3">
-    <MudText Typo="Typo.h3">Support Case</MudText>
+    <MudText Typo="Typo.h3">Support Cases</MudText>
 </div>
 
 <MudStack AlignItems="AlignItems.End" Class="mb-3">
@@ -18,33 +18,23 @@
 
 <MudDataGrid T="SupportCase" @ref="grid" ServerData="(new Func<GridState<SupportCase>, Task<GridData<SupportCase>>>(ServerReload))" Filterable="true">
     <ToolBarContent>
-         <MudText Typo="Typo.h6">Support Case</MudText>
+         <MudText Typo="Typo.h6">Support Cases</MudText>
          <MudSpacer />
          <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
          <MudButton Color="Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
     </ToolBarContent>
     <Columns>
         <PropertyColumn Property="x => x!.Id" Title="Id" />
-        <PropertyColumn Property="x => x!.CustomerId" Title="CustomerId" />
-        <PropertyColumn Property="x => x!.ProductId" Title="ProductId" />
-        <PropertyColumn Property="x => x!.ServiceId" Title="ServiceId" />
+        <PropertyColumn Property="x => x!.Title" Title="Title" />
+        <PropertyColumn Property="x => x!.CustomerId" Title="Customer" />
+        <PropertyColumn Property="x => x!.Priority" Title="Priority" />
         <PropertyColumn Property="x => x!.Status" Title="Status" />
-        <PropertyColumn Property="x => x!.Description" Title="Description" />
-        <PropertyColumn Property="x => x!.CreatedDateTime" Title="CreatedDateTime" />
-        <PropertyColumn Property="x => x!.ModifiedDateTime" Title="ModifiedDateTime" />
-        <PropertyColumn Property="x => x!.UserId" Title="UserId" />
-        <PropertyColumn Property="x => x!.FollowupDate" Title="FollowupDate" />
-        <TemplateColumn Title="Icon" Sortable="false" Filterable="false">
-            <CellTemplate>
-                @if (!string.IsNullOrEmpty(context.Item!.Icon))
-                {
-                    <MudImage Src="@GetAbsoluteUri(context.Item!.Icon)" Style="width:128px;height:128px;object-fit:contain;" />
-                }
-            </CellTemplate>
-        </TemplateColumn>
-        <PropertyColumn Property="x => x!.Notes" Title="Notes" />
-        <PropertyColumn Property="x => x!.CreatedDate" Title="Created Date" />
-        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified Date" />
+        <PropertyColumn Property="x => x!.Category" Title="Category" />
+        <PropertyColumn Property="x => x!.Channel" Title="Channel" />
+        <PropertyColumn Property="x => x!.AssignedUserId" Title="Assigned To" />
+        <PropertyColumn Property="x => x!.DueDate" Title="Due Date" />
+        <PropertyColumn Property="x => x!.CreatedDate" Title="Created" />
+        <PropertyColumn Property="x => x!.ModifiedDate" Title="Modified" />
         <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
             <CellTemplate>
                 <MudStack Row="true">
@@ -119,15 +109,15 @@
 
                if (isNumeric)
                {
-                   filter = $"Id eq {_searchString} or CustomerId eq {_searchString} or ProductId eq {_searchString} or UserId eq {_searchString}";
+                   filter = $"Id eq {_searchString} or CustomerId eq {_searchString} or ProductId eq {_searchString}";
                }
                else if (isDateTime)
                {
-                   filter = $"CreatedDateTime ge cast({_searchString},Edm.DateTimeOffset) or ModifiedDateTime ge cast({_searchString},Edm.DateTimeOffset)";
+                   filter = $"";
                }
                else
                {
-                   filter = $"contains(tolower(ServiceId), '{_searchString}') or contains(tolower(Status), '{_searchString}') or contains(tolower(Description), '{_searchString}') or contains(tolower(FollowupDate), '{_searchString}') or contains(tolower(Notes), '{_searchString}') ";
+                   filter = $"contains(tolower(Title), '{_searchString}') or contains(tolower(Status), '{_searchString}') or contains(tolower(Priority), '{_searchString}') or contains(tolower(Category), '{_searchString}') or contains(tolower(Description), '{_searchString}') or contains(tolower(Notes), '{_searchString}') ";
                }
             }
             result = await AppService.ListSupportCaseODataAsync(top, skip, orderby, filter, true, null);
@@ -200,7 +190,6 @@
             {
                 DateTimeOffset dateTime = DateTime.Parse(_searchString);
                 _searchString = dateTime.ToString("yyyy-MM-ddTHH:mm:ssK");
-                //Console.WriteLine(_searchString);
             }
         }
         catch
@@ -216,41 +205,42 @@
 
         try
         {
-            // Fetch all data from the OData service without any filters or restrictions
             result = await AppService.ListSupportCaseODataAsync(null, null, null, null, true, null);
 
             if (result != null && result?.Value != null)
             {
                 var ar = result?.Value.ToList().Select(x => new
                 {
-                        x.Id,
-    x.CustomerId,
-    x.ProductId,
-    x.ServiceId,
-    x.Status,
-    x.Description,
-    x.CreatedDateTime,
-    x.ModifiedDateTime,
-    x.UserId,
-    x.FollowupDate,
-    x.Icon,
-    x.Notes,
-
+                    x.Id,
+                    x.Title,
+                    x.CustomerId,
+                    x.ContactId,
+                    x.ProductId,
+                    x.ServiceId,
+                    x.Priority,
+                    x.Status,
+                    x.Category,
+                    x.Channel,
+                    x.Description,
+                    x.Resolution,
+                    x.AssignedUserId,
+                    x.SlaHours,
+                    x.DueDate,
+                    x.FollowupDate,
+                    x.ResolvedDate,
+                    x.Notes,
+                    x.CreatedDate,
+                    x.ModifiedDate
                 });
 
                 using var memoryStream = new MemoryStream();
                 using (var writer = new StreamWriter(memoryStream))
                 using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
-                    csv.WriteRecords(ar); // use CSVHelper to write the records to the CSV file
+                    csv.WriteRecords(ar);
                 }
-                // Convert MemoryStream to ByteArray
                 var byteArray = memoryStream.ToArray();
-
-                // Convert ByteArray to Base64String
                 var base64 = Convert.ToBase64String(byteArray);
-
-                // Trigger file download
                 await JSRuntime.InvokeVoidAsync("downloadFromBase64", base64, "SupportCase_"+ System.DateTime.Now.ToString("yyyyMMddHHmmss") +".csv");
             }
         }

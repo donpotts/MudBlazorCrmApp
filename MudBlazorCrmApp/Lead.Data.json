@@ -7,21 +7,26 @@
     "PotentialValue": 15000,
     "OpportunityId": 603,
     "AddressId": 901,
-    "Notes": "Filled out contact form on pricing page"
+    "Photo": "lead_profile_pic.jpg",
+    "Notes": ""
   },
   {
     "Id": 402,
     "ContactId": 802,
-    "Source": "Trade Show",
-    "Status": "Converted",
-    "PotentialValue": 87000,
+    "Source": "Tech Expo",
+    "Status": "Evaluating",
+    "PotentialValue": 25000.00,
     "OpportunityId": 602,
     "AddressId": 902,
-    "Notes": "Met at CES 2026, very interested"
+    "Photo": "tech_expo_booth.jpg",
+    "Notes": ""
   },
   {
     "Id": 403,
-    "ContactId": 803,
+    "Company": "StartUp Ventures",
+    "Title": "Founder",
+    "Industry": "Technology",
+    "ContactId": null,
     "Source": "Social Media",
     "Status": "New",
     "PotentialValue": 5000,
@@ -40,85 +45,10 @@
     "Id": 405,
     "Source": "Cold Call",
     "Status": "Contacted",
-    "PotentialValue": 15000,
-    "OpportunityId": 605,
-    "Notes": "Showed interest during cold call outreach"
-  },
-  {
-    "Id": 406,
-    "Source": "Webinar",
-    "Status": "Qualified",
-    "PotentialValue": 110000,
-    "OpportunityId": 615,
-    "Notes": "Attended product demo webinar, requested trial"
-  },
-  {
-    "Id": 407,
-    "Source": "Website",
-    "Status": "New",
-    "PotentialValue": 22000,
-    "Notes": "Downloaded whitepaper on automation"
-  },
-  {
-    "Id": 408,
-    "Source": "Partner",
-    "Status": "Converted",
-    "PotentialValue": 175000,
-    "OpportunityId": 606,
-    "Notes": "Introduced by integration partner"
-  },
-  {
-    "Id": 409,
-    "Source": "Trade Show",
-    "Status": "Contacted",
-    "PotentialValue": 68000,
-    "OpportunityId": 609,
-    "Notes": "Scanned badge at booth, follow-up sent"
-  },
-  {
-    "Id": 410,
-    "Source": "Referral",
-    "Status": "Won",
-    "PotentialValue": 95000,
-    "OpportunityId": 608,
-    "Notes": "Referred by Cybernetics Corp, closed deal"
-  },
-  {
-    "Id": 411,
-    "Source": "Social Media",
-    "Status": "New",
-    "PotentialValue": 8000,
-    "Notes": "Responded to Twitter/X campaign"
-  },
-  {
-    "Id": 412,
-    "Source": "Website",
-    "Status": "Contacted",
-    "PotentialValue": 142000,
-    "OpportunityId": 610,
-    "Notes": "Requested demo via website chatbot"
-  },
-  {
-    "Id": 413,
-    "Source": "Cold Call",
-    "Status": "Lost",
-    "PotentialValue": 30000,
-    "Notes": "Not interested at this time"
-  },
-  {
-    "Id": 414,
-    "Source": "Webinar",
-    "Status": "New",
-    "PotentialValue": 53000,
-    "OpportunityId": 611,
-    "Notes": "Registered for upcoming product launch webinar"
-  },
-  {
-    "Id": 415,
-    "Source": "Referral",
-    "Status": "Qualified",
-    "PotentialValue": 78000,
-    "OpportunityId": 612,
-    "Notes": "Strong referral from logistics industry contact"
+    "PotentialValue": 5000.00,
+    "OpportunityId": 603,
+    "AddressId": 903,
+    "Photo": "social_media_ad.jpg",
+    "Notes": ""
   }
 ]

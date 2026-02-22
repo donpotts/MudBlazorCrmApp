@@ -3,7 +3,7 @@
     "Id": 1,
     "Name": "AI Consultancy",
     "Description": "Expert AI strategy and implementation services",
-    "Icon": "ai_consultancy_icon.png",
+    "Icon": "/upload/image/2cgcoyhw.png",
     "TaxRate": "0.01%",
     "Notes": ""
   },
@@ -11,7 +11,7 @@
     "Id": 2,
     "Name": "AI Data Analysis",
     "Description": "In-depth data analysis services using AI algorithms",
-    "Icon": "ai_data_analysis_icon.png",
+    "Icon": "/upload/image/2jzkkhah.png",
     "TaxRate": "0.01%",
     "Notes": ""
   },
@@ -19,7 +19,7 @@
     "Id": 3,
     "Name": "AI Security Services",
     "Description": "Security services enhanced with AI for threat detection and response",
-    "Icon": "ai_security_services_icon.png",
+    "Icon": "/upload/image/2qsl1faw.png",
     "TaxRate": "0.01%",
     "Notes": ""
   },
@@ -27,7 +27,7 @@
     "Id": 4,
     "Name": "AI Training Workshops",
     "Description": "Workshops and seminars to educate teams on AI applications",
-    "Icon": "ai_training_workshops_icon.png",
+    "Icon": "/upload/image/2upp0bou.png",
     "TaxRate": "0.01%",
     "Notes": ""
   },
@@ -35,7 +35,7 @@
     "Id": 5,
     "Name": "AI Integration Services",
     "Description": "Services to integrate AI into existing business systems",
-    "Icon": "ai_integration_services_icon.png",
+    "Icon": "/upload/image/2w5n2245.png",
     "TaxRate": "0.01%",
     "Notes": ""
   },
@@ -43,15 +43,15 @@
     "Id": 6,
     "Name": "AI Customer Support",
     "Description": "Customer support services powered by AI for efficiency and accuracy",
-    "Icon": "ai_customer_support_icon.png",
+    "Icon": "/upload/image/34va1f10.png",
     "TaxRate": "0.01%",
     "Notes": ""
   },
   {
     "Id": 7,
     "Name": "AI Research and Development",
-    "Description": "R\u0026D services for pioneering new AI technologies",
-    "Icon": "ai_research_development_icon.png",
+    "Description": "R&D services for pioneering new AI technologies",
+    "Icon": "/upload/image/3bcnjtlj.png",
     "TaxRate": "0.01%",
     "Notes": ""
   },
@@ -59,7 +59,7 @@
     "Id": 8,
     "Name": "AI Legal Advisory",
     "Description": "Legal services utilizing AI for contract analysis and legal research",
-    "Icon": "ai_legal_advisory_icon.png",
+    "Icon": "/upload/image/3j4tx2bi.png",
     "TaxRate": "0.01%",
     "Notes": ""
   }

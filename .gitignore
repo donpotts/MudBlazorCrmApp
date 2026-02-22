@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Markdown files (except README.md)
+*.md
+!README.md

@@ -58,6 +58,20 @@ public class IdentityAuthenticationStateProvider(HttpClient httpClient, IStorage
 
         if (!response.IsSuccessStatusCode)
         {
+            // Log failed login attempt
+            try
+            {
+                await httpClient.PostAsJsonAsync("/api/authactivity/login-failed", new
+                {
+                    Email = loginModel.Email,
+                    Reason = response.StatusCode == HttpStatusCode.Unauthorized ? "Invalid credentials" : "Login failed"
+                });
+            }
+            catch
+            {
+                // Ignore logging errors
+            }
+
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 throw new Exception("The login attempt failed.");
@@ -148,6 +162,19 @@ public class IdentityAuthenticationStateProvider(HttpClient httpClient, IStorage
         await storageService.SetAsync("IdentityAuthenticationStateProvider_accessTokenResponse", accessTokenResponse);
         await storageService.SetAsync("IdentityAuthenticationStateProvider_expiresAt", expiresAt);
         await storageService.SetAsync("IdentityAuthenticationStateProvider_claims", claim);
+
+        // Log successful login activity with IP address
+        try
+        {
+            HttpRequestMessage loginLogRequest = new(HttpMethod.Post, "/api/authactivity/login");
+            loginLogRequest.Headers.Authorization = new("Bearer", accessTokenResponse.AccessToken);
+            loginLogRequest.Content = JsonContent.Create(new { AdditionalInfo = $"Login via web app" });
+            await httpClient.SendAsync(loginLogRequest);
+        }
+        catch
+        {
+            // Ignore logging errors - don't fail login if logging fails
+        }
     }
 
     public async Task<string?> GetBearerTokenAsync()
@@ -204,6 +231,22 @@ public class IdentityAuthenticationStateProvider(HttpClient httpClient, IStorage
 
     public async Task LogoutAsync()
     {
+        // Log logout activity before clearing the token
+        if (accessTokenResponse != null)
+        {
+            try
+            {
+                HttpRequestMessage logoutLogRequest = new(HttpMethod.Post, "/api/authactivity/logout");
+                logoutLogRequest.Headers.Authorization = new("Bearer", accessTokenResponse.AccessToken);
+                logoutLogRequest.Content = JsonContent.Create(new { AdditionalInfo = "Logout via web app" });
+                await httpClient.SendAsync(logoutLogRequest);
+            }
+            catch
+            {
+                // Ignore logging errors - proceed with logout
+            }
+        }
+
         await storageService.RemoveAsync("IdentityAuthenticationStateProvider_accessTokenResponse");
         await storageService.RemoveAsync("IdentityAuthenticationStateProvider_expiresAt");
         await storageService.RemoveAsync("IdentityAuthenticationStateProvider_claims");

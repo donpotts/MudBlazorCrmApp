@@ -1554,6 +1554,151 @@ public class AppService(
         await HandleResponseErrorsAsync(response);
     }
 
+    // AuditLog methods
+    public async Task<AuditLog[]?> ListAuditLogAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/auditlog");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<AuditLog[]>();
+    }
+
+    public Task<ODataResult<AuditLog>?> ListAuditLogODataAsync(
+        int? top = null,
+        int? skip = null,
+        string? orderby = null,
+        string? filter = null,
+        bool count = false,
+        string? expand = null)
+    {
+        return GetODataAsync<AuditLog>("AuditLog", top, skip, orderby, filter, count, expand);
+    }
+
+    public async Task<AuditLog?> GetAuditLogByIdAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/auditlog/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<AuditLog>();
+    }
+
+    public async Task<List<AuditLog>?> GetAuditLogByEntityAsync(string entityType, string entityId)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/auditlog/entity/{entityType}/{entityId}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<AuditLog>>();
+    }
+
+    public async Task<object?> GetAuditLogSummaryAsync(int days = 30)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/auditlog/summary?days={days}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<object>();
+    }
+
+    // ActivityLog methods
+    public async Task<ActivityLog[]?> ListActivityLogAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/activitylog");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<ActivityLog[]>();
+    }
+
+    public Task<ODataResult<ActivityLog>?> ListActivityLogODataAsync(
+        int? top = null,
+        int? skip = null,
+        string? orderby = null,
+        string? filter = null,
+        bool count = false,
+        string? expand = null)
+    {
+        return GetODataAsync<ActivityLog>("ActivityLog", top, skip, orderby, filter, count, expand);
+    }
+
+    public async Task<ActivityLog?> GetActivityLogByIdAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/activitylog/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<ActivityLog>();
+    }
+
+    // Authentication Activity methods
+    public async Task<List<ActivityLog>?> GetMyAuthActivityAsync(int count = 10)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/authactivity/my-activity?count={count}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<ActivityLog>>();
+    }
+
+    public async Task<List<ActivityLog>?> GetAllAuthActivityAsync(int count = 50)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/authactivity/all-activity?count={count}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<ActivityLog>>();
+    }
+
     // Activity CRUD
     public async Task<Activity[]?> ListActivityAsync()
     {
