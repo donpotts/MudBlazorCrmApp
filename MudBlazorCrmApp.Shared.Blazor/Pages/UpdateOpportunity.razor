@@ -30,7 +30,6 @@ else
                 <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
                 <MudNumericField @bind-Value="record.Value" For="@(() => record.Value)" Label="Value ($)" />
                 <MudNumericField @bind-Value="record.Probability" For="@(() => record.Probability)" Label="Probability (%)" Min="0" Max="100" />
-                <MudTextField @bind-Value="record.Source" For="@(() => record.Source)" Label="Source" />
                 <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.EstimatedCloseDate" For="@(() => record.EstimatedCloseDate)" Label="Estimated Close Date" />
                 <MudSelect @bind-Value="record.Stage" Label="Stage" AnchorOrigin="Origin.BottomCenter">
                     <MudSelectItem Value="@("Prospecting")">Prospecting</MudSelectItem>
@@ -72,6 +71,7 @@ else
                 <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" />
 
                 <TagSelector EntityType="Opportunity" EntityId="@(record.Id ?? 0)" />
+                <EntityAttachments EntityType="Opportunity" EntityId="@(record.Id ?? 0)" />
                 <EntityTimeline EntityType="Opportunity" EntityId="@(record.Id ?? 0)" />
             </DialogContent>
             <DialogActions>
@@ -131,7 +131,7 @@ else
         MudDialog?.Cancel();
     }
 
-    private async void OnSubmit()
+    private async Task OnSubmit()
     {
         if (record == null)
         {

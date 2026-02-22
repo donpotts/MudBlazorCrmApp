@@ -12,7 +12,6 @@
             <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
             <MudNumericField @bind-Value="record.Value" For="@(() => record.Value)" Label="Value ($)" />
             <MudNumericField @bind-Value="record.Probability" For="@(() => record.Probability)" Label="Probability (%)" Min="0" Max="100" />
-            <MudTextField @bind-Value="record.Source" For="@(() => record.Source)" Label="Source" />
             <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.EstimatedCloseDate" For="@(() => record.EstimatedCloseDate)" Label="Estimated Close Date" />
             <MudSelect @bind-Value="record.Stage" Label="Stage" AnchorOrigin="Origin.BottomCenter">
                 <MudSelectItem Value="@("Prospecting")">Prospecting</MudSelectItem>
@@ -108,7 +107,7 @@
         MudDialog?.Cancel();
     }
 
-    private async void OnSubmit()
+    private async Task OnSubmit()
     {
         try
         {

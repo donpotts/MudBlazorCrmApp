@@ -16,7 +16,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="Address" @ref="grid" ServerData="(new Func<GridState<Address>, Task<GridData<Address>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="Address" @ref="grid" ServerData="@ServerReload" Filterable="true">
     <ToolBarContent>
          <MudText Typo="Typo.h6">Address</MudText>
          <MudSpacer />
@@ -97,7 +97,7 @@
         return absolute.ToString();
     }
 
-    private async Task<GridData<Address>> ServerReload(GridState<Address> state)
+    private async Task<GridData<Address>> ServerReload(GridState<Address> state, CancellationToken cancellationToken)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -140,9 +140,10 @@
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<AddAddress>("Add Address", dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<AddAddress>("Add Address", dialogOptions);
+        var result = await dialogRef.Result;
 
-        if (!result.Canceled)
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -153,9 +154,10 @@
         DialogParameters<UpdateAddress> dialogParams = new() { { x => x.Id, record.Id!.Value } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<UpdateAddress>("Update Address", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<UpdateAddress>("Update Address", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
 
-        if (!result.Canceled)
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -163,7 +165,7 @@
 
     private async void OnDelete(Address record)
     {
-        var result = await DialogService.ShowMessageBox(
+        var result = await DialogService.ShowMessageBoxAsync(
             "Warning",
             "Are you sure you want to delete this record?",
             "Delete",

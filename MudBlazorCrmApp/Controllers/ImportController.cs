@@ -137,6 +137,86 @@ public class ImportController(ApplicationDbContext _ctx, ILogger<ImportControlle
             return BadRequest($"Error importing CSV: {ex.Message}");
         }
     }
+
+    [HttpPost("opportunities")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ImportResultDto>> ImportOpportunities(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        try
+        {
+            using var reader = new StreamReader(file.OpenReadStream());
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HeaderValidated = null,
+                MissingFieldFound = null,
+            };
+            using var csv = new CsvReader(reader, config);
+            var records = csv.GetRecords<Opportunity>().ToList();
+
+            var imported = 0;
+            foreach (var record in records)
+            {
+                record.Id = null;
+                record.CreatedDate = DateTime.UtcNow;
+                record.ModifiedDate = DateTime.UtcNow;
+                await ctx.Opportunity.AddAsync(record);
+                imported++;
+            }
+
+            await ctx.SaveChangesAsync();
+
+            return Ok(new ImportResultDto { Imported = imported, Total = records.Count });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error importing opportunities");
+            return BadRequest($"Error importing CSV: {ex.Message}");
+        }
+    }
+
+    [HttpPost("sales")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ImportResultDto>> ImportSales(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded");
+
+        try
+        {
+            using var reader = new StreamReader(file.OpenReadStream());
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HeaderValidated = null,
+                MissingFieldFound = null,
+            };
+            using var csv = new CsvReader(reader, config);
+            var records = csv.GetRecords<Sale>().ToList();
+
+            var imported = 0;
+            foreach (var record in records)
+            {
+                record.Id = null;
+                record.CreatedDate = DateTime.UtcNow;
+                record.ModifiedDate = DateTime.UtcNow;
+                await ctx.Sale.AddAsync(record);
+                imported++;
+            }
+
+            await ctx.SaveChangesAsync();
+
+            return Ok(new ImportResultDto { Imported = imported, Total = records.Count });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error importing sales");
+            return BadRequest($"Error importing CSV: {ex.Message}");
+        }
+    }
 }
 
 public class ImportResultDto

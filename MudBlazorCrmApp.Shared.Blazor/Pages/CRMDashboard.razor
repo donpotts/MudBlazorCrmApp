@@ -1,4 +1,4 @@
-﻿@page "/crmdashboard"
+@page "/crmdashboard"
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
 @using MudBlazorCrmApp.Shared.Blazor.Components
@@ -29,513 +29,344 @@ else
 
 @code {
     private IJSObjectReference? _chartModule;
+    private bool _isLoading;
+    private KpiSummaryDto? _kpis;
+    private List<SalesOverTimeDto>? _salesData;
+    private List<LeadSourceDto>? _leadSources;
+    private List<PipelineStageDto>? _pipelineData;
+    private List<RecentActivityDto>? _recentActivities;
+    private List<TopOpportunityDto>? _topOpportunities;
 
-    private List<DashboardCard> GetInitialLayout() => new()
+    protected override async Task OnInitializedAsync()
     {
-        // Top Row - Key Performance Indicators
-        new DashboardCard
+        _isLoading = true;
+        try
         {
-            Id = "sales-chart",
-            CardType = "sales-chart",
-            Title = "Sales Over Time",
-            X = 0, Y = 0, W = 6, H = 4,
-            ChartConfig = new ChartConfig
+            var kpiTask = AppService.GetDashboardKpisAsync();
+            var salesTask = AppService.GetSalesOverTimeAsync();
+            var leadsTask = AppService.GetLeadSourcesAsync();
+            var pipelineTask = AppService.GetPipelineByStageAsync();
+            var activityTask = AppService.GetRecentActivityAsync();
+            var oppsTask = AppService.GetTopOpportunitiesAsync();
+
+            await Task.WhenAll(kpiTask, salesTask, leadsTask, pipelineTask, activityTask, oppsTask);
+
+            _kpis = kpiTask.Result;
+            _salesData = salesTask.Result;
+            _leadSources = leadsTask.Result;
+            _pipelineData = pipelineTask.Result;
+            _recentActivities = activityTask.Result;
+            _topOpportunities = oppsTask.Result;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading dashboard data: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private List<DashboardCard> GetInitialLayout()
+    {
+        var salesLabels = _salesData?.Select(s => s.Month ?? "").ToList() ?? new List<string> { "No Data" };
+        var salesValues = _salesData?.Select(s => (double)s.Total).ToList() ?? new List<double> { 0 };
+
+        var leadLabels = _leadSources?.Select(l => l.Source ?? "Unknown").ToList() ?? new List<string> { "No Data" };
+        var leadValues = _leadSources?.Select(l => (double)l.Count).ToList() ?? new List<double> { 0 };
+
+        // Sort pipeline data in funnel order
+        var stageOrder = new[] { "Prospecting", "Qualification", "Proposal", "Negotiation", "Closed Won", "Closed Lost" };
+        var sortedPipeline = _pipelineData?
+            .OrderBy(p => Array.IndexOf(stageOrder, p.Stage) >= 0 ? Array.IndexOf(stageOrder, p.Stage) : 99)
+            .ToList() ?? new List<PipelineStageDto>();
+
+        var pipelineLabels = sortedPipeline.Select(p => p.Stage ?? "").ToList();
+        var pipelineValues = sortedPipeline.Select(p => (double)p.TotalValue).ToList();
+        var pipelineCounts = sortedPipeline.Select(p => (double)p.Count).ToList();
+        if (!pipelineLabels.Any()) { pipelineLabels.Add("No Data"); pipelineValues.Add(0); pipelineCounts.Add(0); }
+
+        // Funnel data: only active pipeline stages (exclude closed)
+        var funnelStages = sortedPipeline.Where(p => p.Stage != "Closed Won" && p.Stage != "Closed Lost").ToList();
+        var funnelLabels = funnelStages.Select(p => p.Stage ?? "").ToList();
+        var funnelCounts = funnelStages.Select(p => (double)p.Count).ToList();
+        if (!funnelLabels.Any()) { funnelLabels.Add("No Data"); funnelCounts.Add(0); }
+
+        var leadColors = new List<string> { "#28a745", "#17a2b8", "#ffc107", "#fd7e14", "#dc3545", "#6f42c1", "#007bff", "#e83e8c" };
+        var pipelineColors = new List<string> { "#4CAF50", "#2196F3", "#FF9800", "#F44336", "#9C27B0", "#607D8B" };
+
+        return new()
+        {
+            // Top Row - Sales and Lead Sources
+            new DashboardCard
             {
-                Type = "line",
-                Labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug" },
-                Datasets = new List<ChartDataset>
+                Id = "sales-chart",
+                CardType = "chart",
+                Title = "Sales Over Time",
+                X = 0, Y = 0, W = 6, H = 4,
+                ChartConfig = new ChartConfig
                 {
-                    new ChartDataset
+                    Type = "line",
+                    Labels = salesLabels,
+                    Datasets = new List<ChartDataset>
                     {
-                        Label = "Sales ($k)",
-                        Data = new List<double> { 12, 19, 9, 17, 22, 15, 28, 31 },
-                        BorderColor = "#007bff",
-                        BackgroundColor = "rgba(0, 123, 255, 0.1)",
-                        Tension = 0.3,
-                        Fill = true
+                        new ChartDataset
+                        {
+                            Label = "Sales ($)",
+                            Data = salesValues,
+                            BorderColor = "#007bff",
+                            BackgroundColor = "rgba(0, 123, 255, 0.1)",
+                            Tension = 0.3,
+                            Fill = true
+                        }
+                    }
+                }
+            },
+            new DashboardCard
+            {
+                Id = "lead-chart",
+                CardType = "chart",
+                Title = "Lead Sources",
+                X = 6, Y = 0, W = 6, H = 4,
+                ChartConfig = new ChartConfig
+                {
+                    Type = "doughnut",
+                    Labels = leadLabels,
+                    Datasets = new List<ChartDataset>
+                    {
+                        new ChartDataset
+                        {
+                            Label = "Lead Sources",
+                            Data = leadValues,
+                            BackgroundColors = leadColors.Take(leadLabels.Count).ToList()
+                        }
+                    }
+                }
+            },
+
+            // Second Row - Pipeline Value and Pipeline Funnel
+            new DashboardCard
+            {
+                Id = "pipeline-chart",
+                CardType = "chart",
+                Title = "Pipeline Value by Stage",
+                X = 0, Y = 4, W = 6, H = 4,
+                ChartConfig = new ChartConfig
+                {
+                    Type = "bar",
+                    Labels = pipelineLabels,
+                    Datasets = new List<ChartDataset>
+                    {
+                        new ChartDataset
+                        {
+                            Label = "Pipeline Value ($)",
+                            Data = pipelineValues,
+                            BackgroundColors = pipelineColors.Take(pipelineLabels.Count).ToList()
+                        }
+                    }
+                }
+            },
+            new DashboardCard
+            {
+                Id = "pipeline-funnel",
+                CardType = "chart",
+                Title = "Pipeline Funnel",
+                X = 6, Y = 4, W = 6, H = 4,
+                ChartConfig = new ChartConfig
+                {
+                    Type = "bar",
+                    Labels = funnelLabels,
+                    Datasets = new List<ChartDataset>
+                    {
+                        new ChartDataset
+                        {
+                            Label = "Deals in Stage",
+                            Data = funnelCounts,
+                            BackgroundColors = new List<string> { "#4CAF50", "#2196F3", "#FF9800", "#F44336" }.Take(funnelLabels.Count).ToList()
+                        }
                     },
-                    new ChartDataset
+                    Options = new MudBlazorCrmApp.Shared.Blazor.Models.ChartOptions
                     {
-                        Label = "Target ($k)",
-                        Data = new List<double> { 15, 20, 12, 20, 25, 18, 30, 35 },
-                        BorderColor = "#28a745",
-                        BackgroundColor = "rgba(40, 167, 69, 0.1)",
-                        Tension = 0.3,
-                        Fill = false
+                        Scales = new Dictionary<string, object>
+                        {
+                            { "indexAxis", "y" }
+                        }
                     }
                 }
-            }
-        },
-        new DashboardCard
-        {
-            Id = "lead-chart",
-            CardType = "lead-chart",
-            Title = "Lead Sources",
-            X = 6, Y = 0, W = 6, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "doughnut",
-                Labels = new List<string> { "Organic Search", "Social Media", "Email Campaign", "Referrals", "Paid Ads" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Lead Sources",
-                        Data = new List<double> { 300, 150, 100, 80, 70 },
-                        BackgroundColors = new List<string> { "#28a745", "#17a2b8", "#ffc107", "#fd7e14", "#dc3545" }
-                    }
-                }
-            }
-        },
+            },
 
-        // Second Row - Revenue and Pipeline Analysis
-        new DashboardCard
-        {
-            Id = "revenue-chart",
-            CardType = "revenue-chart",
-            Title = "Monthly Revenue",
-            X = 0, Y = 4, W = 4, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "bar",
-                Labels = new List<string> { "Q1", "Q2", "Q3", "Q4" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Revenue ($k)",
-                        Data = new List<double> { 45, 52, 61, 58 },
-                        BackgroundColor = "rgba(75, 192, 192, 0.8)",
-                        BorderColor = "rgba(75, 192, 192, 1)"
-                    }
-                }
-            }
-        },
-        new DashboardCard
-        {
-            Id = "pipeline-chart",
-            CardType = "pipeline-chart",
-            Title = "Sales Pipeline by Stage",
-            X = 4, Y = 4, W = 4, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "bar",
-                Labels = new List<string> { "Prospecting", "Qualification", "Proposal", "Negotiation", "Closing" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Pipeline Value ($k)",
-                        Data = new List<double> { 85, 65, 45, 32, 28 },
-                        BackgroundColor = "rgba(54, 162, 235, 0.8)",
-                        BorderColor = "rgba(54, 162, 235, 1)"
-                    }
-                }
-            }
-        },
-        new DashboardCard
-        {
-            Id = "win-rate-chart",
-            CardType = "win-rate-chart",
-            Title = "Win Rate Trends",
-            X = 8, Y = 4, W = 4, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "line",
-                Labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Win Rate (%)",
-                        Data = new List<double> { 15.2, 18.5, 22.1, 19.8, 25.3, 28.7 },
-                        BorderColor = "#ff6384",
-                        BackgroundColor = "rgba(255, 99, 132, 0.1)",
-                        Tension = 0.3,
-                        Fill = true
-                    }
-                }
-            }
-        },
+            // Third Row - KPIs
+            new DashboardCard { Id = "kpi-leads", CardType = "leads", Title = "New Leads", X = 0, Y = 8, W = 2, H = 4 },
+            new DashboardCard { Id = "kpi-revenue", CardType = "revenue", Title = "Total Revenue", X = 2, Y = 8, W = 2, H = 4 },
+            new DashboardCard { Id = "kpi-conversion", CardType = "conversion", Title = "Conversion Rate", X = 4, Y = 8, W = 2, H = 4 },
+            new DashboardCard { Id = "kpi-pipeline", CardType = "pipeline-value", Title = "Pipeline Value", X = 6, Y = 8, W = 2, H = 4 },
+            new DashboardCard { Id = "kpi-deals", CardType = "deals-closed", Title = "Deals Closed", X = 8, Y = 8, W = 2, H = 4 },
+            new DashboardCard { Id = "kpi-avg-deal", CardType = "avg-deal-size", Title = "Avg Deal Size", X = 10, Y = 8, W = 2, H = 4 },
 
-        // Third Row - Customer and Sales Team Analysis
-        new DashboardCard
-        {
-            Id = "customer-acquisition-chart",
-            CardType = "customer-acquisition-chart",
-            Title = "Customer Acquisition Cost vs LTV",
-            X = 0, Y = 8, W = 6, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "scatter",
-                Labels = new List<string> { "Customers" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "CAC vs LTV",
-                        Data = new List<double> { 500, 1200, 800, 2100, 650, 1850, 750, 1650, 900, 2400 },
-                        BackgroundColor = "rgba(153, 102, 255, 0.6)",
-                        BorderColor = "rgba(153, 102, 255, 1)"
-                    }
-                }
-            }
-        },
-        new DashboardCard
-        {
-            Id = "sales-team-chart",
-            CardType = "sales-team-chart",
-            Title = "Sales Team Performance",
-            X = 6, Y = 8, W = 6, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "radar",
-                Labels = new List<string> { "Sarah J.", "Mike T.", "Lisa K.", "John D.", "Emma R." },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Q1 Performance",
-                        Data = new List<double> { 85, 92, 78, 88, 95 },
-                        BackgroundColor = "rgba(255, 99, 132, 0.2)",
-                        BorderColor = "rgba(255, 99, 132, 1)"
-                    },
-                    new ChartDataset
-                    {
-                        Label = "Q2 Performance",
-                        Data = new List<double> { 90, 88, 85, 92, 98 },
-                        BackgroundColor = "rgba(54, 162, 235, 0.2)",
-                        BorderColor = "rgba(54, 162, 235, 1)"
-                    }
-                }
-            }
-        },
+            // Fourth Row - More KPIs
+            new DashboardCard { Id = "kpi-customers", CardType = "customers", Title = "Total Customers", X = 0, Y = 12, W = 3, H = 4 },
+            new DashboardCard { Id = "kpi-support", CardType = "support-cases", Title = "Open Support Cases", X = 3, Y = 12, W = 3, H = 4 },
 
-        // Fourth Row - Geographic and Forecast Analysis
-        new DashboardCard
-        {
-            Id = "geographic-chart",
-            CardType = "geographic-chart",
-            Title = "Revenue by Region",
-            X = 0, Y = 12, W = 6, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "polarArea",
-                Labels = new List<string> { "North America", "Europe", "Asia Pacific", "Latin America", "Middle East" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Revenue ($k)",
-                        Data = new List<double> { 180, 125, 95, 45, 32 },
-                        BackgroundColors = new List<string> { "#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff" }
-                    }
-                }
-            }
-        },
-        new DashboardCard
-        {
-            Id = "forecast-chart",
-            CardType = "forecast-chart",
-            Title = "Sales Forecast vs Actual",
-            X = 6, Y = 12, W = 6, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "line",
-                Labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Actual Sales ($k)",
-                        Data = new List<double> { 12, 19, 9, 17, 22, 15, 28, 31, 0, 0, 0, 0 },
-                        BorderColor = "#007bff",
-                        BackgroundColor = "rgba(0, 123, 255, 0.1)",
-                        Tension = 0.3,
-                        Fill = false
-                    },
-                    new ChartDataset
-                    {
-                        Label = "Forecasted Sales ($k)",
-                        Data = new List<double> { 15, 20, 12, 20, 25, 18, 30, 35, 38, 42, 45, 48 },
-                        BorderColor = "#28a745",
-                        BackgroundColor = "rgba(40, 167, 69, 0.1)",
-                        Tension = 0.3,
-                        Fill = false,
-                    }
-                }
-            }
-        },
+            // Fifth Row - Activity Feed and Top Opportunities
+            new DashboardCard { Id = "activity-feed", CardType = "activity", Title = "Recent Activity", X = 0, Y = 16, W = 6, H = 4 },
+            new DashboardCard { Id = "top-opportunities", CardType = "opportunities", Title = "Top Opportunities", X = 6, Y = 16, W = 6, H = 4 },
 
-        // Fifth Row - Customer Lifecycle and Churn Analysis
-        new DashboardCard
-        {
-            Id = "customer-lifecycle-chart",
-            CardType = "customer-lifecycle-chart",
-            Title = "Customer Lifecycle Value",
-            X = 0, Y = 16, W = 6, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "bar",
-                Labels = new List<string> { "New", "Active", "At Risk", "Churned", "Reactivated" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Customer Count",
-                        Data = new List<double> { 145, 892, 67, 43, 28 },
-                        BackgroundColors = new List<string> { "#28a745", "#17a2b8", "#ffc107", "#dc3545", "#6f42c1" }
-                    }
-                }
-            }
-        },
-        new DashboardCard
-        {
-            Id = "churn-analysis-chart",
-            CardType = "churn-analysis-chart",
-            Title = "Churn Rate by Customer Segment",
-            X = 6, Y = 16, W = 6, H = 4,
-            ChartConfig = new ChartConfig
-            {
-                Type = "doughnut",
-                Labels = new List<string> { "Enterprise", "Mid-Market", "Small Business", "Startup" },
-                Datasets = new List<ChartDataset>
-                {
-                    new ChartDataset
-                    {
-                        Label = "Churn Rate (%)",
-                        Data = new List<double> { 3.2, 8.5, 12.8, 18.9 },
-                        BackgroundColors = new List<string> { "#28a745", "#ffc107", "#fd7e14", "#dc3545" }
-                    }
-                }
-            }
-        },
+            // Sixth Row - Quick Notes
+            new DashboardCard { Id = "quick-notes", CardType = "notes", Title = "Quick Notes", X = 0, Y = 20, W = 6, H = 5 },
+        };
+    }
 
-        // Sixth Row - KPIs and Activity Feed
-        new DashboardCard { Id = "kpi-leads", CardType = "leads", Title = "New Leads", X = 0, Y = 20, W = 2, H = 4 },
-        new DashboardCard { Id = "kpi-revenue", CardType = "revenue", Title = "Total Revenue", X = 2, Y = 20, W = 2, H = 4 },
-        new DashboardCard { Id = "kpi-conversion", CardType = "conversion", Title = "Conversion Rate", X = 4, Y = 20, W = 2, H = 4 },
-        new DashboardCard { Id = "kpi-pipeline", CardType = "pipeline-value", Title = "Pipeline Value", X = 6, Y = 20, W = 2, H = 4 },
-        new DashboardCard { Id = "kpi-deals", CardType = "deals-closed", Title = "Deals Closed", X = 8, Y = 20, W = 2, H = 4 },
-        new DashboardCard { Id = "kpi-avg-deal", CardType = "avg-deal-size", Title = "Avg Deal Size", X = 10, Y = 20, W = 2, H = 4 },
+    private string FormatCurrency(decimal value)
+    {
+        if (value >= 1000000) return $"${value / 1000000:N1}M";
+        if (value >= 1000) return $"${value / 1000:N1}K";
+        return $"${value:N0}";
+    }
 
-        // Seventh Row - Management Tools
-        new DashboardCard { Id = "activity-feed", CardType = "activity", Title = "Recent Activity", X = 0, Y = 24, W = 6, H = 4 },
-        new DashboardCard { Id = "top-opportunities", CardType = "opportunities", Title = "Top Opportunities", X = 6, Y = 24, W = 6, H = 4 },
-
-        // Eighth Row - Quick Tools
-        new DashboardCard { Id = "quick-notes", CardType = "notes", Title = "Quick Notes", X = 0, Y = 28, W = 4, H = 5 },
-        new DashboardCard { Id = "key-metrics", CardType = "metrics", Title = "Key Metrics", X = 4, Y = 28, W = 4, H = 5 },
-        new DashboardCard { Id = "pending-tasks", CardType = "tasks", Title = "Pending Tasks", X = 8, Y = 28, W = 4, H = 5 },
+    private string GetActivityIcon(string? type) => type switch
+    {
+        "Call" => "phone",
+        "Email" => "email",
+        "Meeting" => "groups",
+        "Note" => "note",
+        "Task" => "task_alt",
+        _ => "event"
     };
 
     private RenderFragment<DashboardCard> RenderCardContent => card => __builder =>
     {
         switch (card.CardType)
         {
-            case "sales-chart":
-            case "lead-chart":
-            case "pipeline-chart":
-            case "win-rate-chart":
-            case "customer-acquisition-chart":
-            case "sales-team-chart":
-            case "geographic-chart":
-            case "forecast-chart":
-            case "customer-lifecycle-chart":
-            case "churn-analysis-chart":
+            case "chart":
                 <canvas id="@(card.Id)Canvas" style="pointer-events: none;"></canvas>
                 break;
             case "leads":
                 <div class="kpi-card-body">
-                    <div class="kpi-number">1,284</div>
-                    <div class="kpi-label">This Month</div>
-                    <div class="kpi-change positive">+12%</div>
+                    <div class="kpi-number">@(_kpis?.NewLeads.ToString("N0") ?? "0")</div>
+                    <div class="kpi-label">Last 30 Days</div>
                 </div>
                 break;
             case "revenue":
                 <div class="kpi-card-body">
-                    <div class="kpi-number">$45.6k</div>
-                    <div class="kpi-label">This Month</div>
-                    <div class="kpi-change positive">+8%</div>
+                    <div class="kpi-number">@FormatCurrency(_kpis?.TotalRevenue ?? 0)</div>
+                    <div class="kpi-label">Last 30 Days</div>
                 </div>
                 break;
             case "conversion":
                 <div class="kpi-card-body">
-                    <div class="kpi-number">24.8%</div>
+                    <div class="kpi-number">@((_kpis?.ConversionRate ?? 0).ToString("N1"))%</div>
                     <div class="kpi-label">Lead to Customer</div>
-                    <div class="kpi-change positive">+3.2%</div>
                 </div>
                 break;
             case "pipeline-value":
                 <div class="kpi-card-body">
-                    <div class="kpi-number">$127K</div>
-                    <div class="kpi-label">Pipeline Value</div>
-                    <div class="kpi-change positive">+15%</div>
+                    <div class="kpi-number">@FormatCurrency(_kpis?.PipelineValue ?? 0)</div>
+                    <div class="kpi-label">Open Pipeline</div>
                 </div>
                 break;
             case "deals-closed":
                 <div class="kpi-card-body">
-                    <div class="kpi-number">47</div>
-                    <div class="kpi-label">This Quarter</div>
-                    <div class="kpi-change positive">+22%</div>
+                    <div class="kpi-number">@(_kpis?.DealsClosed.ToString("N0") ?? "0")</div>
+                    <div class="kpi-label">Closed Won</div>
                 </div>
                 break;
             case "avg-deal-size":
                 <div class="kpi-card-body">
                     <div class="kpi-number">@FormatCurrency(_kpis?.AvgDealSize ?? 0)</div>
                     <div class="kpi-label">Average Deal</div>
-                    <div class="kpi-change negative">-2%</div>
+                </div>
+                break;
+            case "customers":
+                <div class="kpi-card-body">
+                    <div class="kpi-number">@(_kpis?.TotalCustomers.ToString("N0") ?? "0")</div>
+                    <div class="kpi-label">Total Customers</div>
+                </div>
+                break;
+            case "support-cases":
+                <div class="kpi-card-body">
+                    <div class="kpi-number">@(_kpis?.OpenSupportCases.ToString("N0") ?? "0")</div>
+                    <div class="kpi-label">Open Cases</div>
                 </div>
                 break;
             case "activity":
-                <ul class="activity-feed">
-                    <li>
-                        <span class="icon">
-                            <i class="fas fa-user-plus"></i>
-                        </span> New lead 'John Smith' assigned to Sarah.
-                    </li>
-                    <li>
-                        <span class="icon">
-                            <i class="fas fa-handshake"></i>
-                        </span> Deal 'Enterprise Project' moved to negotiation.
-                    </li>
-                    <li>
-                        <span class="icon">
-                            <i class="fas fa-check-circle"></i>
-                        </span> Deal 'Website Redesign' closed - $15,000.
-                    </li>
-                    <li>
-                        <span class="icon">
-                            <i class="fas fa-envelope"></i>
-                        </span> Follow-up email sent to 'Tech Solutions Inc'.
-                    </li>
-                    <li>
-                        <span class="icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </span> Meeting scheduled with 'ABC Corp' for tomorrow.
-                    </li>
-                </ul>
+                @if (_recentActivities != null && _recentActivities.Any())
+                {
+                    <ul class="activity-feed">
+                        @foreach (var activity in _recentActivities)
+                        {
+                            <li>
+                                <span class="icon"><MudIcon Icon="@GetActivityIcon(activity.Type)" Size="Size.Small" /></span>
+                                <strong>@activity.Subject</strong>
+                                @if (!string.IsNullOrEmpty(activity.EntityName))
+                                {
+                                    <span> — @activity.EntityName</span>
+                                }
+                                <br />
+                                <small>@activity.Date?.ToString("MMM dd, yyyy")</small>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="default-card-content"><p>No recent activities. Log calls, emails, and meetings to see them here.</p></div>
+                }
                 break;
             case "opportunities":
-                <div class="opportunities-list">
-                    <div class="opportunity-item">
-                        <div class="opportunity-header">
-                            <span class="opportunity-name">Global Tech Solutions</span>
-                            <span class="opportunity-value">$85,000</span>
-                        </div>
-                        <div class="opportunity-details">
-                            <span class="opportunity-stage">Negotiation</span>
-                            <span class="opportunity-probability">75%</span>
-                        </div>
+                @if (_topOpportunities != null && _topOpportunities.Any())
+                {
+                    <div class="opportunities-list">
+                        @foreach (var opp in _topOpportunities)
+                        {
+                            <div class="opportunity-item">
+                                <div class="opportunity-header">
+                                    <span class="opportunity-name">@opp.Name</span>
+                                    <span class="opportunity-value">@FormatCurrency(opp.Value ?? 0)</span>
+                                </div>
+                                <div class="opportunity-details">
+                                    <span class="opportunity-stage">@opp.Stage</span>
+                                    @if (opp.Probability.HasValue)
+                                    {
+                                        <span class="opportunity-probability">@(opp.Probability.Value.ToString("N0"))%</span>
+                                    }
+                                </div>
+                                @if (!string.IsNullOrEmpty(opp.CustomerName))
+                                {
+                                    <div><small>@opp.CustomerName</small></div>
+                                }
+                            </div>
+                        }
                     </div>
-                    <div class="opportunity-item">
-                        <div class="opportunity-header">
-                            <span class="opportunity-name">Marketing Automation Deal</span>
-                            <span class="opportunity-value">$65,000</span>
-                        </div>
-                        <div class="opportunity-details">
-                            <span class="opportunity-stage">Proposal</span>
-                            <span class="opportunity-probability">60%</span>
-                        </div>
-                    </div>
-                    <div class="opportunity-item">
-                        <div class="opportunity-header">
-                            <span class="opportunity-name">Enterprise CRM Upgrade</span>
-                            <span class="opportunity-value">$120,000</span>
-                        </div>
-                        <div class="opportunity-details">
-                            <span class="opportunity-stage">Qualification</span>
-                            <span class="opportunity-probability">40%</span>
-                        </div>
-                    </div>
-                </div>
+                }
+                else
+                {
+                    <div class="default-card-content"><p>No opportunities yet. Create opportunities to track your pipeline.</p></div>
+                }
                 break;
             case "notes":
                 <div class="notes-card">
                     <div class="notes-header">
-                        <i class="fas fa-sticky-note"></i>
                         <span>Quick Notes</span>
                     </div>
                     <div class="notes-content">
-                        <p>• Follow up with Marketing team about Q1 campaigns</p>
-                        <p>• Review customer feedback from last month</p>
-                        <p>• Prepare presentation for board meeting</p>
-                    </div>
-                </div>
-                break;
-            case "metrics":
-                <div class="metrics-card">
-                    <div class="metric-row">
-                        <span class="metric-label">Conversion Rate</span>
-                        <span class="metric-value">12.5%</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Customer Satisfaction</span>
-                        <span class="metric-value">4.8/5</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Churn Rate</span>
-                        <span class="metric-value">2.3%</span>
-                    </div>
-                    <div class="metric-row">
-                        <span class="metric-label">Lead Response Time</span>
-                        <span class="metric-value">2.1 hrs</span>
-                    </div>
-                </div>
-                break;
-            case "tasks":
-                <div class="tasks-card">
-                    <div class="task-item">
-                        <input type="checkbox" checked />
-                        <span class="task-completed">Call client about renewal</span>
-                    </div>
-                    <div class="task-item">
-                        <input type="checkbox" />
-                        <span>Send proposal to prospect</span>
-                    </div>
-                    <div class="task-item">
-                        <input type="checkbox" />
-                        <span>Update CRM records</span>
-                    </div>
-                    <div class="task-item">
-                        <input type="checkbox" />
-                        <span>Schedule team meeting</span>
-                    </div>
-                    <div class="task-item">
-                        <input type="checkbox" />
-                        <span>Review quarterly goals</span>
+                        <p>Use the Dashboard to monitor your CRM health.</p>
+                        <p>• Track leads, revenue, and pipeline in real-time</p>
+                        <p>• Log activities for every customer interaction</p>
+                        <p>• Drag cards to customize your layout</p>
                     </div>
                 </div>
                 break;
             default:
                 <div class="default-card">
                     <div class="default-card-content">
-                        <h4>New Dashboard Card</h4>
-                        <p>This is a customizable dashboard card. You can modify this content to display any information you need.</p>
-                        <div class="default-card-stats">
-                            <div class="stat-item">
-                                <span class="stat-number">42</span>
-                                <span class="stat-label">Items</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">98%</span>
-                                <span class="stat-label">Progress</span>
-                            </div>
-                        </div>
+                        <h4>Dashboard Card</h4>
+                        <p>Customize this card or drag to rearrange your dashboard.</p>
                     </div>
                 </div>
                 break;
         }
     };
-
-    private string FormatCurrency(decimal value)
-    {
-        if (value >= 1000000)
-            return $"${value / 1000000:N1}M";
-        if (value >= 1000)
-            return $"${value / 1000:N1}K";
-        return $"${value:N0}";
-    }
 
     private async Task HandleChartsRerender()
     {
@@ -574,31 +405,5 @@ else
         {
             Console.WriteLine($"Error rendering charts: {ex.Message}");
         }
-    }
-
-    // Example method to update chart data dynamically
-    private async Task UpdateSalesChart()
-    {
-        if (_chartModule == null) return;
-
-        var updatedConfig = new ChartConfig
-        {
-            Type = "line",
-            Labels = new List<string> { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" },
-            Datasets = new List<ChartDataset>
-            {
-                new ChartDataset
-                {
-                    Label = "Updated Sales ($k)",
-                    Data = new List<double> { 15, 22, 11, 19, 25, 18, 31, 35, 29 },
-                    BorderColor = "#dc3545",
-                    BackgroundColor = "rgba(220, 53, 69, 0.1)",
-                    Tension = 0.3,
-                    Fill = true
-                }
-            }
-        };
-
-        await _chartModule.InvokeVoidAsync("renderChart", "sales-chartCanvas", updatedConfig);
     }
 }

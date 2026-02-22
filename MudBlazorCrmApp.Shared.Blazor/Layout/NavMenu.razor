@@ -14,6 +14,45 @@
     <AuthorizeView>
         <MudAutocomplete T="SearchResultItem" SearchFunc="@SearchEntities" Placeholder="Search..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Dense="true" Class="mr-4" Style="max-width:300px;color:inherit;" ToStringFunc="@(item => item?.Name ?? "")" ValueChanged="@OnSearchItemSelected" ResetValueOnEmptyText="true" />
     </AuthorizeView>
+    <AuthorizeView>
+        <Authorized>
+            <MudBadge Content="@_unreadCount" Color="Color.Error" Overlap="true" Visible="@(_unreadCount > 0)">
+                <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" OnClick="@ToggleNotifications" />
+            </MudBadge>
+            <MudPopover Open="@_notificationsOpen" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Class="pa-4" Style="max-width:400px;max-height:500px;overflow-y:auto;">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
+                    <MudText Typo="Typo.h6">Notifications</MudText>
+                    <MudSpacer />
+                    @if (_unreadCount > 0)
+                    {
+                        <MudButton Size="Size.Small" OnClick="MarkAllRead">Mark all read</MudButton>
+                    }
+                    <MudIconButton Icon="@Icons.Material.Filled.Refresh" Size="Size.Small" OnClick="RefreshNotifications" Title="Check for alerts" />
+                </MudStack>
+                <MudDivider Class="mb-2" />
+                @if (_notifications == null || _notifications.Count == 0)
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">No notifications</MudText>
+                }
+                else
+                {
+                    @foreach (var notif in _notifications)
+                    {
+                        <MudPaper Class="@($"pa-2 mb-1 {(notif.IsRead ? "" : "mud-theme-primary")} cursor-pointer")" Elevation="0" Outlined="true" @onclick="() => OnNotificationClick(notif)">
+                            <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="1">
+                                <MudIcon Icon="@GetNotificationIcon(notif.Type)" Size="Size.Small" Color="@GetNotificationColor(notif.Type)" Class="mt-1" />
+                                <MudStack Spacing="0" Style="flex:1;">
+                                    <MudText Typo="Typo.body2"><b>@notif.Title</b></MudText>
+                                    <MudText Typo="Typo.caption">@notif.Message</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@notif.CreatedDate.ToString("MMM dd, HH:mm")</MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudPaper>
+                    }
+                }
+            </MudPopover>
+        </Authorized>
+    </AuthorizeView>
     <ThemesMenu @bind-ThemingDrawerOpen="_themingDrawerOpen"
             ThemeManager="_themeManager"
             ThemeManagerChanged="ThemeManagerChanged" />
@@ -27,44 +66,84 @@
                     Class="mr-5"/>
         </MudTooltip>
         </MudLink>
-    <MudLink Href="https://github.com/donpotts/MudBlazorCrmApp" Target="_blank" Color="Color.Inherit" Class="mr-3">
+    @* <MudLink Href="https://github.com/donpotts/MudBlazorCrmApp" Target="_blank" Color="Color.Inherit" Class="mr-3">
         <MudIcon Icon="@Icons.Custom.Brands.GitHub" />
-    </MudLink>
-    <MudLink Href="https://www.radendpoint.com/" Color="Color.Inherit">About</MudLink>
+    </MudLink> *@
+    <MudLink Href="https://www.ask2app.com/" Color="Color.Inherit">About</MudLink>
 </MudAppBar>
-<MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit">
-    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <AuthorizeView>
-        <MudNavLink Href="/CrmDashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Home">CRM Dashboard</MudNavLink>
-        <MudNavLink Href="/Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PeopleAlt">Customers</MudNavLink>
-        <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeWork">Addresses</MudNavLink>
-        <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>
-        <MudNavLink Href="/ServiceCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeRepairService">Service Categories</MudNavLink>
-        <MudNavLink Href="/Contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ContactMail">Contacts</MudNavLink>
-        <MudNavLink Href="/Opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Newspaper">Opportunities</MudNavLink>
-        <MudNavLink Href="/Lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Leaderboard">Leads</MudNavLink>
-        <MudNavLink Href="/Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ProductionQuantityLimits">Products</MudNavLink>
-        <MudNavLink Href="/Service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TableChart">Services</MudNavLink>
-        <MudNavLink Href="/Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PointOfSale">Sales</MudNavLink>
-        <MudNavLink Href="/Vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Store">Vendors</MudNavLink>
-        <MudNavLink Href="/SupportCase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Support">Support Cases</MudNavLink>
-        <MudNavLink Href="/TodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Todo Tasks</MudNavLink>
-        <MudNavLink Href="/KanbanTodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Today">Kanban Todo Tasks</MudNavLink>
-        <MudNavLink Href="/Reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Money">Rewards</MudNavLink>
-    </AuthorizeView>
-    <AuthorizeView Roles="Administrator">
-        <MudNavLink Href="/user" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">User</MudNavLink>
-    </AuthorizeView>
-    <AuthorizeView>
-        <Authorized>
-            <MudNavLink Href="/account/changePassword" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Change Password</MudNavLink>
-            <MudNavLink Href="/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
-        </Authorized>
-        <NotAuthorized>
-            <MudNavLink Href="/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Edit">Register</MudNavLink>
-            <MudNavLink Href="/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
-        </NotAuthorized>
-    </AuthorizeView>
+<MudDrawer @bind-Open="drawerOpen" ClipMode="DrawerClipMode.Docked" Color="Color.Inherit" Elevation="1">
+    <MudNavMenu Bordered="true" Class="pt-2">
+        <AuthorizeView>
+            <MudNavLink Href="/crmdashboard" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+            <MudNavLink Href="/pipeline" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ViewKanban">Pipeline Board</MudNavLink>
+            <MudNavLink Href="/calendar" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CalendarMonth">Calendar</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudNavGroup Title="Sales" Icon="@Icons.Material.Filled.AttachMoney" Expanded="false">
+                <MudNavLink Href="/Lead" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Leaderboard">Leads</MudNavLink>
+                <MudNavLink Href="/Opportunity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.TrendingUp">Opportunities</MudNavLink>
+                <MudNavLink Href="/Sale" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PointOfSale">Sales</MudNavLink>
+                <MudNavLink Href="/Activity" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Timeline">Activities</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Customers" Icon="@Icons.Material.Filled.People" Expanded="false">
+                <MudNavLink Href="/Customer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Business">Companies</MudNavLink>
+                <MudNavLink Href="/Contact" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ContactMail">Contacts</MudNavLink>
+                <MudNavLink Href="/Address" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.LocationOn">Addresses</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Products & Services" Icon="@Icons.Material.Filled.Inventory" Expanded="false">
+                <MudNavLink Href="/Product" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ShoppingCart">Products</MudNavLink>
+                <MudNavLink Href="/ProductCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category">Product Categories</MudNavLink>
+                <MudNavLink Href="/Service" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Build">Services</MudNavLink>
+                <MudNavLink Href="/ServiceCategory" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.HomeRepairService">Service Categories</MudNavLink>
+                <MudNavLink Href="/Vendor" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Store">Vendors</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Support" Icon="@Icons.Material.Filled.SupportAgent" Expanded="false">
+                <MudNavLink Href="/SupportCase" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.BugReport">Support Cases</MudNavLink>
+                <MudNavLink Href="/communication" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Forum">Communications</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavGroup Title="Tasks" Icon="@Icons.Material.Filled.CheckCircle" Expanded="false">
+                <MudNavLink Href="/TodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FormatListBulleted">Task List</MudNavLink>
+                <MudNavLink Href="/KanbanTodoTask" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ViewKanban">Kanban Board</MudNavLink>
+            </MudNavGroup>
+            
+            <MudNavLink Href="/Reward" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CardGiftcard">Rewards</MudNavLink>
+            <MudNavLink Href="/Tag" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Label">Tags</MudNavLink>
+
+            <MudDivider Class="my-2" />
+
+            <MudNavGroup Title="Tools" Icon="@Icons.Material.Filled.Construction" Expanded="false">
+                <MudNavLink Href="/reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Assessment">Reports</MudNavLink>
+                <MudNavLink Href="/import" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FileUpload">Import Data</MudNavLink>
+                <MudNavLink Href="/emailtemplate" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MailOutline">Email Templates</MudNavLink>
+            </MudNavGroup>
+        </AuthorizeView>
+        
+        <AuthorizeView Roles="Administrator">
+            <MudDivider Class="my-2" />
+            <MudNavGroup Title="Administration" Icon="@Icons.Material.Filled.AdminPanelSettings" Expanded="false">
+                <MudNavLink Href="/user" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ManageAccounts">Users</MudNavLink>
+                <MudNavLink Href="/auditlog" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.History">Audit Log</MudNavLink>
+            </MudNavGroup>
+        </AuthorizeView>
+        
+        <MudDivider Class="my-2" />
+        
+        <AuthorizeView>
+            <Authorized>
+                <MudNavLink Href="/account/changePassword" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Change Password</MudNavLink>
+                <MudNavLink Href="/logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout (@context.User.Identity!.Name)</MudNavLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavLink Href="/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+                <MudNavLink Href="/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudNavMenu>
 </MudDrawer>
 
 @code {
@@ -74,6 +153,11 @@
     private bool drawerOpen = false;
 
     private bool _themingDrawerOpen;
+
+    // Notification state
+    private bool _notificationsOpen;
+    private int _unreadCount;
+    private List<Notification>? _notifications;
 
     private MudTheme _theme = new();
     private bool _isDarkMode = false;
@@ -124,7 +208,7 @@
             };
 
         await ThemeManagerChanged(_themeManager);
-
+        await LoadNotificationCount();
     }
                             
     private void DrawerToggle()
@@ -136,10 +220,10 @@
     {
         if (firstRender && mudThemeProvider != null)
         {
-            isDarkMode = await mudThemeProvider.GetSystemPreference();
+            isDarkMode = await mudThemeProvider.GetSystemDarkModeAsync();
             StateHasChanged();
 
-            await mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+            await mudThemeProvider.WatchSystemDarkModeAsync(OnSystemPreferenceChanged);
         }
     }
 
@@ -178,15 +262,94 @@
     {
         if (item == null) return;
 
+        var search = Uri.EscapeDataString(item.Name ?? "");
         var url = item.EntityType switch
         {
-            "Customer" => "/Customer",
-            "Contact" => "/Contact",
-            "Opportunity" => "/Opportunity",
-            "Lead" => "/Lead",
+            "Customer" => $"/Customer?search={search}",
+            "Contact" => $"/Contact?search={search}",
+            "Opportunity" => $"/Opportunity?search={search}",
+            "Lead" => $"/Lead?search={search}",
             _ => "/"
         };
 
         Navigation.NavigateTo(url);
     }
+
+    private async Task LoadNotificationCount()
+    {
+        try
+        {
+            _unreadCount = await AppService.GetUnreadNotificationCountAsync();
+        }
+        catch { }
+    }
+
+    private async Task ToggleNotifications()
+    {
+        _notificationsOpen = !_notificationsOpen;
+        if (_notificationsOpen)
+        {
+            try
+            {
+                _notifications = await AppService.GetNotificationsAsync(20);
+            }
+            catch { }
+        }
+    }
+
+    private async Task RefreshNotifications()
+    {
+        try
+        {
+            await AppService.GenerateNotificationsAsync();
+            _notifications = await AppService.GetNotificationsAsync(20);
+            _unreadCount = await AppService.GetUnreadNotificationCountAsync();
+        }
+        catch { }
+    }
+
+    private async Task MarkAllRead()
+    {
+        try
+        {
+            await AppService.MarkAllNotificationsAsReadAsync();
+            _unreadCount = 0;
+            if (_notifications != null)
+            {
+                foreach (var n in _notifications) n.IsRead = true;
+            }
+        }
+        catch { }
+    }
+
+    private async Task OnNotificationClick(Notification n)
+    {
+        if (!n.IsRead)
+        {
+            try
+            {
+                await AppService.MarkNotificationAsReadAsync(n.Id!.Value);
+                n.IsRead = true;
+                _unreadCount = Math.Max(0, _unreadCount - 1);
+            }
+            catch { }
+        }
+        _notificationsOpen = false;
+    }
+
+    private string GetNotificationIcon(string? type) => type switch
+    {
+        "Alert" => Icons.Material.Filled.Error,
+        "Warning" => Icons.Material.Filled.Warning,
+        "Reminder" => Icons.Material.Filled.Alarm,
+        _ => Icons.Material.Filled.Info,
+    };
+
+    private Color GetNotificationColor(string? type) => type switch
+    {
+        "Alert" => Color.Error,
+        "Warning" => Color.Warning,
+        "Reminder" => Color.Info,
+        _ => Color.Default,
+    };
 }

@@ -7,56 +7,170 @@
     "Source": "Referral",
     "EstimatedCloseDate": "2026-03-15T00:00:00",
     "Stage": "Negotiation",
-    "Icon": "opportunity_stage_icon.png",
-    "Notes": ""
+    "CustomerId": 301,
+    "ContactId": 801,
+    "Notes": "Final contract review in progress"
   },
   {
     "Id": 602,
-    "EstimatedCloseDate": "2024-11-30T00:00:00",
+    "Name": "RoboTech Inc. - Automation Suite",
+    "Value": 87000,
+    "Probability": 60,
+    "Source": "Trade Show",
+    "EstimatedCloseDate": "2026-04-30T00:00:00",
     "Stage": "Proposal",
-    "Icon": "opportunity_proposal_icon.png",
-    "Notes": ""
+    "CustomerId": 302,
+    "ContactId": 802,
+    "Notes": "Proposal sent, awaiting feedback"
   },
   {
     "Id": 603,
-    "EstimatedCloseDate": "2024-10-15T00:00:00",
+    "Name": "Jane Engineering - Consulting Package",
+    "Value": 32000,
+    "Probability": 40,
+    "Source": "Website",
+    "EstimatedCloseDate": "2026-05-15T00:00:00",
     "Stage": "Qualification",
-    "Icon": "opportunity_qualification_icon.png",
-    "Notes": ""
+    "CustomerId": 303,
+    "ContactId": 803,
+    "Notes": "Needs assessment call scheduled"
   },
   {
     "Id": 604,
-    "EstimatedCloseDate": "2024-09-20T00:00:00",
-    "Stage": "Presentation",
-    "Icon": "opportunity_presentation_icon.png",
-    "Notes": ""
+    "Name": "TechVentures - Cloud Migration",
+    "Value": 210000,
+    "Probability": 90,
+    "Source": "Referral",
+    "EstimatedCloseDate": "2026-02-28T00:00:00",
+    "Stage": "Negotiation",
+    "CustomerId": 304,
+    "ContactId": 804,
+    "Notes": "Verbal agreement, finalizing terms"
   },
   {
     "Id": 605,
-    "EstimatedCloseDate": "2024-08-25T00:00:00",
-    "Stage": "Discovery",
-    "Icon": "opportunity_discovery_icon.png",
-    "Notes": ""
+    "Name": "Global Solutions - Analytics Platform",
+    "Value": 175000,
+    "Probability": 70,
+    "Source": "Partner",
+    "EstimatedCloseDate": "2026-04-15T00:00:00",
+    "Stage": "Proposal",
+    "CustomerId": 305,
+    "ContactId": 805,
+    "Notes": "Technical evaluation underway"
   },
   {
     "Id": 606,
-    "EstimatedCloseDate": "2024-07-30T00:00:00",
-    "Stage": "Analysis",
-    "Icon": "opportunity_analysis_icon.png",
-    "Notes": ""
+    "Name": "FinanceFirst - Compliance Module",
+    "Value": 95000,
+    "Probability": 95,
+    "Source": "Existing Customer",
+    "EstimatedCloseDate": "2026-02-20T00:00:00",
+    "Stage": "Closed Won",
+    "CustomerId": 306,
+    "ContactId": 806,
+    "Notes": "Deal signed and delivered"
   },
   {
     "Id": 607,
-    "EstimatedCloseDate": "2024-06-15T00:00:00",
-    "Stage": "Value Proposition",
-    "Icon": "opportunity_value_proposition_icon.png",
-    "Notes": ""
+    "Name": "HealthCare Plus - Patient Portal",
+    "Value": 142000,
+    "Probability": 35,
+    "Source": "Website",
+    "EstimatedCloseDate": "2026-07-31T00:00:00",
+    "Stage": "Qualification",
+    "CustomerId": 307,
+    "ContactId": 807,
+    "Notes": "Budget approval pending"
   },
   {
     "Id": 608,
-    "EstimatedCloseDate": "2024-05-10T00:00:00",
-    "Stage": "Decision Making",
-    "Icon": "opportunity_decision_making_icon.png",
-    "Notes": ""
+    "Name": "RetailMax - POS Integration",
+    "Value": 68000,
+    "Probability": 55,
+    "Source": "Trade Show",
+    "EstimatedCloseDate": "2026-04-20T00:00:00",
+    "Stage": "Proposal",
+    "CustomerId": 308,
+    "ContactId": 808,
+    "Notes": "Competitive situation with two other vendors"
+  },
+  {
+    "Id": 609,
+    "Name": "EduTech - LMS Platform",
+    "Value": 53000,
+    "Probability": 20,
+    "Source": "Social Media",
+    "EstimatedCloseDate": "2026-08-15T00:00:00",
+    "Stage": "Prospecting",
+    "CustomerId": 309,
+    "ContactId": 809,
+    "Notes": "Early stage discussions"
+  },
+  {
+    "Id": 610,
+    "Name": "GreenEnergy - IoT Dashboard",
+    "Value": 78000,
+    "Probability": 75,
+    "Source": "Referral",
+    "EstimatedCloseDate": "2026-03-31T00:00:00",
+    "Stage": "Negotiation",
+    "CustomerId": 310,
+    "ContactId": 810,
+    "Notes": "Pricing negotiation in progress"
+  },
+  {
+    "Id": 611,
+    "Name": "LogiTrans - Supply Chain Suite",
+    "Value": 110000,
+    "Probability": 80,
+    "Source": "Webinar",
+    "EstimatedCloseDate": "2026-03-20T00:00:00",
+    "Stage": "Negotiation",
+    "CustomerId": 311,
+    "ContactId": 811,
+    "Notes": "Contract redline received"
+  },
+  {
+    "Id": 612,
+    "Name": "MediaPro - Content Platform",
+    "Value": 38000,
+    "Probability": 45,
+    "Source": "Website",
+    "EstimatedCloseDate": "2026-05-31T00:00:00",
+    "Stage": "Qualification",
+    "CustomerId": 312,
+    "ContactId": 812,
+    "Notes": "Attended our webinar, requested demo"
+  },
+  {
+    "Id": 613,
+    "Name": "TechStart Inc - Starter Pack",
+    "Value": 15000,
+    "Probability": 25,
+    "Source": "Cold Call",
+    "EstimatedCloseDate": "2026-06-30T00:00:00",
+    "Stage": "Prospecting",
+    "Notes": "Initial outreach, interest shown"
+  },
+  {
+    "Id": 614,
+    "Name": "BuildRight Construction - Project Mgmt",
+    "Value": 62000,
+    "Probability": 0,
+    "Source": "Partner",
+    "EstimatedCloseDate": "2026-01-15T00:00:00",
+    "Stage": "Closed Lost",
+    "Notes": "Lost to competitor on price"
+  },
+  {
+    "Id": 615,
+    "Name": "NovaChem Labs - Research Platform",
+    "Value": 88000,
+    "Probability": 30,
+    "Source": "Cold Call",
+    "EstimatedCloseDate": "2026-09-30T00:00:00",
+    "Stage": "Prospecting",
+    "Notes": "Left voicemail, callback pending"
   }
 ]

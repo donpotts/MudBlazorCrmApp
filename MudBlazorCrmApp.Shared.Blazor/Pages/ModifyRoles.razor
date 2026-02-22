@@ -81,6 +81,6 @@ else
 
     private class ModifyRolesModel
     {
-        public IEnumerable<string> Roles { get; set; } = [];
+        public IReadOnlyCollection<string> Roles { get; set; } = [];
     }
 }

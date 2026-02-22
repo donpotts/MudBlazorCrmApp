@@ -1,6 +1,7 @@
 @inject AppService AppService
 @inject ISnackbar Snackbar
 @inject HttpClient HttpClient
+@inject IDialogService DialogService
 
 @if (record == null)
 {
@@ -28,9 +29,29 @@ else
             <DialogContent>
                 <MudNumericField @bind-Value="record.Id" For="@(() => record.Id)" Label="Id" ReadOnly="true" />
                 <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
+                <MudTextField @bind-Value="record.Company" For="@(() => record.Company)" Label="Company" />
+                <MudTextField @bind-Value="record.Title" For="@(() => record.Title)" Label="Title" />
                 <MudTextField @bind-Value="record.Email" For="@(() => record.Email)" Label="Email" />
-                <MudNumericField @bind-Value="record.Phone" For="@(() => record.Phone)" Label="Phone" />
+                <MudTextField @bind-Value="record.Phone" For="@(() => record.Phone)" Label="Phone" />
+                <MudTextField @bind-Value="record.MobilePhone" For="@(() => record.MobilePhone)" Label="Mobile Phone" />
                 <MudTextField @bind-Value="record.Role" For="@(() => record.Role)" Label="Role" />
+                <MudTextField @bind-Value="record.Department" For="@(() => record.Department)" Label="Department" />
+                <MudTextField @bind-Value="record.LinkedInUrl" For="@(() => record.LinkedInUrl)" Label="LinkedIn URL" />
+                <MudSelect @bind-Value="record.Status" Label="Status" For="@(() => record.Status)">
+                    <MudSelectItem Value="@((string?)null)">-- Select --</MudSelectItem>
+                    <MudSelectItem Value="@("Active")">Active</MudSelectItem>
+                    <MudSelectItem Value="@("Inactive")">Inactive</MudSelectItem>
+                    <MudSelectItem Value="@("Prospect")">Prospect</MudSelectItem>
+                </MudSelect>
+                <MudSelect @bind-Value="record.PreferredContactMethod" Label="Preferred Contact Method" For="@(() => record.PreferredContactMethod)">
+                    <MudSelectItem Value="@((string?)null)">-- Select --</MudSelectItem>
+                    <MudSelectItem Value="@("Email")">Email</MudSelectItem>
+                    <MudSelectItem Value="@("Phone")">Phone</MudSelectItem>
+                    <MudSelectItem Value="@("SMS")">SMS</MudSelectItem>
+                    <MudSelectItem Value="@("LinkedIn")">LinkedIn</MudSelectItem>
+                </MudSelect>
+                <MudCheckBox @bind-Value="record.IsPrimary" Label="Primary Contact" />
+                <MudCheckBox @bind-Value="record.DoNotContact" Label="Do Not Contact" />
                 <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Photo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                     <ActivatorContent>
                         <MudIconButton Color="Color.Info"
@@ -58,10 +79,15 @@ else
                 </MudSelect>
 
                 <TagSelector EntityType="Contact" EntityId="@(record.Id ?? 0)" />
+                <EntityAttachments EntityType="Contact" EntityId="@(record.Id ?? 0)" />
                 <EntityTimeline EntityType="Contact" EntityId="@(record.Id ?? 0)" />
             </DialogContent>
             <DialogActions>
                 <MudButton OnClick="OnCancel">Cancel</MudButton>
+                @if (!string.IsNullOrEmpty(record?.Email))
+                {
+                    <MudButton Color="Color.Info" StartIcon="@Icons.Material.Filled.Email" OnClick="OnSendEmail">Email</MudButton>
+                }
                 <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Update</MudButton>
             </DialogActions>
         </MudDialog>
@@ -77,7 +103,7 @@ else
 
     private Address[]? addressArray;
     private Reward[]? rewardArray;
-    private IEnumerable<long?>? rewardValues;
+    private IReadOnlyCollection<long?>? rewardValues;
     private Contact? record;
 
     private string GetAbsoluteUri(string uri)
@@ -136,6 +162,21 @@ else
         {
             Snackbar.Add(ex.Message, Severity.Error);
         }
+    }
+
+    private async Task OnSendEmail()
+    {
+        if (record == null || string.IsNullOrEmpty(record.Email)) return;
+
+        var parameters = new DialogParameters<SendEmailDialog>
+        {
+            { x => x.To, record.Email },
+            { x => x.Subject, "" },
+            { x => x.EntityType, "Contact" },
+            { x => x.EntityId, record.Id },
+        };
+
+        await DialogService.ShowAsync<SendEmailDialog>("Send Email", parameters, new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
     }
 
     private async Task<string?> UploadImageAsync(IBrowserFile file, int maxWidth = 256, int maxHeight = 256)

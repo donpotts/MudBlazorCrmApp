@@ -1,0 +1,272 @@
+@page "/calendar"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<PageTitle>Calendar</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Calendar</MudText>
+</div>
+
+<MudPaper Class="pa-4" Elevation="3">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="PreviousMonth" />
+        <MudText Typo="Typo.h5" Class="mx-4">@currentDate.ToString("MMMM yyyy")</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="NextMonth" />
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" OnClick="GoToToday">Today</MudButton>
+        <MudSelect T="string" Value="viewFilter" Label="Filter" Dense="true" Style="max-width:150px;" ValueChanged="OnFilterChanged">
+            <MudSelectItem Value="@("All")">All</MudSelectItem>
+            <MudSelectItem Value="@("Activities")">Activities</MudSelectItem>
+            <MudSelectItem Value="@("Tasks")">Tasks</MudSelectItem>
+        </MudSelect>
+    </MudStack>
+
+    @if (isLoading)
+    {
+        <MudProgressLinear Indeterminate="true" Class="mb-2" />
+    }
+
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:#e0e0e0;border:1px solid #e0e0e0;">
+        @foreach (var dayName in dayNames)
+        {
+            <div style="text-align:center;padding:8px;background:var(--mud-palette-surface);font-weight:bold;">@dayName</div>
+        }
+        @foreach (var day in GetCalendarDays())
+        {
+            <div @onclick="() => OnDayClick(day)" style="@GetDayCellStyle(day)">
+                <div style="@GetDayNumberStyle(day)">@day.Day</div>
+                @foreach (var evt in GetEventsForDay(day).Take(3))
+                {
+                    <div style="@($"font-size:0.7rem;padding:1px 4px;margin:1px 0;border-radius:4px;background-color:{GetColorHex(evt.ChipColor)};color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;")">
+                        @evt.Title
+                    </div>
+                }
+                @if (GetEventsForDay(day).Count > 3)
+                {
+                    <div style="font-size:0.65rem;color:gray;">+@(GetEventsForDay(day).Count - 3) more</div>
+                }
+            </div>
+        }
+    </div>
+</MudPaper>
+
+<MudPaper Class="pa-4 mt-4" Elevation="3">
+    <MudText Typo="Typo.h6" Class="mb-2">Events for @selectedDate.ToString("MMMM dd, yyyy")</MudText>
+    @if (GetEventsForDay(selectedDate).Count == 0)
+    {
+        <MudText Typo="Typo.body2" Color="Color.Secondary">No events on this day</MudText>
+    }
+    else
+    {
+        @foreach (var evt in GetEventsForDay(selectedDate))
+        {
+            <MudPaper Class="pa-3 mb-2" Outlined="true">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudIcon Icon="@evt.Icon" Color="@evt.ChipColor" />
+                    <MudStack Spacing="0" Style="flex:1;">
+                        <MudText Typo="Typo.body1"><b>@evt.Title</b></MudText>
+                        <MudText Typo="Typo.body2">@evt.Description</MudText>
+                        @if (evt.Time.HasValue)
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@evt.Time.Value.ToString("hh:mm tt")</MudText>
+                        }
+                    </MudStack>
+                    <MudChip T="string" Size="Size.Small" Color="@evt.ChipColor">@evt.EventType</MudChip>
+                </MudStack>
+            </MudPaper>
+        }
+    }
+</MudPaper>
+
+@code {
+    private DateTime currentDate = DateTime.Today;
+    private DateTime selectedDate = DateTime.Today;
+    private bool isLoading;
+    private string viewFilter = "All";
+    private static readonly string[] dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    private Activity[]? activities;
+    private TodoTask[]? todoTasks;
+    private List<CalEvent> calendarEvents = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        isLoading = true;
+        try
+        {
+            activities = await AppService.ListActivityAsync();
+            var taskResult = await AppService.ListTodoTaskODataAsync(null, null, null, null, true, null);
+            todoTasks = taskResult?.Value?.ToArray();
+            BuildCalendarEvents();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OnFilterChanged(string value)
+    {
+        viewFilter = value;
+        BuildCalendarEvents();
+    }
+
+    private void OnDayClick(DateTime day)
+    {
+        selectedDate = day;
+    }
+
+    private void BuildCalendarEvents()
+    {
+        calendarEvents.Clear();
+
+        if (activities != null && (viewFilter == "All" || viewFilter == "Activities"))
+        {
+            foreach (var a in activities)
+            {
+                if (a.ActivityDate.HasValue)
+                {
+                    calendarEvents.Add(new CalEvent
+                    {
+                        Date = a.ActivityDate.Value.Date,
+                        Time = a.ActivityDate.Value,
+                        Title = a.Subject ?? "Activity",
+                        Description = a.Type + " - " + a.Status,
+                        EventType = a.Type ?? "Activity",
+                        ChipColor = a.Type switch
+                        {
+                            "Call" => Color.Info,
+                            "Email" => Color.Primary,
+                            "Meeting" => Color.Warning,
+                            "Task" => Color.Success,
+                            _ => Color.Default,
+                        },
+                        Icon = a.Type switch
+                        {
+                            "Call" => Icons.Material.Filled.Phone,
+                            "Email" => Icons.Material.Filled.Email,
+                            "Meeting" => Icons.Material.Filled.Groups,
+                            "Task" => Icons.Material.Filled.Task,
+                            "Note" => Icons.Material.Filled.Note,
+                            _ => Icons.Material.Filled.Event,
+                        },
+                    });
+                }
+            }
+        }
+
+        if (todoTasks != null && (viewFilter == "All" || viewFilter == "Tasks"))
+        {
+            foreach (var t in todoTasks)
+            {
+                if (t.DueDate.HasValue)
+                {
+                    calendarEvents.Add(new CalEvent
+                    {
+                        Date = t.DueDate.Value.Date,
+                        Time = t.DueDate.Value,
+                        Title = t.Name ?? "Task",
+                        Description = "Status: " + t.Status,
+                        EventType = "Task",
+                        ChipColor = t.Status switch
+                        {
+                            "Completed" => Color.Success,
+                            "In Progress" => Color.Warning,
+                            _ => Color.Error,
+                        },
+                        Icon = Icons.Material.Filled.CheckCircle,
+                    });
+                }
+            }
+        }
+    }
+
+    private List<DateTime> GetCalendarDays()
+    {
+        var firstDay = new DateTime(currentDate.Year, currentDate.Month, 1);
+        var startDate = firstDay.AddDays(-(int)firstDay.DayOfWeek);
+        var days = new List<DateTime>();
+
+        for (int i = 0; i < 42; i++)
+        {
+            var day = startDate.AddDays(i);
+            if (i >= 35 && day.Month != currentDate.Month)
+                break;
+            days.Add(day);
+        }
+
+        return days;
+    }
+
+    private List<CalEvent> GetEventsForDay(DateTime day)
+    {
+        return calendarEvents.Where(e => e.Date == day.Date).OrderBy(e => e.Time).ToList();
+    }
+
+    private void PreviousMonth()
+    {
+        currentDate = currentDate.AddMonths(-1);
+        selectedDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+    }
+
+    private void NextMonth()
+    {
+        currentDate = currentDate.AddMonths(1);
+        selectedDate = new DateTime(currentDate.Year, currentDate.Month, 1);
+    }
+
+    private void GoToToday()
+    {
+        currentDate = DateTime.Today;
+        selectedDate = DateTime.Today;
+    }
+
+    private string GetDayCellStyle(DateTime day)
+    {
+        var style = "min-height:100px;padding:4px;background:var(--mud-palette-surface);cursor:pointer;";
+        if (day.Month != currentDate.Month) style += "opacity:0.4;";
+        if (day.Date == DateTime.Today) style += "border:2px solid var(--mud-palette-primary);";
+        if (day.Date == selectedDate.Date) style += "background:var(--mud-palette-primary-lighten);";
+        return style;
+    }
+
+    private string GetDayNumberStyle(DateTime day)
+    {
+        var style = "font-weight:bold;";
+        if (day.Date == DateTime.Today) style += "color:var(--mud-palette-primary);";
+        return style;
+    }
+
+    private static string GetColorHex(Color color) => color switch
+    {
+        Color.Primary => "#594AE2",
+        Color.Secondary => "#ff4081",
+        Color.Info => "#2196f3",
+        Color.Success => "#00c853",
+        Color.Warning => "#ff9800",
+        Color.Error => "#f44336",
+        _ => "#757575",
+    };
+
+    public class CalEvent
+    {
+        public DateTime Date { get; set; }
+        public DateTime? Time { get; set; }
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string EventType { get; set; } = "";
+        public Color ChipColor { get; set; }
+        public string Icon { get; set; } = Icons.Material.Filled.Event;
+    }
+}

@@ -1,0 +1,83 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+
+<EditForm Model="@record" OnValidSubmit="@OnSubmit">
+    <DataAnnotationsValidator />
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Log Communication</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudSelect @bind-Value="record.Type" Label="Type" For="@(() => record.Type)">
+                <MudSelectItem Value="@("Email")">Email</MudSelectItem>
+                <MudSelectItem Value="@("Call")">Call</MudSelectItem>
+                <MudSelectItem Value="@("Meeting")">Meeting</MudSelectItem>
+                <MudSelectItem Value="@("Note")">Note</MudSelectItem>
+                <MudSelectItem Value="@("SMS")">SMS</MudSelectItem>
+                <MudSelectItem Value="@("VideoCall")">Video Call</MudSelectItem>
+                <MudSelectItem Value="@("InPerson")">In Person</MudSelectItem>
+                <MudSelectItem Value="@("SocialMedia")">Social Media</MudSelectItem>
+            </MudSelect>
+            <MudSelect @bind-Value="record.Direction" Label="Direction" For="@(() => record.Direction)">
+                <MudSelectItem Value="@("Outbound")">Outbound</MudSelectItem>
+                <MudSelectItem Value="@("Inbound")">Inbound</MudSelectItem>
+            </MudSelect>
+            <MudTextField @bind-Value="record.Subject" For="@(() => record.Subject)" Label="Subject" />
+            <MudTextField @bind-Value="record.Body" For="@(() => record.Body)" Label="Body" Lines="4" />
+            <MudSelect @bind-Value="record.Status" Label="Status" For="@(() => record.Status)">
+                <MudSelectItem Value="@("Completed")">Completed</MudSelectItem>
+                <MudSelectItem Value="@("Pending")">Pending</MudSelectItem>
+                <MudSelectItem Value="@("Scheduled")">Scheduled</MudSelectItem>
+                <MudSelectItem Value="@("Cancelled")">Cancelled</MudSelectItem>
+            </MudSelect>
+            <MudNumericField @bind-Value="record.ContactId" For="@(() => record.ContactId)" Label="Contact Id" />
+            <MudNumericField @bind-Value="record.CustomerId" For="@(() => record.CustomerId)" Label="Customer Id" />
+            <MudNumericField @bind-Value="record.LeadId" For="@(() => record.LeadId)" Label="Lead Id" />
+            <MudNumericField @bind-Value="record.OpportunityId" For="@(() => record.OpportunityId)" Label="Opportunity Id" />
+            <MudNumericField @bind-Value="record.SupportCaseId" For="@(() => record.SupportCaseId)" Label="Support Case Id" />
+            <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.CommunicationDate" For="@(() => record.CommunicationDate)" Label="Date" />
+            <MudNumericField @bind-Value="record.DurationMinutes" For="@(() => record.DurationMinutes)" Label="Duration (minutes)" />
+            <MudTextField @bind-Value="record.Outcome" For="@(() => record.Outcome)" Label="Outcome" />
+            <MudCheckBox @bind-Value="record.FollowUpRequired" For="@(() => record.FollowUpRequired)" Label="Follow-up Required" />
+            @if (record.FollowUpRequired)
+            {
+                <MudTextField Format="s" InputType="InputType.DateTimeLocal" @bind-Value="record.FollowUpDate" For="@(() => record.FollowUpDate)" Label="Follow-up Date" />
+            }
+            <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" Lines="3" />
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Add</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance? MudDialog { get; set; }
+
+    private Communication record = new()
+    {
+        CommunicationDate = DateTime.Now,
+        Status = "Completed",
+        Direction = "Outbound"
+    };
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async void OnSubmit()
+    {
+        try
+        {
+            await AppService.InsertCommunicationAsync(record);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

@@ -1,0 +1,136 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+
+<MudDivider Class="my-3" />
+<MudText Typo="Typo.h6" Class="mb-2">Attachments</MudText>
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
+    <MudFileUpload T="IBrowserFile" FilesChanged="OnFileSelected" Accept="*/*">
+        <ActivatorContent>
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.AttachFile" Size="Size.Small">
+                Attach File
+            </MudButton>
+        </ActivatorContent>
+    </MudFileUpload>
+    @if (isUploading)
+    {
+        <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+    }
+</MudStack>
+
+@if (attachments != null && attachments.Count > 0)
+{
+    <MudList T="Attachment" Dense="true">
+        @foreach (var att in attachments)
+        {
+            <MudListItem T="Attachment">
+                <MudStack Row="true" AlignItems="AlignItems.Center">
+                    <MudIcon Icon="@GetFileIcon(att.ContentType)" Size="Size.Small" />
+                    <MudLink Href="@GetAbsoluteUri(att.FilePath ?? "")" Target="_blank">@att.FileName</MudLink>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">(@FormatFileSize(att.FileSize))</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@att.UploadedDate.ToString("MMM dd, yyyy")</MudText>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="() => DeleteAttachment(att)" />
+                </MudStack>
+            </MudListItem>
+        }
+    </MudList>
+}
+else if (attachments != null)
+{
+    <MudText Typo="Typo.body2" Color="Color.Secondary">No attachments</MudText>
+}
+
+@code {
+    [Parameter]
+    public string EntityType { get; set; } = "";
+
+    [Parameter]
+    public long EntityId { get; set; }
+
+    private List<Attachment>? attachments;
+    private bool isUploading;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (EntityId > 0)
+        {
+            await LoadAttachments();
+        }
+    }
+
+    private async Task LoadAttachments()
+    {
+        try
+        {
+            attachments = await AppService.GetAttachmentsByEntityAsync(EntityType, EntityId);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async Task OnFileSelected(IBrowserFile file)
+    {
+        if (EntityId <= 0) return;
+
+        isUploading = true;
+        StateHasChanged();
+
+        try
+        {
+            await AppService.UploadAttachmentAsync(file, EntityType, EntityId);
+            await LoadAttachments();
+            Snackbar.Add("File uploaded successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            isUploading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteAttachment(Attachment att)
+    {
+        try
+        {
+            await AppService.DeleteAttachmentAsync(att.Id!.Value);
+            attachments?.Remove(att);
+            Snackbar.Add("Attachment deleted", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/")) return uri;
+        var baseUri = HttpClient.BaseAddress;
+        if (baseUri == null) return uri;
+        return new Uri(baseUri, uri).ToString();
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024} KB";
+        return $"{bytes / (1024 * 1024)} MB";
+    }
+
+    private string GetFileIcon(string? contentType) => contentType switch
+    {
+        string ct when ct.StartsWith("image/") => Icons.Material.Filled.Image,
+        string ct when ct.Contains("pdf") => Icons.Material.Filled.PictureAsPdf,
+        string ct when ct.Contains("spreadsheet") || ct.Contains("excel") => Icons.Material.Filled.TableChart,
+        string ct when ct.Contains("document") || ct.Contains("word") => Icons.Material.Filled.Description,
+        _ => Icons.Material.Filled.InsertDriveFile,
+    };
+}

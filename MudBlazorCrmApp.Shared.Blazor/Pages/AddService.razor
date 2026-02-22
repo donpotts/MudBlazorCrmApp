@@ -44,7 +44,7 @@
     IMudDialogInstance? MudDialog { get; set; }
 
     private ServiceCategory[]? serviceCategoryArray;
-    private IEnumerable<long?>? serviceCategoryValues;
+    private IReadOnlyCollection<long?>? serviceCategoryValues;
     private Service record = new();
 
     private string GetAbsoluteUri(string uri)

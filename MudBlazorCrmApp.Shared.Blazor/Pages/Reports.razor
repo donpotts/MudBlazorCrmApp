@@ -100,17 +100,69 @@
     </MudPaper>
 }
 
-@if (activityData != null && selectedReport == "activities")
+@if (activityReport != null && selectedReport == "activities")
 {
     <MudPaper Class="pa-4 mb-4" Elevation="3">
         <MudText Typo="Typo.h6" Class="mb-3">Activity Summary</MudText>
         <MudGrid>
             <MudItem xs="12" md="4">
-                <MudText Typo="Typo.h4" Color="Color.Primary">@activityTotal</MudText>
+                <MudText Typo="Typo.h4" Color="Color.Primary">@activityReport.Total</MudText>
                 <MudText Typo="Typo.body2">Total Activities</MudText>
             </MudItem>
         </MudGrid>
     </MudPaper>
+
+    @if (activityReport.ByType?.Count > 0)
+    {
+        <MudPaper Class="pa-4 mb-4" Elevation="3">
+            <MudText Typo="Typo.h6" Class="mb-3">Activities by Type</MudText>
+            <MudSimpleTable Dense="true" Bordered="true" Striped="true">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Count</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in activityReport.ByType)
+                    {
+                        <tr>
+                            <td>@row.Type</td>
+                            <td>@row.Count</td>
+                            <td>@(activityReport.Total > 0 ? Math.Round((double)row.Count / activityReport.Total * 100, 1) : 0)%</td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </MudPaper>
+    }
+
+    @if (activityReport.ByStatus?.Count > 0)
+    {
+        <MudPaper Class="pa-4 mb-4" Elevation="3">
+            <MudText Typo="Typo.h6" Class="mb-3">Activities by Status</MudText>
+            <MudSimpleTable Dense="true" Bordered="true" Striped="true">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Count</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in activityReport.ByStatus)
+                    {
+                        <tr>
+                            <td>@row.Status</td>
+                            <td>@row.Count</td>
+                            <td>@(activityReport.Total > 0 ? Math.Round((double)row.Count / activityReport.Total * 100, 1) : 0)%</td>
+                        </tr>
+                    }
+                </tbody>
+            </MudSimpleTable>
+        </MudPaper>
+    }
 }
 
 @code {
@@ -121,8 +173,7 @@
 
     private List<SalesOverTimeDto>? salesData;
     private List<PipelineStageDto>? pipelineData;
-    private int activityTotal;
-    private object? activityData;
+    private ActivityReportDto? activityReport;
 
     private async Task RunReport()
     {
@@ -140,10 +191,7 @@
                     pipelineData = await AppService.GetPipelineReportAsync();
                     break;
                 case "activities":
-                    // Simple activity count for now
-                    var activities = await AppService.ListActivityODataAsync(null, null, null, null, true, null);
-                    activityTotal = activities?.Count ?? 0;
-                    activityData = new { };
+                    activityReport = await AppService.GetActivityReportAsync(fromDate, toDate);
                     break;
             }
         }

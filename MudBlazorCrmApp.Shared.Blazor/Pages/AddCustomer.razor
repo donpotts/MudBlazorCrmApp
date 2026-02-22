@@ -52,7 +52,7 @@
 
     private Address[]? addressArray;
     private Contact[]? contactArray;
-    private IEnumerable<long?>? contactValues;
+    private IReadOnlyCollection<long?>? contactValues;
     private Customer record = new();
 
     private string GetAbsoluteUri(string uri)

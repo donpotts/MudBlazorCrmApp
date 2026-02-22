@@ -1,0 +1,247 @@
+@page "/communication"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+@attribute [Authorize]
+
+<PageTitle>Communications</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Communications</MudText>
+</div>
+
+<MudStack AlignItems="AlignItems.End" Class="mb-3">
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Log Communication</MudButton>
+</MudStack>
+
+<MudDataGrid T="Communication" @ref="grid" ServerData="@ServerReload" Filterable="true">
+    <ToolBarContent>
+         <MudText Typo="Typo.h6">Communications</MudText>
+         <MudSpacer />
+         <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
+         <MudButton Color="Color.Primary" OnClick="ExportAllToCSV">Export</MudButton>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x!.Id" Title="Id" />
+        <PropertyColumn Property="x => x!.Type" Title="Type" />
+        <PropertyColumn Property="x => x!.Direction" Title="Direction" />
+        <PropertyColumn Property="x => x!.Subject" Title="Subject" />
+        <PropertyColumn Property="x => x!.Status" Title="Status" />
+        <PropertyColumn Property="x => x!.Contact != null ? x.Contact.Name : null" Title="Contact" />
+        <PropertyColumn Property="x => x!.Customer != null ? x.Customer.Name : null" Title="Customer" />
+        <PropertyColumn Property="x => x!.CommunicationDate" Title="Date" />
+        <PropertyColumn Property="x => x!.DurationMinutes" Title="Duration (min)" />
+        <PropertyColumn Property="x => x!.FollowUpRequired" Title="Follow-up" />
+        <PropertyColumn Property="x => x!.FollowUpDate" Title="Follow-up Date" />
+        <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudStack Row="true">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Communication" />
+    </PagerContent>
+</MudDataGrid>
+
+<script>
+    window.downloadFromBase64 = function (base64, filename) {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        var byteCharacters = atob(base64);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray], { type: "application/octet-stream" });
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+</script>
+
+@code {
+    private MudDataGrid<Communication>? grid;
+    private string? _searchString;
+
+    private string GetAbsoluteUri(string uri)
+    {
+        if (!uri.StartsWith("/"))
+        {
+            return uri;
+        }
+
+        var baseUri = HttpClient.BaseAddress;
+
+        if (baseUri == null)
+        {
+            throw new Exception("Unable to determine base address");
+        }
+
+        Uri absolute = new(baseUri, uri);
+
+        return absolute.ToString();
+    }
+
+    private async Task<GridData<Communication>> ServerReload(GridState<Communication> state, CancellationToken cancellationToken)
+    {
+        var top = state.PageSize;
+        var skip = state.Page * state.PageSize;
+        var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
+        var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
+
+        AppService.ODataResult<Communication>? result = null;
+
+        try
+        {
+            if (_searchString?.Length > 0)
+            {
+               bool isNumeric = double.TryParse(_searchString, out _);
+
+               if (isNumeric)
+               {
+                   filter = $"Id eq {_searchString} or ContactId eq {_searchString} or CustomerId eq {_searchString}";
+               }
+               else
+               {
+                   filter = $"contains(tolower(Type), '{_searchString}') or contains(tolower(Subject), '{_searchString}') or contains(tolower(Direction), '{_searchString}') or contains(tolower(Status), '{_searchString}') or contains(tolower(Outcome), '{_searchString}') or contains(tolower(Notes), '{_searchString}')";
+               }
+            }
+            result = await AppService.ListCommunicationODataAsync(top, skip, orderby, filter, true, "Contact,Customer");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return new() { TotalItems = result?.Count ?? 0, Items = result?.Value ?? Enumerable.Empty<Communication>() };
+    }
+
+    private async void OnAdd()
+    {
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var dialogRef = await DialogService.ShowAsync<AddCommunication>("Log Communication", dialogOptions);
+        var result = await dialogRef.Result;
+
+        if (result is { Canceled: false })
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnEdit(Communication record)
+    {
+        DialogParameters<UpdateCommunication> dialogParams = new() { { x => x.Id, record.Id } };
+        DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
+
+        var dialogRef = await DialogService.ShowAsync<UpdateCommunication>("Update Communication", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
+
+        if (result is { Canceled: false })
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnDelete(Communication record)
+    {
+        var result = await DialogService.ShowMessageBoxAsync(
+            "Warning",
+            "Are you sure you want to delete this record?",
+            "Delete",
+            "Cancel");
+
+        if (result.GetValueOrDefault(false))
+        {
+            try
+            {
+                await AppService.DeleteCommunicationAsync(record.Id);
+                await (grid?.ReloadServerData() ?? Task.CompletedTask);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+
+    private void SearchChanged(string Value)
+    {
+        if (Value.EndsWith("."))
+        {
+            return;
+        }
+        _searchString = Value.ToString().ToLower();
+        try
+        {
+            if (_searchString.Length > 18)
+            {
+                DateTimeOffset dateTime = DateTime.Parse(_searchString);
+                _searchString = dateTime.ToString("yyyy-MM-ddTHH:mm:ssK");
+            }
+        }
+        catch
+        {
+            return;
+        }
+        grid?.ReloadServerData();
+    }
+
+    private async Task ExportAllToCSV()
+    {
+        AppService.ODataResult<Communication>? result = null;
+
+        try
+        {
+            result = await AppService.ListCommunicationODataAsync(null, null, null, null, true, null);
+
+            if (result != null && result?.Value != null)
+            {
+                var ar = result?.Value.ToList().Select(x => new
+                {
+                    x.Id,
+                    x.Type,
+                    x.Direction,
+                    x.Subject,
+                    x.Status,
+                    x.ContactId,
+                    x.CustomerId,
+                    x.LeadId,
+                    x.OpportunityId,
+                    x.CommunicationDate,
+                    x.DurationMinutes,
+                    x.Outcome,
+                    x.FollowUpRequired,
+                    x.FollowUpDate,
+                    x.Notes,
+                    x.CreatedDate,
+                    x.ModifiedDate
+                });
+
+                using var memoryStream = new MemoryStream();
+                using (var writer = new StreamWriter(memoryStream))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(ar);
+                }
+                var byteArray = memoryStream.ToArray();
+                var base64 = Convert.ToBase64String(byteArray);
+                await JSRuntime.InvokeVoidAsync("downloadFromBase64", base64, "Communication_"+ System.DateTime.Now.ToString("yyyyMMddHHmmss") +".csv");
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

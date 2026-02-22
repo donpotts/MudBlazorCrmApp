@@ -1,32 +1,33 @@
 [
   {
     "Id": 401,
+    "Company": "Cybernetics Corp",
+    "Industry": "Technology",
     "ContactId": 801,
     "Source": "Website",
     "Status": "Qualified",
-    "PotentialValue": 15000,
-    "OpportunityId": 603,
+    "PotentialValue": 125000,
+    "OpportunityId": 601,
     "AddressId": 901,
-    "Photo": "lead_profile_pic.jpg",
-    "Notes": ""
+    "Notes": "Filled out contact form on pricing page"
   },
   {
     "Id": 402,
+    "Company": "RoboTech Inc.",
+    "Industry": "Robotics",
     "ContactId": 802,
-    "Source": "Tech Expo",
-    "Status": "Evaluating",
-    "PotentialValue": 25000.00,
+    "Source": "Trade Show",
+    "Status": "Converted",
+    "PotentialValue": 87000,
     "OpportunityId": 602,
     "AddressId": 902,
-    "Photo": "tech_expo_booth.jpg",
-    "Notes": ""
+    "Notes": "Met at CES 2026, very interested"
   },
   {
     "Id": 403,
     "Company": "StartUp Ventures",
     "Title": "Founder",
     "Industry": "Technology",
-    "ContactId": null,
     "Source": "Social Media",
     "Status": "New",
     "PotentialValue": 5000,
@@ -35,20 +36,126 @@
   },
   {
     "Id": 404,
+    "Company": "MediaPro Studios",
+    "Industry": "Media",
     "Source": "Referral",
     "Status": "Qualified",
-    "PotentialValue": 45000,
-    "OpportunityId": 607,
-    "Notes": "Referred by existing customer FinServ Group"
+    "PotentialValue": 38000,
+    "OpportunityId": 612,
+    "Notes": "Referred by existing customer FinanceFirst"
   },
   {
     "Id": 405,
+    "Company": "TechStart Inc",
+    "Industry": "Technology",
     "Source": "Cold Call",
     "Status": "Contacted",
-    "PotentialValue": 5000.00,
-    "OpportunityId": 603,
-    "AddressId": 903,
-    "Photo": "social_media_ad.jpg",
-    "Notes": ""
+    "PotentialValue": 15000,
+    "OpportunityId": 613,
+    "Notes": "Showed interest during cold call outreach"
+  },
+  {
+    "Id": 406,
+    "Company": "LogiTrans Freight",
+    "Industry": "Logistics",
+    "ContactId": 811,
+    "Source": "Webinar",
+    "Status": "Qualified",
+    "PotentialValue": 110000,
+    "OpportunityId": 611,
+    "Notes": "Attended product demo webinar, requested trial"
+  },
+  {
+    "Id": 407,
+    "Company": "NovaChem Labs",
+    "Industry": "Chemicals",
+    "Source": "Website",
+    "Status": "New",
+    "PotentialValue": 22000,
+    "Notes": "Downloaded whitepaper on automation"
+  },
+  {
+    "Id": 408,
+    "Company": "Global Solutions Inc",
+    "Industry": "Consulting",
+    "ContactId": 805,
+    "Source": "Partner",
+    "Status": "Converted",
+    "PotentialValue": 175000,
+    "OpportunityId": 605,
+    "Notes": "Introduced by integration partner"
+  },
+  {
+    "Id": 409,
+    "Company": "RetailMax Stores",
+    "Industry": "Retail",
+    "ContactId": 808,
+    "Source": "Trade Show",
+    "Status": "Contacted",
+    "PotentialValue": 68000,
+    "OpportunityId": 608,
+    "Notes": "Scanned badge at booth, follow-up sent"
+  },
+  {
+    "Id": 410,
+    "Company": "FinanceFirst Bank",
+    "Industry": "Finance",
+    "ContactId": 806,
+    "Source": "Referral",
+    "Status": "Won",
+    "PotentialValue": 95000,
+    "OpportunityId": 606,
+    "Notes": "Referred by Cybernetics Corp, closed deal"
+  },
+  {
+    "Id": 411,
+    "Company": "DataWave Analytics",
+    "Industry": "Analytics",
+    "Source": "Social Media",
+    "Status": "New",
+    "PotentialValue": 8000,
+    "Notes": "Responded to Twitter/X campaign"
+  },
+  {
+    "Id": 412,
+    "Company": "HealthCare Plus",
+    "Industry": "Healthcare",
+    "ContactId": 807,
+    "Source": "Website",
+    "Status": "Contacted",
+    "PotentialValue": 142000,
+    "OpportunityId": 607,
+    "Notes": "Requested demo via website chatbot"
+  },
+  {
+    "Id": 413,
+    "Company": "OldTech Corp",
+    "Industry": "Manufacturing",
+    "Source": "Cold Call",
+    "Status": "Lost",
+    "PotentialValue": 30000,
+    "Notes": "Not interested at this time"
+  },
+  {
+    "Id": 414,
+    "Company": "EduTech Academy",
+    "Industry": "Education",
+    "ContactId": 809,
+    "Source": "Webinar",
+    "Status": "New",
+    "PotentialValue": 53000,
+    "OpportunityId": 609,
+    "Notes": "Registered for upcoming product launch webinar"
+  },
+  {
+    "Id": 415,
+    "Company": "GreenEnergy Solutions",
+    "Industry": "Energy",
+    "ContactId": 810,
+    "Source": "Referral",
+    "Status": "Qualified",
+    "PotentialValue": 78000,
+    "OpportunityId": 610,
+    "Notes": "Strong referral from logistics industry contact"
   }
 ]

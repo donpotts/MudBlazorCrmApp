@@ -16,7 +16,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="Activity" @ref="grid" ServerData="(new Func<GridState<Activity>, Task<GridData<Activity>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="Activity" @ref="grid" ServerData="@ServerReload" Filterable="true">
     <ToolBarContent>
          <MudText Typo="Typo.h6">Activities</MudText>
          <MudSpacer />
@@ -79,7 +79,7 @@
     private MudDataGrid<Activity>? grid;
     private string? _searchString;
 
-    private async Task<GridData<Activity>> ServerReload(GridState<Activity> state)
+    private async Task<GridData<Activity>> ServerReload(GridState<Activity> state, CancellationToken cancellationToken)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -107,8 +107,9 @@
     private async void OnAdd()
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
-        var result = await DialogService.Show<AddActivity>("Add Activity", dialogOptions).Result;
-        if (!result.Canceled)
+        var dialogRef = await DialogService.ShowAsync<AddActivity>("Add Activity", dialogOptions);
+        var result = await dialogRef.Result;
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -118,8 +119,9 @@
     {
         DialogParameters<UpdateActivity> dialogParams = new() { { x => x.Id, record.Id!.Value } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
-        var result = await DialogService.Show<UpdateActivity>("Update Activity", dialogParams, dialogOptions).Result;
-        if (!result.Canceled)
+        var dialogRef = await DialogService.ShowAsync<UpdateActivity>("Update Activity", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -127,7 +129,7 @@
 
     private async void OnDelete(Activity record)
     {
-        var result = await DialogService.ShowMessageBox("Warning", "Are you sure you want to delete this record?", "Delete", "Cancel");
+        var result = await DialogService.ShowMessageBoxAsync("Warning", "Are you sure you want to delete this record?", "Delete", "Cancel");
         if (result.GetValueOrDefault(false))
         {
             try

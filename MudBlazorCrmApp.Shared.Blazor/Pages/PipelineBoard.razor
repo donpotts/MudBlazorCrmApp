@@ -147,7 +147,8 @@
     private async void OnAddToStage(string stage)
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
-        var result = await DialogService.Show<AddOpportunity>("Add Opportunity", dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<AddOpportunity>("Add Opportunity", dialogOptions);
+        var result = await dialogRef.Result;
         if (!result.Canceled)
         {
             await LoadDataAsync();
@@ -158,7 +159,8 @@
     {
         DialogParameters<UpdateOpportunity> dialogParams = new() { { x => x.Id, item.Id } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
-        var result = await DialogService.Show<UpdateOpportunity>("Update Opportunity", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<UpdateOpportunity>("Update Opportunity", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
         if (!result.Canceled)
         {
             await LoadDataAsync();
@@ -167,7 +169,7 @@
 
     private async void OnDelete(PipelineItem item)
     {
-        var result = await DialogService.ShowMessageBox("Warning", "Are you sure you want to delete this deal?", "Delete", "Cancel");
+        var result = await DialogService.ShowMessageBoxAsync("Warning", "Are you sure you want to delete this deal?", "Delete", "Cancel");
         if (result.GetValueOrDefault(false))
         {
             try

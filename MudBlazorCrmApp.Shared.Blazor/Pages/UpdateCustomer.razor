@@ -57,6 +57,7 @@ else
                 </MudSelect>
 
                 <TagSelector EntityType="Customer" EntityId="@(record.Id ?? 0)" />
+                <EntityAttachments EntityType="Customer" EntityId="@(record.Id ?? 0)" />
                 <EntityTimeline EntityType="Customer" EntityId="@(record.Id ?? 0)" />
             </DialogContent>
             <DialogActions>
@@ -76,7 +77,7 @@ else
 
     private Address[]? addressArray;
     private Contact[]? contactArray;
-    private IEnumerable<long?>? contactValues;
+    private IReadOnlyCollection<long?>? contactValues;
     private Customer? record;
 
     private string GetAbsoluteUri(string uri)

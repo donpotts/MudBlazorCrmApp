@@ -143,7 +143,8 @@ public class CommunicationController(ApplicationDbContext ctx, ILogger<Communica
 
         if (communication != null)
         {
-            ctx.Communication.Remove(communication);
+            communication.IsDeleted = true;
+            communication.DeletedDate = DateTime.UtcNow;
             await ctx.SaveChangesAsync();
         }
 

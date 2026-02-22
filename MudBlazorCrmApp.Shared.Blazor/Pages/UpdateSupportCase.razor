@@ -73,6 +73,9 @@ else
                 }
                 <MudTextField @bind-Value="record.Notes" For="@(() => record.Notes)" Label="Notes" Lines="3" />
 
+                <TagSelector EntityType="SupportCase" EntityId="@(record.Id ?? 0)" />
+                <EntityAttachments EntityType="SupportCase" EntityId="@(record.Id ?? 0)" />
+                <EntityTimeline EntityType="SupportCase" EntityId="@(record.Id ?? 0)" />
             </DialogContent>
             <DialogActions>
                 <MudButton OnClick="OnCancel">Cancel</MudButton>

@@ -1,0 +1,218 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using MudBlazorCrmApp.Data;
+using MudBlazorCrmApp.Shared.Models;
+
+namespace MudBlazorCrmApp.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize]
+[EnableRateLimiting("Fixed")]
+public class DashboardController(ApplicationDbContext _ctx) : ControllerBase
+{
+    private readonly ApplicationDbContext ctx = _ctx;
+
+    [HttpGet("kpis")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<KpiSummaryDto>> GetKpis()
+    {
+        var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+
+        var newLeads = await ctx.Lead.CountAsync(l => l.CreatedDate >= thirtyDaysAgo);
+        var totalRevenue = await ctx.Sale.Where(s => s.SaleDate >= thirtyDaysAgo).SumAsync(s => (double)(s.TotalAmount ?? 0));
+        var totalLeads = await ctx.Lead.CountAsync();
+        var convertedLeads = await ctx.Lead.CountAsync(l => l.Status == "Converted" || l.Status == "Won");
+        var pipelineValue = await ctx.Opportunity.Where(o => o.Stage != "Closed Won" && o.Stage != "Closed Lost").SumAsync(o => (double)(o.Value ?? 0));
+        var dealsClosed = await ctx.Opportunity.CountAsync(o => o.Stage == "Closed Won" && o.CreatedDate >= thirtyDaysAgo);
+        var closedValues = await ctx.Opportunity.Where(o => o.Stage == "Closed Won").Select(o => (double)(o.Value ?? 0)).ToListAsync();
+        var avgDealSize = closedValues.Count > 0 ? closedValues.Average() : 0;
+        var totalCustomers = await ctx.Customer.CountAsync();
+        var openSupportCases = await ctx.SupportCase.CountAsync(s => s.Status != "Closed" && s.Status != "Resolved");
+
+        return Ok(new KpiSummaryDto
+        {
+            NewLeads = newLeads,
+            TotalRevenue = (decimal)totalRevenue,
+            ConversionRate = totalLeads > 0 ? Math.Round((double)convertedLeads / totalLeads * 100, 1) : 0,
+            PipelineValue = (decimal)pipelineValue,
+            DealsClosed = dealsClosed,
+            AvgDealSize = (decimal)avgDealSize,
+            TotalCustomers = totalCustomers,
+            OpenSupportCases = openSupportCases
+        });
+    }
+
+    [HttpGet("sales-over-time")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<SalesOverTimeDto>>> GetSalesOverTime()
+    {
+        var twelveMonthsAgo = DateTime.UtcNow.AddMonths(-12);
+
+        var sales = await ctx.Sale
+            .Where(s => s.SaleDate >= twelveMonthsAgo)
+            .ToListAsync();
+
+        var grouped = sales
+            .GroupBy(s => s.SaleDate?.ToString("yyyy-MM") ?? "Unknown")
+            .Select(g => new SalesOverTimeDto
+            {
+                Month = g.Key,
+                Total = g.Sum(s => s.TotalAmount ?? 0),
+                Count = g.Count()
+            })
+            .OrderBy(x => x.Month)
+            .ToList();
+
+        return Ok(grouped);
+    }
+
+    [HttpGet("lead-sources")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<LeadSourceDto>>> GetLeadSources()
+    {
+        var sources = await ctx.Lead
+            .GroupBy(l => l.Source ?? "Unknown")
+            .Select(g => new LeadSourceDto
+            {
+                Source = g.Key,
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.Count)
+            .ToListAsync();
+
+        return Ok(sources);
+    }
+
+    [HttpGet("pipeline-by-stage")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<PipelineStageDto>>> GetPipelineByStage()
+    {
+        var stages = await ctx.Opportunity
+            .GroupBy(o => o.Stage ?? "Unknown")
+            .Select(g => new PipelineStageDto
+            {
+                Stage = g.Key,
+                Count = g.Count(),
+                TotalValue = g.Sum(o => o.Value ?? 0)
+            })
+            .OrderBy(x => x.Stage)
+            .ToListAsync();
+
+        return Ok(stages);
+    }
+
+    [HttpGet("recent-activity")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<RecentActivityDto>>> GetRecentActivity()
+    {
+        var activities = await ctx.Activity
+            .Include(a => a.Customer)
+            .Include(a => a.Contact)
+            .OrderByDescending(a => a.ActivityDate)
+            .Take(10)
+            .Select(a => new RecentActivityDto
+            {
+                Id = a.Id,
+                Type = a.Type,
+                Subject = a.Subject,
+                EntityName = a.Customer != null ? a.Customer.Name : (a.Contact != null ? a.Contact.Name : null),
+                Date = a.ActivityDate
+            })
+            .ToListAsync();
+
+        return Ok(activities);
+    }
+
+    [HttpGet("top-opportunities")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<TopOpportunityDto>>> GetTopOpportunities()
+    {
+        var opportunities = await ctx.Opportunity
+            .Include(o => o.Customer)
+            .Where(o => o.Stage != "Closed Won" && o.Stage != "Closed Lost")
+            .OrderByDescending(o => o.Value)
+            .Take(5)
+            .Select(o => new TopOpportunityDto
+            {
+                Id = o.Id,
+                Name = o.Name,
+                Value = o.Value,
+                Stage = o.Stage,
+                Probability = o.Probability,
+                CustomerName = o.Customer != null ? o.Customer.Name : null
+            })
+            .ToListAsync();
+
+        return Ok(opportunities);
+    }
+
+    [HttpGet("timeline/{entityType}/{entityId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<TimelineEventDto>>> GetTimeline(string entityType, long entityId)
+    {
+        var events = new List<TimelineEventDto>();
+
+        // Activities
+        IQueryable<Activity> activityQuery = ctx.Activity;
+        activityQuery = entityType.ToLower() switch
+        {
+            "customer" => activityQuery.Where(a => a.CustomerId == entityId),
+            "contact" => activityQuery.Where(a => a.ContactId == entityId),
+            "lead" => activityQuery.Where(a => a.LeadId == entityId),
+            "opportunity" => activityQuery.Where(a => a.OpportunityId == entityId),
+            _ => activityQuery.Where(a => false)
+        };
+
+        var activities = await activityQuery.OrderByDescending(a => a.ActivityDate).Take(50).ToListAsync();
+        events.AddRange(activities.Select(a => new TimelineEventDto
+        {
+            Id = a.Id,
+            EventType = a.Type,
+            Title = a.Subject,
+            Description = a.Description,
+            Date = a.ActivityDate,
+            Icon = a.Type switch
+            {
+                "Call" => "phone",
+                "Email" => "email",
+                "Meeting" => "groups",
+                "Note" => "note",
+                "Task" => "task",
+                _ => "event"
+            }
+        }));
+
+        // Sales (for customer)
+        if (entityType.ToLower() == "customer")
+        {
+            var sales = await ctx.Sale.Where(s => s.CustomerId == entityId).OrderByDescending(s => s.SaleDate).Take(20).ToListAsync();
+            events.AddRange(sales.Select(s => new TimelineEventDto
+            {
+                Id = s.Id,
+                EventType = "Sale",
+                Title = $"Sale - ${s.TotalAmount:N2}",
+                Description = s.Notes,
+                Date = s.SaleDate,
+                Icon = "point_of_sale"
+            }));
+        }
+
+        // Support Cases (for customer)
+        if (entityType.ToLower() == "customer")
+        {
+            var cases = await ctx.SupportCase.Where(s => s.CustomerId == entityId).OrderByDescending(s => s.CreatedDateTime).Take(20).ToListAsync();
+            events.AddRange(cases.Select(s => new TimelineEventDto
+            {
+                Id = s.Id,
+                EventType = "SupportCase",
+                Title = $"Support Case - {s.Status}",
+                Description = s.Description,
+                Date = s.CreatedDateTime,
+                Icon = "support"
+            }));
+        }
+
+        return Ok(events.OrderByDescending(e => e.Date).ToL

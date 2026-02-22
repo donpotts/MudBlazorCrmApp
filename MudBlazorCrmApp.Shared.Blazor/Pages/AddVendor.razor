@@ -59,9 +59,9 @@
 
     private Address[]? addressArray;
     private Product[]? productArray;
-    private IEnumerable<long?>? productValues;
+    private IReadOnlyCollection<long?>? productValues;
     private Service[]? serviceArray;
-    private IEnumerable<long?>? serviceValues;
+    private IReadOnlyCollection<long?>? serviceValues;
     private Vendor record = new();
 
     private string GetAbsoluteUri(string uri)

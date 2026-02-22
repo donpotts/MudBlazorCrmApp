@@ -43,7 +43,7 @@
     </MudGrid>
 </MudPaper>
 
-<MudDataGrid T="AuditLog" @ref="grid" ServerData="(new Func<GridState<AuditLog>, Task<GridData<AuditLog>>>(ServerReload))" Filterable="true" Dense="true">
+<MudDataGrid T="AuditLog" @ref="grid" ServerData="@ServerReload" Filterable="true" Dense="true">
     <ToolBarContent>
          <MudText Typo="Typo.h6">Audit Trail</MudText>
          <MudSpacer />
@@ -134,7 +134,7 @@
         _ => Color.Default
     };
 
-    private async Task<GridData<AuditLog>> ServerReload(GridState<AuditLog> state)
+    private async Task<GridData<AuditLog>> ServerReload(GridState<AuditLog> state, CancellationToken cancellationToken)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -192,7 +192,8 @@
         DialogParameters<ViewAuditLogDetails> dialogParams = new() { { x => x.AuditLogRecord, record } };
         DialogOptions dialogOptions = new() { FullWidth = true, MaxWidth = MaxWidth.Large, CloseOnEscapeKey = true };
 
-        await DialogService.Show<ViewAuditLogDetails>("Audit Log Details", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<ViewAuditLogDetails>("Audit Log Details", dialogParams, dialogOptions);
+        await dialogRef.Result;
     }
 
     private void OnFilterChanged()

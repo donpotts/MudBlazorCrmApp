@@ -32,12 +32,28 @@ public class Contact : IAuditableEntity, ISoftDelete
     public string? MobilePhone { get; set; }
 
     [DataMember]
+    [StringLength(200)]
+    public string? Company { get; set; }
+
+    [DataMember]
+    [StringLength(100)]
+    public string? Title { get; set; }
+
+    [DataMember]
     [StringLength(100)]
     public string? Role { get; set; }
 
     [DataMember]
     [StringLength(100)]
     public string? Department { get; set; }
+
+    [DataMember]
+    [StringLength(50)]
+    public string? PreferredContactMethod { get; set; }
+
+    [DataMember]
+    [StringLength(50)]
+    public string? Status { get; set; }
 
     [DataMember]
     public long? CustomerId { get; set; }

@@ -16,7 +16,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="Reward" @ref="grid" ServerData="(new Func<GridState<Reward>, Task<GridData<Reward>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="Reward" @ref="grid" ServerData="@ServerReload" Filterable="true">
     <ToolBarContent>
          <MudText Typo="Typo.h6">Reward</MudText>
          <MudSpacer />
@@ -88,7 +88,7 @@
         return absolute.ToString();
     }
 
-    private async Task<GridData<Reward>> ServerReload(GridState<Reward> state)
+    private async Task<GridData<Reward>> ServerReload(GridState<Reward> state, CancellationToken cancellationToken)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -131,9 +131,10 @@
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<AddReward>("Add Contact Rewards", dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<AddReward>("Add Contact Rewards", dialogOptions);
+        var result = await dialogRef.Result;
 
-        if (!result.Canceled)
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -144,9 +145,10 @@
         DialogParameters<UpdateReward> dialogParams = new() { { x => x.Id, record.Id!.Value } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<UpdateReward>("Update Contact Rewards", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<UpdateReward>("Update Contact Rewards", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
 
-        if (!result.Canceled)
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -154,7 +156,7 @@
 
     private async void OnDelete(Reward record)
     {
-        var result = await DialogService.ShowMessageBox(
+        var result = await DialogService.ShowMessageBoxAsync(
             "Warning",
             "Are you sure you want to delete this record?",
             "Delete",

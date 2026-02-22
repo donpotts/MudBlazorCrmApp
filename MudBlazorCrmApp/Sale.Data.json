@@ -1,10 +1,9 @@
 [
   {
-    "Id": 1,
+    "Id": 701,
     "ProductId": 101,
     "ServiceId": 201,
     "CustomerId": 301,
-    "OpportunityId": null,
     "Quantity": 10,
     "TotalAmount": 24999.90,
     "SaleDate": "2025-04-01T00:00:00",
@@ -12,80 +11,104 @@
   },
   {
     "Id": 702,
-    "ProductId": "102",
-    "ServiceId": "NULL",
+    "ProductId": 102,
     "CustomerId": 302,
-    "OpportunityId": null,
     "Quantity": 5,
     "TotalAmount": 24999.95,
-    "SaleDate": "2024-06-15T00:00:00",
-    "ReceiptPhoto": "sale_receipt_702.jpg",
-    "Notes": ""
+    "SaleDate": "2025-05-15T00:00:00",
+    "Notes": "Annual license renewal"
   },
   {
     "Id": 703,
-    "ProductId": "NULL",
-    "ServiceId": "202",
+    "ServiceId": 202,
     "CustomerId": 303,
     "Quantity": 1,
-    "TotalAmount": 199.99,
-    "SaleDate": "2024-06-20T00:00:00",
-    "ReceiptPhoto": "sale_receipt_703.jpg",
-    "Notes": ""
+    "TotalAmount": 8500.00,
+    "SaleDate": "2025-06-20T00:00:00",
+    "Notes": "Consulting engagement"
   },
   {
     "Id": 704,
-    "ProductId": "103",
-    "ServiceId": "NULL",
+    "ProductId": 103,
     "CustomerId": 304,
     "Quantity": 3,
-    "TotalAmount": 2399.97,
-    "SaleDate": "2024-07-05T00:00:00",
-    "ReceiptPhoto": "sale_receipt_704.jpg",
-    "Notes": ""
+    "TotalAmount": 12400.00,
+    "SaleDate": "2025-07-05T00:00:00",
+    "Notes": "Hardware upgrade"
   },
   {
     "Id": 705,
-    "ProductId": "104",
-    "ServiceId": "204",
+    "ProductId": 104,
+    "ServiceId": 204,
     "CustomerId": 305,
     "Quantity": 7,
-    "TotalAmount": 9099.93,
-    "SaleDate": "2024-07-12T00:00:00",
-    "ReceiptPhoto": "sale_receipt_705.jpg",
-    "Notes": ""
+    "TotalAmount": 35200.00,
+    "SaleDate": "2025-08-12T00:00:00",
+    "Notes": "Product and implementation services"
   },
   {
     "Id": 706,
-    "ProductId": "105",
-    "ServiceId": "NULL",
+    "ProductId": 105,
     "CustomerId": 306,
     "Quantity": 2,
     "TotalAmount": 6999.98,
-    "SaleDate": "2024-07-19T00:00:00",
-    "ReceiptPhoto": "sale_receipt_706.jpg",
-    "Notes": ""
+    "SaleDate": "2025-09-19T00:00:00",
+    "Notes": "Add-on modules"
   },
   {
     "Id": 707,
-    "ProductId": "106",
-    "ServiceId": "205",
+    "ProductId": 106,
+    "ServiceId": 205,
     "CustomerId": 307,
     "Quantity": 4,
-    "TotalAmount": 1199.96,
-    "SaleDate": "2024-07-26T00:00:00",
-    "ReceiptPhoto": "sale_receipt_707.jpg",
-    "Notes": ""
+    "TotalAmount": 18750.00,
+    "SaleDate": "2025-10-26T00:00:00",
+    "Notes": "Year-end expansion"
   },
   {
     "Id": 708,
-    "ProductId": "107",
-    "ServiceId": "NULL",
+    "ProductId": 107,
     "CustomerId": 308,
     "Quantity": 1,
-    "TotalAmount": 10000.00,
-    "SaleDate": "2024-08-02T00:00:00",
-    "ReceiptPhoto": "sale_receipt_708.jpg",
-    "Notes": ""
+    "TotalAmount": 45000.00,
+    "SaleDate": "2025-11-02T00:00:00",
+    "Notes": "Enterprise license"
+  },
+  {
+    "Id": 709,
+    "ServiceId": 201,
+    "CustomerId": 309,
+    "Quantity": 1,
+    "TotalAmount": 15000.00,
+    "SaleDate": "2025-12-10T00:00:00",
+    "Notes": "Annual support contract"
+  },
+  {
+    "Id": 710,
+    "ProductId": 101,
+    "CustomerId": 310,
+    "Quantity": 15,
+    "TotalAmount": 37500.00,
+    "SaleDate": "2026-01-08T00:00:00",
+    "Notes": "New year bulk purchase"
+  },
+  {
+    "Id": 711,
+    "ProductId": 102,
+    "ServiceId": 202,
+    "CustomerId": 311,
+    "Quantity": 3,
+    "TotalAmount": 28500.00,
+    "SaleDate": "2026-01-22T00:00:00",
+    "Notes": "Platform upgrade and training"
+  },
+  {
+    "Id": 712,
+    "ProductId": 103,
+    "CustomerId": 312,
+    "Quantity": 2,
+    "TotalAmount": 9800.00,
+    "SaleDate": "2026-02-05T00:00:00",
+    "Notes": "Compliance module add-on"
   }
 ]

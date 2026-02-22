@@ -1,0 +1,96 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+
+@if (record == null)
+{
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">Update Email Template</MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudText>Loading...</MudText>
+        </DialogContent>
+        <DialogActions>
+            <MudButton OnClick="OnCancel">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Disabled="true">Update</MudButton>
+        </DialogActions>
+    </MudDialog>
+}
+else
+{
+    <EditForm Model="@record" OnValidSubmit="@OnSubmit">
+        <DataAnnotationsValidator />
+        <MudDialog>
+            <TitleContent>
+                <MudText Typo="Typo.h6">Update Email Template</MudText>
+            </TitleContent>
+            <DialogContent>
+                <MudNumericField @bind-Value="record.Id" For="@(() => record.Id)" Label="Id" ReadOnly="true" />
+                <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Template Name" Required="true" />
+                <MudSelect @bind-Value="record.Category" Label="Category" For="@(() => record.Category)">
+                    <MudSelectItem Value="@("Onboarding")">Onboarding</MudSelectItem>
+                    <MudSelectItem Value="@("Sales")">Sales</MudSelectItem>
+                    <MudSelectItem Value="@("Support")">Support</MudSelectItem>
+                    <MudSelectItem Value="@("Communication")">Communication</MudSelectItem>
+                    <MudSelectItem Value="@("Account Management")">Account Management</MudSelectItem>
+                    <MudSelectItem Value="@("Marketing")">Marketing</MudSelectItem>
+                    <MudSelectItem Value="@("Billing")">Billing</MudSelectItem>
+                </MudSelect>
+                <MudTextField @bind-Value="record.Description" For="@(() => record.Description)" Label="Description" />
+                <MudTextField @bind-Value="record.Subject" For="@(() => record.Subject)" Label="Subject Line" Required="true" />
+                <MudTextField @bind-Value="record.Body" For="@(() => record.Body)" Label="Body (Plain Text)" Lines="10" />
+                <MudTextField @bind-Value="record.HtmlBody" For="@(() => record.HtmlBody)" Label="Body (HTML)" Lines="10" HelperText="Optional HTML version" />
+                <MudCheckBox @bind-Value="record.IsActive" Label="Active" />
+                <MudText Typo="Typo.caption" Class="mt-2">
+                    Available placeholders: @("{{ContactName}}, {{CustomerName}}, {{CompanyName}}, {{SenderName}}, {{OpportunityName}}, {{Value}}, {{CaseId}}, {{CaseSubject}}")
+                </MudText>
+            </DialogContent>
+            <DialogActions>
+                <MudButton OnClick="OnCancel">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Update</MudButton>
+            </DialogActions>
+        </MudDialog>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    [CascadingParameter]
+    IMudDialogInstance? MudDialog { get; set; }
+
+    private EmailTemplate? record;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            record = await AppService.GetEmailTemplateByIdAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async Task OnSubmit()
+    {
+        if (record == null) return;
+
+        try
+        {
+            await AppService.UpdateEmailTemplateAsync(Id, record);
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}

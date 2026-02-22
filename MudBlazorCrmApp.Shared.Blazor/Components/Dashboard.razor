@@ -163,10 +163,10 @@
             { x => x.CardTitle, cardToDelete.Title }
         };
 
-        var dialog = DialogService.Show<ConfirmDeleteDialog>("Confirm Deletion", parameters);
-        var result = await dialog.Result;
+        var dialogRef = await DialogService.ShowAsync<ConfirmDeleteDialog>("Confirm Deletion", parameters);
+        var result = await dialogRef.Result;
 
-        if (!result.Canceled)
+        if (result is { Canceled: false })
         {
             _currentLayout.Remove(cardToDelete);
     

@@ -16,7 +16,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="ProductCategory" @ref="grid" ServerData="(new Func<GridState<ProductCategory>, Task<GridData<ProductCategory>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="ProductCategory" @ref="grid" ServerData="@ServerReload" Filterable="true">
     <ToolBarContent>
          <MudText Typo="Typo.h6">Product Category</MudText>
          <MudSpacer />
@@ -95,7 +95,7 @@
         return absolute.ToString();
     }
 
-    private async Task<GridData<ProductCategory>> ServerReload(GridState<ProductCategory> state)
+    private async Task<GridData<ProductCategory>> ServerReload(GridState<ProductCategory> state, CancellationToken cancellationToken)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -138,9 +138,10 @@
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<AddProductCategory>("Add Product Category", dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<AddProductCategory>("Add Product Category", dialogOptions);
+        var result = await dialogRef.Result;
 
-        if (!result.Canceled)
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -151,9 +152,10 @@
         DialogParameters<UpdateProductCategory> dialogParams = new() { { x => x.Id, record.Id!.Value } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<UpdateProductCategory>("Update Product Category", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<UpdateProductCategory>("Update Product Category", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
 
-        if (!result.Canceled)
+        if (result is { Canceled: false })
         {
             await (grid?.ReloadServerData() ?? Task.CompletedTask);
         }
@@ -161,7 +163,7 @@
 
     private async void OnDelete(ProductCategory record)
     {
-        var result = await DialogService.ShowMessageBox(
+        var result = await DialogService.ShowMessageBoxAsync(
             "Warning",
             "Are you sure you want to delete this record?",
             "Delete",

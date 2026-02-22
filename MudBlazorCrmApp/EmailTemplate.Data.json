@@ -1,0 +1,182 @@
+[
+  {
+    "Id": 1,
+    "Name": "Welcome New Contact",
+    "Subject": "Welcome to {{CompanyName}} - Let's Get Started",
+    "Body": "Dear {{ContactName}},\n\nThank you for connecting with us! We're excited to have you on board.\n\nAt {{CompanyName}}, we're committed to providing exceptional service and building lasting relationships. Here's what you can expect from us:\n\n- A dedicated point of contact for all your needs\n- Regular updates on products and services relevant to you\n- Priority access to our latest offerings\n\nPlease don't hesitate to reach out if you have any questions or need assistance.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Onboarding",
+    "Description": "Send to new contacts when they are first added to the CRM",
+    "IsActive": true
+  },
+  {
+    "Id": 2,
+    "Name": "New Customer Welcome",
+    "Subject": "Welcome Aboard, {{CustomerName}}!",
+    "Body": "Dear {{CustomerName}},\n\nWelcome to the {{CompanyName}} family! We're thrilled to have you as a customer.\n\nYour account has been set up and you're ready to go. Here are some important details:\n\n- Your dedicated account manager: {{SenderName}}\n- Support email: support@company.com\n- Support hours: Monday-Friday, 9 AM - 5 PM\n\nWe've attached our getting started guide to help you make the most of our products and services.\n\nLooking forward to a successful partnership!\n\nWarm regards,\n{{SenderName}}",
+    "Category": "Onboarding",
+    "Description": "Welcome email for newly converted customers",
+    "IsActive": true
+  },
+  {
+    "Id": 3,
+    "Name": "Lead Follow-Up",
+    "Subject": "Following Up on Our Conversation",
+    "Body": "Hi {{ContactName}},\n\nI wanted to follow up on our recent conversation about how {{CompanyName}} can help with your needs.\n\nAs discussed, I believe our solutions could significantly benefit your organization by:\n\n- [Key benefit 1]\n- [Key benefit 2]\n- [Key benefit 3]\n\nWould you be available for a brief call this week to discuss next steps? I'm happy to work around your schedule.\n\nPlease let me know what works best for you.\n\nBest,\n{{SenderName}}",
+    "Category": "Sales",
+    "Description": "Follow up with leads after initial contact or meeting",
+    "IsActive": true
+  },
+  {
+    "Id": 4,
+    "Name": "Opportunity Proposal",
+    "Subject": "Proposal for {{OpportunityName}}",
+    "Body": "Dear {{ContactName}},\n\nThank you for considering {{CompanyName}} for your upcoming project. Please find below our proposal details:\n\nProject: {{OpportunityName}}\nEstimated Value: ${{Value}}\nTimeline: {{Timeline}}\n\nOur proposal includes:\n\n1. [Scope item 1]\n2. [Scope item 2]\n3. [Scope item 3]\n\nWe're confident this solution will deliver significant value to your organization. I'd be happy to walk you through the details at your convenience.\n\nPlease review and let me know if you have any questions.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Sales",
+    "Description": "Send proposal details for an opportunity",
+    "IsActive": true
+  },
+  {
+    "Id": 5,
+    "Name": "Deal Won Confirmation",
+    "Subject": "Congratulations! Your Agreement with {{CompanyName}}",
+    "Body": "Dear {{ContactName}},\n\nWe're delighted to confirm that everything is finalized for {{OpportunityName}}!\n\nHere's a summary of what happens next:\n\n1. Our implementation team will reach out within 48 hours\n2. You'll receive your official documentation via email\n3. Your dedicated success manager will schedule an onboarding call\n\nThank you for choosing {{CompanyName}}. We're committed to making this a successful partnership.\n\nIf you have any immediate questions, please don't hesitate to contact me.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Sales",
+    "Description": "Confirmation email when an opportunity is closed/won",
+    "IsActive": true
+  },
+  {
+    "Id": 6,
+    "Name": "Deal Lost Follow-Up",
+    "Subject": "Thank You for Your Consideration",
+    "Body": "Dear {{ContactName}},\n\nI appreciate the time you spent evaluating {{CompanyName}} for your needs. While I understand you've decided to go in a different direction, I want you to know that we value the relationship.\n\nIf circumstances change or if there's anything we can help with in the future, please don't hesitate to reach out.\n\nI'd also appreciate any feedback you could share about your decision - it helps us improve our offerings.\n\nWishing you all the best,\n{{SenderName}}",
+    "Category": "Sales",
+    "Description": "Professional follow-up when an opportunity is lost",
+    "IsActive": true
+  },
+  {
+    "Id": 7,
+    "Name": "Meeting Request",
+    "Subject": "Meeting Request: {{MeetingTopic}}",
+    "Body": "Hi {{ContactName}},\n\nI'd like to schedule a meeting to discuss {{MeetingTopic}}.\n\nProposed Details:\n- Date: [Proposed Date]\n- Time: [Proposed Time]\n- Duration: [Duration]\n- Location/Format: [In-person/Virtual]\n\nAgenda:\n1. [Agenda item 1]\n2. [Agenda item 2]\n3. [Agenda item 3]\n\nPlease let me know if this time works for you, or suggest an alternative that fits your schedule.\n\nLooking forward to connecting!\n\nBest,\n{{SenderName}}",
+    "Category": "Communication",
+    "Description": "Request a meeting with a contact or customer",
+    "IsActive": true
+  },
+  {
+    "Id": 8,
+    "Name": "Meeting Follow-Up",
+    "Subject": "Summary & Next Steps from Our Meeting",
+    "Body": "Hi {{ContactName}},\n\nThank you for taking the time to meet today. Here's a quick summary of our discussion:\n\nKey Points Discussed:\n- [Point 1]\n- [Point 2]\n- [Point 3]\n\nAction Items:\n- [Action 1] - Owner: [Name] - Due: [Date]\n- [Action 2] - Owner: [Name] - Due: [Date]\n\nNext Steps:\n- [Next step]\n\nPlease let me know if I've missed anything or if you have additional thoughts.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Communication",
+    "Description": "Send after a meeting to summarize discussion and action items",
+    "IsActive": true
+  },
+  {
+    "Id": 9,
+    "Name": "Support Case Created",
+    "Subject": "Support Case #{{CaseId}} - We're On It",
+    "Body": "Dear {{ContactName}},\n\nThank you for contacting our support team. Your case has been created and assigned.\n\nCase Details:\n- Case #: {{CaseId}}\n- Subject: {{CaseSubject}}\n- Priority: {{CasePriority}}\n- Assigned To: {{AssignedAgent}}\n\nWhat to expect:\n- We aim to respond within [SLA timeframe]\n- You'll receive updates as we work on your case\n- You can reply to this email to add information\n\nIf this is urgent, please call our support line at [phone number].\n\nBest regards,\n{{SenderName}}\nSupport Team",
+    "Category": "Support",
+    "Description": "Notification when a support case is created",
+    "IsActive": true
+  },
+  {
+    "Id": 10,
+    "Name": "Support Case Resolved",
+    "Subject": "Support Case #{{CaseId}} - Resolved",
+    "Body": "Dear {{ContactName}},\n\nGreat news! Your support case has been resolved.\n\nCase Details:\n- Case #: {{CaseId}}\n- Subject: {{CaseSubject}}\n- Resolution: {{Resolution}}\n\nIf you're satisfied with the resolution, no further action is needed. If you need additional help, simply reply to this email and we'll reopen your case.\n\nWe'd appreciate your feedback! Please take a moment to rate your experience.\n\nThank you for your patience and for being a valued customer.\n\nBest regards,\n{{SenderName}}\nSupport Team",
+    "Category": "Support",
+    "Description": "Notification when a support case is resolved",
+    "IsActive": true
+  },
+  {
+    "Id": 11,
+    "Name": "Support Case Escalation",
+    "Subject": "Support Case #{{CaseId}} - Escalation Notice",
+    "Body": "Dear {{ContactName}},\n\nI'm writing to let you know that your support case has been escalated for priority handling.\n\nCase Details:\n- Case #: {{CaseId}}\n- Subject: {{CaseSubject}}\n- New Priority: {{CasePriority}}\n- Escalated To: {{EscalatedTo}}\n\nOur senior team is now reviewing your case and will provide an update within [timeframe].\n\nWe understand the importance of resolving this quickly and appreciate your patience.\n\nBest regards,\n{{SenderName}}\nSupport Team",
+    "Category": "Support",
+    "Description": "Notification when a support case is escalated",
+    "IsActive": true
+  },
+  {
+    "Id": 12,
+    "Name": "Invoice / Payment Reminder",
+    "Subject": "Payment Reminder - Invoice #{{InvoiceNumber}}",
+    "Body": "Dear {{CustomerName}},\n\nThis is a friendly reminder that invoice #{{InvoiceNumber}} is due on {{DueDate}}.\n\nInvoice Details:\n- Invoice #: {{InvoiceNumber}}\n- Amount: ${{Amount}}\n- Due Date: {{DueDate}}\n\nPayment Methods:\n- Bank Transfer: [Details]\n- Online Payment: [Link]\n\nIf payment has already been sent, please disregard this notice.\n\nPlease contact us if you have any questions about this invoice.\n\nBest regards,\n{{SenderName}}\nAccounts Team",
+    "Category": "Billing",
+    "Description": "Payment reminder for outstanding invoices",
+    "IsActive": true
+  },
+  {
+    "Id": 13,
+    "Name": "Quarterly Business Review",
+    "Subject": "Quarterly Business Review - {{Quarter}} {{Year}}",
+    "Body": "Dear {{ContactName}},\n\nAs part of our commitment to your success, I'd like to schedule our quarterly business review.\n\nIn this review, we'll cover:\n\n1. Performance Summary\n   - Key metrics and achievements\n   - Service utilization overview\n\n2. Feedback & Satisfaction\n   - Your experience with our team\n   - Areas for improvement\n\n3. Roadmap & Opportunities\n   - Upcoming features and services\n   - Growth opportunities\n\n4. Action Plan\n   - Goals for next quarter\n   - Resource allocation\n\nPlease let me know your availability for a 45-minute meeting in the next two weeks.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Account Management",
+    "Description": "Schedule and outline quarterly business review meetings",
+    "IsActive": true
+  },
+  {
+    "Id": 14,
+    "Name": "Product/Service Update",
+    "Subject": "Exciting Updates from {{CompanyName}}",
+    "Body": "Dear {{ContactName}},\n\nWe're thrilled to share some exciting updates that we think you'll find valuable:\n\nWhat's New:\n- [Feature/Update 1]: [Brief description]\n- [Feature/Update 2]: [Brief description]\n- [Feature/Update 3]: [Brief description]\n\nHow This Benefits You:\n- [Benefit 1]\n- [Benefit 2]\n\nWant to Learn More?\nI'd be happy to schedule a quick demo or walkthrough. Just reply to this email or book a time on my calendar.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Marketing",
+    "Description": "Announce product or service updates to contacts and customers",
+    "IsActive": true
+  },
+  {
+    "Id": 15,
+    "Name": "Re-engagement",
+    "Subject": "We Miss You, {{ContactName}}!",
+    "Body": "Hi {{ContactName}},\n\nIt's been a while since we last connected, and I wanted to reach out to see how things are going.\n\nA lot has changed at {{CompanyName}} since we last spoke:\n\n- [New offering 1]\n- [New offering 2]\n- [Achievement or milestone]\n\nI'd love to catch up and explore how we might be able to help with any current challenges you're facing.\n\nWould you have 15 minutes this week for a quick call?\n\nHope to hear from you!\n\nBest,\n{{SenderName}}",
+    "Category": "Sales",
+    "Description": "Re-engage with inactive contacts or former customers",
+    "IsActive": true
+  },
+  {
+    "Id": 16,
+    "Name": "Referral Request",
+    "Subject": "A Quick Favor - Know Anyone Who Could Benefit?",
+    "Body": "Hi {{ContactName}},\n\nI hope you've been happy with our partnership! I'm reaching out because we're looking to help more organizations like yours.\n\nDo you know anyone in your network who might benefit from our services? We'd be grateful for any introductions.\n\nAs a thank you, we offer [referral incentive] for successful referrals.\n\nNo pressure at all - just thought I'd ask! If you'd like to refer someone, simply reply with their name and contact info, or forward this email to them.\n\nThank you for your continued trust in {{CompanyName}}.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Sales",
+    "Description": "Ask satisfied customers for referrals",
+    "IsActive": true
+  },
+  {
+    "Id": 17,
+    "Name": "Thank You Note",
+    "Subject": "Thank You, {{ContactName}}!",
+    "Body": "Dear {{ContactName}},\n\nI just wanted to take a moment to say thank you.\n\n{{ThankYouReason}}\n\nYour trust and partnership mean a great deal to us, and we're committed to continuing to deliver value.\n\nPlease don't hesitate to reach out if there's anything we can do for you.\n\nWith gratitude,\n{{SenderName}}",
+    "Category": "Communication",
+    "Description": "General purpose thank you note for any occasion",
+    "IsActive": true
+  },
+  {
+    "Id": 18,
+    "Name": "Contract Renewal Reminder",
+    "Subject": "Your Contract Renewal is Coming Up",
+    "Body": "Dear {{ContactName}},\n\nI wanted to give you advance notice that your contract with {{CompanyName}} is set to renew on {{RenewalDate}}.\n\nCurrent Contract Details:\n- Service/Product: {{ServiceName}}\n- Current Term: {{CurrentTerm}}\n- Renewal Date: {{RenewalDate}}\n\nI'd like to schedule a brief meeting to:\n- Review your current usage and satisfaction\n- Discuss any changes or upgrades\n- Ensure the renewal terms meet your needs\n\nPlease let me know a convenient time to connect in the next couple of weeks.\n\nBest regards,\n{{SenderName}}",
+    "Category": "Account Management",
+    "Description": "Remind customers about upcoming contract renewals",
+    "IsActive": true
+  },
+  {
+    "Id": 19,
+    "Name": "Event Invitation",
+    "Subject": "You're Invited: {{EventName}}",
+    "Body": "Dear {{ContactName}},\n\nWe're excited to invite you to {{EventName}}!\n\nEvent Details:\n- Date: {{EventDate}}\n- Time: {{EventTime}}\n- Location: {{EventLocation}}\n- Format: {{EventFormat}}\n\nWhat to Expect:\n- [Highlight 1]\n- [Highlight 2]\n- [Highlight 3]\n\nThis is a great opportunity to [value proposition].\n\nPlease RSVP by {{RSVPDate}} by replying to this email.\n\nWe hope to see you there!\n\nBest regards,\n{{SenderName}}",
+    "Category": "Marketing",
+    "Description": "Invite contacts to events, webinars, or conferences",
+    "IsActive": true
+  },
+  {
+    "Id": 20,
+    "Name": "Feedback Request",
+    "Subject": "We'd Love Your Feedback",
+    "Body": "Dear {{ContactName}},\n\nYour opinion matters to us! We're always looking for ways to improve, and your feedback is invaluable.\n\nCould you take a few minutes to share your thoughts on:\n\n1. How satisfied are you with our products/services? (1-10)\n2. What do we do well?\n3. Where can we improve?\n4. Would you recommend us to others?\n\nYou can simply reply to this email with your responses, or if you prefer, I can schedule a quick call.\n\nThank you in advance for helping us serve you better!\n\nBest regards,\n{{SenderName}}",
+    "Category": "Account Management",
+    "Description": "Request feedback from customers to improve services",
+    "IsActive": true
+  }
+]

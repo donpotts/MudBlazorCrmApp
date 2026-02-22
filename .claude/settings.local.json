@@ -15,7 +15,21 @@
       "Bash(Select-Object FullName)",
       "Bash(node -e:*)",
       "Bash(printf:*)",
-      "Bash(xxd:*)"
+      "Bash(xxd:*)",
+      "Bash(ls:*)",
+      "Bash(dotnet run:*)",
+      "Bash(powershell.exe -File - << 'PSEOF'\n$base = 'c:\\\\repos\\\\MudBlazorCrmApp\\\\MudBlazorCrmApp'\n$entities = @\\('Activity','Address','Contact','Customer','Lead','Opportunity','Sale','Product','ProductCategory','Service','ServiceCategory','SupportCase','TodoTask','Vendor','Reward','Tag'\\)\nforeach \\($e in $entities\\) {\n    $path = \"$base\\\\$e.Data.json\"\n    $data = Get-Content $path -Raw | ConvertFrom-Json\n    Write-Host \"$e: $\\($data.Count\\)\"\n}\nPSEOF)",
+      "Bash(timeout:*)",
+      "Bash(powershell -Command \"Start-Sleep -Seconds 15; Invoke-RestMethod -Uri ''http://localhost:5025/api/communication'' -Method Get | ConvertTo-Json -Depth 3\")",
+      "Bash(powershell -Command \"Start-Sleep -Seconds 10; Invoke-RestMethod -Uri ''http://localhost:5025/api/communication'' -Method Get | ConvertTo-Json -Depth 3\")",
+      "Bash(powershell -Command:*)",
+      "Bash(powershell -File:*)",
+      "Bash(powershell -NoProfile -Command:*)",
+      "Bash(powershell:*)",
+      "Bash(Get-Process:*)",
+      "Bash(dotnet user-secrets set:*)",
+      "Bash(dotnet user-secrets:*)",
+      "Bash(dotnet ef migrations add:*)"
     ]
   }
 }

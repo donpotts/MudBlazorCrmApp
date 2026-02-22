@@ -87,3 +87,25 @@ public class SearchResultItem
     [DataMember] public string? EntityType { get; set; }
     [DataMember] public string? Detail { get; set; }
 }
+
+[DataContract]
+public class ActivityReportDto
+{
+    [DataMember] public int Total { get; set; }
+    [DataMember] public List<ActivityTypeCount>? ByType { get; set; }
+    [DataMember] public List<ActivityStatusCount>? ByStatus { get; set; }
+}
+
+[DataContract]
+public class ActivityTypeCount
+{
+    [DataMember] public string? Type { get; set; }
+    [DataMember] public int Count { get; set; }
+}
+
+[DataContract]
+public class ActivityStatusCount
+{
+    [DataMember] public string? Status { get; set; }
+    [DataMember] public int Count { get; set; }
+}

@@ -10,9 +10,29 @@
         </TitleContent>
         <DialogContent>
             <MudTextField @bind-Value="record.Name" For="@(() => record.Name)" Label="Name" />
+            <MudTextField @bind-Value="record.Company" For="@(() => record.Company)" Label="Company" />
+            <MudTextField @bind-Value="record.Title" For="@(() => record.Title)" Label="Title" />
             <MudTextField @bind-Value="record.Email" For="@(() => record.Email)" Label="Email" />
-            <MudNumericField @bind-Value="record.Phone" For="@(() => record.Phone)" Label="Phone" />
+            <MudTextField @bind-Value="record.Phone" For="@(() => record.Phone)" Label="Phone" />
+            <MudTextField @bind-Value="record.MobilePhone" For="@(() => record.MobilePhone)" Label="Mobile Phone" />
             <MudTextField @bind-Value="record.Role" For="@(() => record.Role)" Label="Role" />
+            <MudTextField @bind-Value="record.Department" For="@(() => record.Department)" Label="Department" />
+            <MudTextField @bind-Value="record.LinkedInUrl" For="@(() => record.LinkedInUrl)" Label="LinkedIn URL" />
+            <MudSelect @bind-Value="record.Status" Label="Status" For="@(() => record.Status)">
+                <MudSelectItem Value="@((string?)null)">-- Select --</MudSelectItem>
+                <MudSelectItem Value="@("Active")">Active</MudSelectItem>
+                <MudSelectItem Value="@("Inactive")">Inactive</MudSelectItem>
+                <MudSelectItem Value="@("Prospect")">Prospect</MudSelectItem>
+            </MudSelect>
+            <MudSelect @bind-Value="record.PreferredContactMethod" Label="Preferred Contact Method" For="@(() => record.PreferredContactMethod)">
+                <MudSelectItem Value="@((string?)null)">-- Select --</MudSelectItem>
+                <MudSelectItem Value="@("Email")">Email</MudSelectItem>
+                <MudSelectItem Value="@("Phone")">Phone</MudSelectItem>
+                <MudSelectItem Value="@("SMS")">SMS</MudSelectItem>
+                <MudSelectItem Value="@("LinkedIn")">LinkedIn</MudSelectItem>
+            </MudSelect>
+            <MudCheckBox @bind-Value="record.IsPrimary" Label="Primary Contact" />
+            <MudCheckBox @bind-Value="record.DoNotContact" Label="Do Not Contact" />
             <MudFileUpload T="IBrowserFile" FilesChanged="@(async args => record.Photo = await UploadImageAsync(args, 256, 256))" Accept=".png,.jpg,.jpeg">
                 <ActivatorContent>
                     <MudIconButton Color="Color.Info"
@@ -53,7 +73,7 @@
 
     private Address[]? addressArray;
     private Reward[]? rewardArray;
-    private IEnumerable<long?>? rewardValues;
+    private IReadOnlyCollection<long?>? rewardValues;
     private Contact record = new();
 
     private string GetAbsoluteUri(string uri)

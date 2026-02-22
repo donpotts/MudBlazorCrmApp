@@ -64,6 +64,9 @@ else
                     }
                 </MudSelect>
 
+                <TagSelector EntityType="Lead" EntityId="@(record.Id ?? 0)" />
+                <EntityAttachments EntityType="Lead" EntityId="@(record.Id ?? 0)" />
+                <EntityTimeline EntityType="Lead" EntityId="@(record.Id ?? 0)" />
             </DialogContent>
             <DialogActions>
                 <MudButton OnClick="OnCancel">Cancel</MudButton>

@@ -15,7 +15,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="ApplicationUserDto" @ref="grid" ServerData="(new Func<GridState<ApplicationUserDto>, Task<GridData<ApplicationUserDto>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="ApplicationUserDto" @ref="grid" ServerData="@ServerReload" Filterable="true">
     <Columns>
         <PropertyColumn Property="x => x!.Id" Title="Id" />
         <PropertyColumn Property="x => x!.Email" />
@@ -69,7 +69,7 @@
         return absolute.ToString();
     }
 
-    private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state)
+    private async Task<GridData<ApplicationUserDto>> ServerReload(GridState<ApplicationUserDto> state, CancellationToken cancellationToken)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -94,7 +94,8 @@
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<AddUser>("Add User", dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<AddUser>("Add User", dialogOptions);
+        var result = await dialogRef.Result;
 
         if (!result.Canceled)
         {
@@ -107,7 +108,8 @@
         DialogParameters<ModifyRoles> dialogParams = new() { { x => x.Id, record.Id } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        await DialogService.Show<ModifyRoles>("Modify Roles", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<ModifyRoles>("Modify Roles", dialogParams, dialogOptions);
+        await dialogRef.Result;
     }
 
     private async void OnEdit(ApplicationUserDto record)
@@ -115,7 +117,8 @@
         DialogParameters<UpdateUser> dialogParams = new() { { x => x.Id, record.Id } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<UpdateUser>("Update User", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<UpdateUser>("Update User", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
 
         if (!result.Canceled)
         {
@@ -125,7 +128,7 @@
 
     private async void OnDelete(ApplicationUserDto record)
     {
-        var result = await DialogService.ShowMessageBox(
+        var result = await DialogService.ShowMessageBoxAsync(
             "Warning",
             "Are you sure you want to delete this record?",
             "Delete",

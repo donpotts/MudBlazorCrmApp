@@ -45,7 +45,7 @@
     IMudDialogInstance? MudDialog { get; set; }
 
     private ProductCategory[]? productCategoryArray;
-    private IEnumerable<long?>? productCategoryValues;
+    private IReadOnlyCollection<long?>? productCategoryValues;
     private Product record = new();
 
     private string GetAbsoluteUri(string uri)

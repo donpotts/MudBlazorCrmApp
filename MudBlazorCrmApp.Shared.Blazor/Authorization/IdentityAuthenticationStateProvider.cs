@@ -15,6 +15,7 @@ public class IdentityAuthenticationStateProvider(HttpClient httpClient, IStorage
     private static readonly ClaimsPrincipal anonymousUser = new(new ClaimsIdentity());
     private ClaimsPrincipal currentUser = anonymousUser;
     private bool hasLoaded = false;
+    private Task<string?>? _refreshTask;
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
@@ -34,6 +35,17 @@ public class IdentityAuthenticationStateProvider(HttpClient httpClient, IStorage
             claims = null;
 
             currentUser = anonymousUser;
+        }
+        else if (expiresAt <= DateTimeOffset.UtcNow && accessTokenResponse.RefreshToken == null)
+        {
+            // Token expired with no refresh token — clear stale data
+            accessTokenResponse = null;
+            expiresAt = null;
+            currentUser = anonymousUser;
+
+            await storageService.RemoveAsync("IdentityAuthenticationStateProvider_accessTokenResponse");
+            await storageService.RemoveAsync("IdentityAuthenticationStateProvider_expiresAt");
+            await storageService.RemoveAsync("IdentityAuthenticationStateProvider_claims");
         }
         else
         {
@@ -186,47 +198,70 @@ public class IdentityAuthenticationStateProvider(HttpClient httpClient, IStorage
 
         if (expiresAt <= DateTimeOffset.UtcNow)
         {
+            // Use a shared task to prevent concurrent refresh requests
+            _refreshTask ??= RefreshTokenCoreAsync();
+
+            try
+            {
+                return await _refreshTask;
+            }
+            finally
+            {
+                _refreshTask = null;
+            }
+        }
+
+        return accessTokenResponse.AccessToken;
+    }
+
+    private async Task<string?> RefreshTokenCoreAsync()
+    {
+        try
+        {
             var response = await httpClient.PostAsJsonAsync(
                 "/identity/refresh",
-                new { accessTokenResponse.RefreshToken });
+                new { accessTokenResponse!.RefreshToken });
 
             var date = response.Headers.Date ?? DateTimeOffset.UtcNow;
 
             if (!response.IsSuccessStatusCode)
             {
-                accessTokenResponse = null;
-                expiresAt = null;
-                currentUser = anonymousUser;
-                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
-
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    throw new Exception("The token could not be refreshed.");
-                }
-                else if (response.StatusCode != HttpStatusCode.NotFound)
-                {
-                    string? message = await response.Content.ReadAsStringAsync();
-                    throw new Exception(message);
-                }
-
-                response.EnsureSuccessStatusCode();
+                await ClearStoredAuthStateAsync();
+                return null;
             }
 
             accessTokenResponse = await response.Content.ReadFromJsonAsync<AccessTokenResponse>();
 
             if (accessTokenResponse == null)
             {
-                expiresAt = null;
-                currentUser = anonymousUser;
-                NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
-
-                throw new Exception("The login attempt failed.");
+                await ClearStoredAuthStateAsync();
+                return null;
             }
 
             expiresAt = date.AddSeconds(accessTokenResponse.ExpiresIn);
-        }
+            await storageService.SetAsync("IdentityAuthenticationStateProvider_accessTokenResponse", accessTokenResponse);
+            await storageService.SetAsync("IdentityAuthenticationStateProvider_expiresAt", expiresAt);
 
-        return accessTokenResponse.AccessToken;
+            return accessTokenResponse.AccessToken;
+        }
+        catch
+        {
+            await ClearStoredAuthStateAsync();
+            return null;
+        }
+    }
+
+    private async Task ClearStoredAuthStateAsync()
+    {
+        accessTokenResponse = null;
+        expiresAt = null;
+        currentUser = anonymousUser;
+
+        await storageService.RemoveAsync("IdentityAuthenticationStateProvider_accessTokenResponse");
+        await storageService.RemoveAsync("IdentityAuthenticationStateProvider_expiresAt");
+        await storageService.RemoveAsync("IdentityAuthenticationStateProvider_claims");
+
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(currentUser)));
     }
 
     public async Task LogoutAsync()

@@ -16,6 +16,8 @@
                 <MudSelectItem Value="@("contacts")">Contacts</MudSelectItem>
                 <MudSelectItem Value="@("customers")">Customers</MudSelectItem>
                 <MudSelectItem Value="@("leads")">Leads</MudSelectItem>
+                <MudSelectItem Value="@("opportunities")">Opportunities</MudSelectItem>
+                <MudSelectItem Value="@("sales")">Sales</MudSelectItem>
             </MudSelect>
         </MudItem>
         <MudItem xs="12" md="6">
@@ -63,6 +65,12 @@
     </MudText>
     <MudText Typo="Typo.body2">
         <b>Leads:</b> Source, Status, PotentialValue, Notes
+    </MudText>
+    <MudText Typo="Typo.body2">
+        <b>Opportunities:</b> Name, Stage, Value, Probability, Source, Notes
+    </MudText>
+    <MudText Typo="Typo.body2">
+        <b>Sales:</b> Quantity, UnitPrice, TotalAmount, SaleDate, Notes
     </MudText>
 </MudPaper>
 

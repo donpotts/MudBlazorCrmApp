@@ -1314,6 +1314,96 @@ public class AppService(
         await HandleResponseErrorsAsync(response);
     }
 
+    public async Task<Communication[]?> ListCommunicationAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/communication");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Communication[]>();
+    }
+
+    public Task<ODataResult<Communication>?> ListCommunicationODataAsync(
+        int? top = null,
+        int? skip = null,
+        string? orderby = null,
+        string? filter = null,
+        bool count = false,
+        string? expand = null)
+    {
+        return GetODataAsync<Communication>("Communication", top, skip, orderby, filter, count, expand);
+    }
+
+    public async Task<Communication?> GetCommunicationByIdAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/communication/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Communication>();
+    }
+
+    public async Task UpdateCommunicationAsync(long key, Communication data)
+    {
+        data.ModifiedDate = DateTime.UtcNow;
+
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"/api/communication/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(data);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task<Communication?> InsertCommunicationAsync(Communication data)
+    {
+        if (data.CreatedDate == null)
+            data.CreatedDate = DateTime.UtcNow;
+        data.ModifiedDate = DateTime.UtcNow;
+
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/communication");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(data);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Communication>();
+    }
+
+    public async Task DeleteCommunicationAsync(long key)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"/api/communication/{key}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+
+        await HandleResponseErrorsAsync(response);
+    }
+
     public async Task<TodoTask[]?> ListTodoTaskAsync()
     {
         var token = await authenticationStateProvider.GetBearerTokenAsync()
@@ -2064,6 +2154,260 @@ public class AppService(
 
         return await response.Content.ReadFromJsonAsync<List<PipelineStageDto>>();
     }
+
+    public async Task<ActivityReportDto?> GetActivityReportAsync(DateTime? from, DateTime? to)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        var queryParams = new List<string>();
+        if (from.HasValue) queryParams.Add($"from={from.Value:yyyy-MM-dd}");
+        if (to.HasValue) queryParams.Add($"to={to.Value:yyyy-MM-dd}");
+        var url = "/api/report/activities" + (queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "");
+
+        HttpRequestMessage request = new(HttpMethod.Get, url);
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<ActivityReportDto>();
+    }
+    // Notification methods
+    public async Task<int> GetUnreadNotificationCountAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/notification/unread-count");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<int>();
+    }
+
+    public async Task<List<Notification>?> GetNotificationsAsync(int top = 20)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/notification?$top={top}&$orderby=CreatedDate desc");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<Notification>>();
+    }
+
+    public async Task MarkNotificationAsReadAsync(long id)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"/api/notification/{id}/read");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task MarkAllNotificationsAsReadAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, "/api/notification/read-all");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    public async Task<int> GenerateNotificationsAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/notification/generate");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<int>();
+    }
+
+    public async Task DeleteNotificationAsync(long id)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"/api/notification/{id}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    // Attachment methods
+    public async Task<List<Attachment>?> GetAttachmentsByEntityAsync(string entityType, long entityId)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/attachment/entity/{entityType}/{entityId}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<List<Attachment>>();
+    }
+
+    public async Task<Attachment?> UploadAttachmentAsync(IBrowserFile file, string entityType, long entityId, string? description = null)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        using var content = new MultipartFormDataContent();
+        using var fileStream = file.OpenReadStream(20 * 1024 * 1024);
+        content.Add(new StreamContent(fileStream), "file", file.Name);
+        content.Add(new StringContent(entityType), "entityType");
+        content.Add(new StringContent(entityId.ToString()), "entityId");
+        if (!string.IsNullOrEmpty(description))
+            content.Add(new StringContent(description), "description");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/attachment/upload");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = content;
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<Attachment>();
+    }
+
+    public async Task DeleteAttachmentAsync(long id)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"/api/attachment/{id}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    // Email Templates
+
+    public async Task<EmailTemplate[]?> ListEmailTemplateAsync()
+    {
+        var result = await GetODataAsync<EmailTemplate>("EmailTemplate", orderby: "Category,Name", filter: "IsActive eq true");
+        return result?.Value?.ToArray();
+    }
+
+    public async Task<EmailTemplate?> GetEmailTemplateByIdAsync(long id)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, $"/api/emailtemplate/{id}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<EmailTemplate>();
+    }
+
+    public async Task<EmailTemplate?> InsertEmailTemplateAsync(EmailTemplate record)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/emailtemplate");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(record);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<EmailTemplate>();
+    }
+
+    public async Task<EmailTemplate?> UpdateEmailTemplateAsync(long id, EmailTemplate record)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Put, $"/api/emailtemplate/{id}");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(record);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        return await response.Content.ReadFromJsonAsync<EmailTemplate>();
+    }
+
+    public async Task DeleteEmailTemplateAsync(long id)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Delete, $"/api/emailtemplate/{id}");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+
+    // Email
+
+    public async Task<bool> GetEmailStatusAsync()
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Get, "/api/email/status");
+        request.Headers.Authorization = new("Bearer", token);
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+
+        var result = await response.Content.ReadFromJsonAsync<EmailStatusResult>();
+        return result?.IsConfigured ?? false;
+    }
+
+    public async Task SendEmailAsync(string to, string subject, string body, string? htmlBody = null, string? entityType = null, long? entityId = null)
+    {
+        var token = await authenticationStateProvider.GetBearerTokenAsync()
+            ?? throw new Exception("Not authorized");
+
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/email/send");
+        request.Headers.Authorization = new("Bearer", token);
+        request.Content = JsonContent.Create(new
+        {
+            To = to,
+            Subject = subject,
+            Body = body,
+            HtmlBody = htmlBody,
+            EntityType = entityType,
+            EntityId = entityId,
+        });
+
+        var response = await httpClient.SendAsync(request);
+        await HandleResponseErrorsAsync(response);
+    }
+}
+
+public class EmailStatusResult
+{
+    public bool IsConfigured { get; set; }
 }
 
 public class ImportResult

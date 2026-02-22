@@ -233,6 +233,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     communication.CreatedDate = DateTime.UtcNow;
                 communication.ModifiedDate = DateTime.UtcNow;
             }
+            else if (entry.Entity is Activity activity)
+            {
+                if (entry.State == EntityState.Added)
+                    activity.CreatedDate ??= DateTime.UtcNow;
+                activity.ModifiedDate = DateTime.UtcNow;
+            }
             else if (entry.Entity is ActivityLog activityLog && entry.State == EntityState.Added)
             {
                 activityLog.Timestamp = DateTime.UtcNow;
@@ -256,6 +262,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Activity> Activity => Set<Activity>();
     public DbSet<Tag> Tag => Set<Tag>();
     public DbSet<EntityTag> EntityTag => Set<EntityTag>();
+    public DbSet<AuditLog> AuditLog => Set<AuditLog>();
+    public DbSet<ActivityLog> ActivityLog => Set<ActivityLog>();
+    public DbSet<Communication> Communication => Set<Communication>();
+    public DbSet<Notification> Notification => Set<Notification>();
+    public DbSet<Attachment> Attachment => Set<Attachment>();
+    public DbSet<EmailTemplate> EmailTemplate => Set<EmailTemplate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -418,6 +430,33 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasIndex(x => x.Status);
         modelBuilder.Entity<SupportCase>()
             .HasIndex(x => x.Priority);
+
+        // Communication relationships
+        modelBuilder.Entity<Communication>()
+            .HasOne(x => x.Customer)
+            .WithMany()
+            .HasForeignKey(x => x.CustomerId)
+            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<Communication>()
+            .HasOne(x => x.Contact)
+            .WithMany()
+            .HasForeignKey(x => x.ContactId)
+            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<Communication>()
+            .HasOne(x => x.Lead)
+            .WithMany()
+            .HasForeignKey(x => x.LeadId)
+            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<Communication>()
+            .HasOne(x => x.Opportunity)
+            .WithMany()
+            .HasForeignKey(x => x.OpportunityId)
+            .OnDelete(DeleteBehavior.SetNull);
+        modelBuilder.Entity<Communication>()
+            .HasOne(x => x.SupportCase)
+            .WithMany()
+            .HasForeignKey(x => x.SupportCaseId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         // Reward configuration
         modelBuilder.Entity<Reward>()

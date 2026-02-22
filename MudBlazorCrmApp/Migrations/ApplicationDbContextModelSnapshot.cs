@@ -15,7 +15,7 @@ namespace MudBlazorCrmApp.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -285,6 +285,67 @@ namespace MudBlazorCrmApp.Migrations
                     b.ToTable("Activity");
                 });
 
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.ActivityLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChangedField")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("EntityId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EntityName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OldValues")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActivityLog");
+                });
+
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Address", b =>
                 {
                     b.Property<long>("Id")
@@ -321,6 +382,51 @@ namespace MudBlazorCrmApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Address");
+                });
+
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Attachment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("EntityId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EntityType")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UploadedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UploadedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Attachment");
                 });
 
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.AuditLog", b =>
@@ -385,16 +491,6 @@ namespace MudBlazorCrmApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CorrelationId");
-
-                    b.HasIndex("EntityId");
-
-                    b.HasIndex("EntityType");
-
-                    b.HasIndex("Timestamp");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("AuditLog");
                 });
@@ -490,8 +586,6 @@ namespace MudBlazorCrmApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommunicationDate");
-
                     b.HasIndex("ContactId");
 
                     b.HasIndex("CustomerId");
@@ -501,8 +595,6 @@ namespace MudBlazorCrmApp.Migrations
                     b.HasIndex("OpportunityId");
 
                     b.HasIndex("SupportCaseId");
-
-                    b.HasIndex("Type");
 
                     b.ToTable("Communication");
                 });
@@ -515,6 +607,10 @@ namespace MudBlazorCrmApp.Migrations
 
                     b.Property<long?>("AddressId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Company")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(450)
@@ -584,10 +680,22 @@ namespace MudBlazorCrmApp.Migrations
                     b.Property<string>("Photo")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PreferredContactMethod")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
                     b.Property<long?>("RewardId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Role")
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
@@ -681,6 +789,46 @@ namespace MudBlazorCrmApp.Migrations
                     b.HasIndex("AddressId");
 
                     b.ToTable("Customer");
+                });
+
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.EmailTemplate", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Body")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HtmlBody")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmailTemplate");
                 });
 
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.EntityTag", b =>
@@ -818,13 +966,93 @@ namespace MudBlazorCrmApp.Migrations
                     b.ToTable("Lead");
                 });
 
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Notification", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ActionUrl")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("EntityId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EntityType")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Priority")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ReadDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notification");
+                });
+
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Opportunity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("ActualCloseDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AssignedUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CompetitorInfo")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("ContactId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long?>("CustomerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("EstimatedCloseDate")
@@ -847,9 +1075,17 @@ namespace MudBlazorCrmApp.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(2000)
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("Probability")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Stage")
                         .HasMaxLength(50)
@@ -860,6 +1096,14 @@ namespace MudBlazorCrmApp.Migrations
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignedUserId");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Stage");
 
                     b.ToTable("Opportunity");
                 });
@@ -1444,6 +1688,71 @@ namespace MudBlazorCrmApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Activity", b =>
+                {
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId");
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Lead", "Lead")
+                        .WithMany()
+                        .HasForeignKey("LeadId");
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Opportunity", "Opportunity")
+                        .WithMany()
+                        .HasForeignKey("OpportunityId");
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Lead");
+
+                    b.Navigation("Opportunity");
+                });
+
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Communication", b =>
+                {
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Lead", "Lead")
+                        .WithMany()
+                        .HasForeignKey("LeadId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Opportunity", "Opportunity")
+                        .WithMany()
+                        .HasForeignKey("OpportunityId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.SupportCase", "SupportCase")
+                        .WithMany()
+                        .HasForeignKey("SupportCaseId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Lead");
+
+                    b.Navigation("Opportunity");
+
+                    b.Navigation("SupportCase");
+                });
+
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Contact", b =>
                 {
                     b.HasOne("MudBlazorCrmApp.Shared.Models.Address", "Address")
@@ -1508,6 +1817,23 @@ namespace MudBlazorCrmApp.Migrations
                     b.Navigation("ConvertedToCustomer");
 
                     b.Navigation("Opportunity");
+                });
+
+            modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Opportunity", b =>
+                {
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MudBlazorCrmApp.Shared.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("MudBlazorCrmApp.Shared.Models.Product", b =>

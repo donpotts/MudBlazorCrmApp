@@ -1,0 +1,141 @@
+@page "/emailtemplate"
+@inject AppService AppService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@attribute [Authorize]
+
+<PageTitle>Email Templates</PageTitle>
+
+<div class="mb-3">
+    <MudText Typo="Typo.h3">Email Templates</MudText>
+</div>
+
+<MudStack AlignItems="AlignItems.End" Class="mb-3">
+    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add Template</MudButton>
+</MudStack>
+
+<MudDataGrid T="EmailTemplate" @ref="grid" ServerData="@ServerReload" Filterable="true">
+    <ToolBarContent>
+         <MudText Typo="Typo.h6">Email Templates</MudText>
+         <MudSpacer />
+         <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" ValueChanged="@(value => SearchChanged(value))"></MudTextField>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="x => x!.Id" Title="Id" />
+        <PropertyColumn Property="x => x!.Name" Title="Name" />
+        <PropertyColumn Property="x => x!.Category" Title="Category" />
+        <PropertyColumn Property="x => x!.Subject" Title="Subject" />
+        <PropertyColumn Property="x => x!.Description" Title="Description" />
+        <TemplateColumn Title="Active" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudCheckBox Value="@context.Item!.IsActive" ReadOnly="true" />
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn Style="width: 50px;" StickyRight="true" Sortable="false" Filterable="false">
+            <CellTemplate>
+                <MudStack Row="true">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" Title="Edit" OnClick="@(e => OnEdit(context.Item!))" />
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="@Size.Small" Title="Delete" OnClick="@(e => OnDelete(context.Item!))" />
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="EmailTemplate" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    private MudDataGrid<EmailTemplate>? grid;
+    private string? _searchString;
+
+    private async Task<GridData<EmailTemplate>> ServerReload(GridState<EmailTemplate> state, CancellationToken cancellationToken)
+    {
+        var top = state.PageSize;
+        var skip = state.Page * state.PageSize;
+        var orderby = ODataHelpers.GetOrderBy(state.SortDefinitions);
+        var filter = ODataHelpers.GetFilter(state.FilterDefinitions);
+
+        if (!string.IsNullOrEmpty(_searchString))
+        {
+            var search = _searchString.Replace("'", "''");
+            var searchFilter = $"contains(tolower(Name), '{search}') or contains(tolower(Category), '{search}') or contains(tolower(Subject), '{search}') or contains(tolower(Description), '{search}')";
+            filter = string.IsNullOrEmpty(filter) ? searchFilter : $"({filter}) and ({searchFilter})";
+        }
+
+        AppService.ODataResult<EmailTemplate>? result = null;
+
+        try
+        {
+            result = await AppService.GetODataAsync<EmailTemplate>("EmailTemplate", top, skip, orderby, filter, true);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+        return new GridData<EmailTemplate> { TotalItems = result?.Count ?? 0, Items = result?.Value ?? [] };
+    }
+
+    private async void OnAdd()
+    {
+        DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackdropClick = false };
+        var result = await DialogService.ShowAsync<AddEmailTemplate>("Add Email Template", dialogOptions);
+        var dialogResult = await result.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnEdit(EmailTemplate record)
+    {
+        DialogParameters<UpdateEmailTemplate> dialogParams = new()
+        {
+            { x => x.Id, record.Id!.Value }
+        };
+
+        DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true, BackdropClick = false };
+        var result = await DialogService.ShowAsync<UpdateEmailTemplate>("Update Email Template", dialogParams, dialogOptions);
+        var dialogResult = await result.Result;
+
+        if (dialogResult != null && !dialogResult.Canceled)
+        {
+            await (grid?.ReloadServerData() ?? Task.CompletedTask);
+        }
+    }
+
+    private async void OnDelete(EmailTemplate record)
+    {
+        var result = await DialogService.ShowMessageBoxAsync(
+            "Warning",
+            "Are you sure you want to delete this template?",
+            "Delete",
+            "Cancel");
+
+        if (result.GetValueOrDefault(false))
+        {
+            try
+            {
+                await AppService.DeleteEmailTemplateAsync(record.Id!.Value);
+                await (grid?.ReloadServerData() ?? Task.CompletedTask);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(ex.Message, Severity.Error);
+            }
+        }
+    }
+
+    private void SearchChanged(string Value)
+    {
+        if (Value.EndsWith("."))
+        {
+            return;
+        }
+
+        _searchString = Value.Trim().ToLower();
+        grid?.ReloadServerData();
+    }
+}

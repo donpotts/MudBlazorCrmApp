@@ -1,0 +1,127 @@
+@inject AppService AppService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Email" Class="mr-2" />
+            Send Email
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudSelect T="long?" Value="_selectedTemplateId" ValueChanged="OnTemplateSelected" Label="Use Template" Clearable="true"
+                   Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Description" Class="mb-3">
+            @if (_templates != null)
+            {
+                @foreach (var tmpl in _templates)
+                {
+                    <MudSelectItem T="long?" Value="@tmpl.Id">@tmpl.Category - @tmpl.Name</MudSelectItem>
+                }
+            }
+        </MudSelect>
+
+        <MudTextField @bind-Value="To" Label="To" Required="true" RequiredError="Recipient is required"
+                      Placeholder="email@example.com" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Person" />
+        <MudTextField @bind-Value="Subject" Label="Subject" Required="true" RequiredError="Subject is required"
+                      Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Subject" Class="mt-3" />
+        <MudTextField @bind-Value="Body" Label="Message" Lines="10" Required="true" RequiredError="Message is required" Class="mt-3" />
+        @if (_sending)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mt-3" />
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="OnCancel" Disabled="_sending">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="OnSend" Disabled="_sending"
+                   StartIcon="@Icons.Material.Filled.Send">
+            @(_sending ? "Sending..." : "Send")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public string? To { get; set; }
+
+    [Parameter]
+    public string? Subject { get; set; }
+
+    [Parameter]
+    public string? EntityType { get; set; }
+
+    [Parameter]
+    public long? EntityId { get; set; }
+
+    private string? Body;
+    private bool _sending;
+    private long? _selectedTemplateId;
+    private EmailTemplate[]? _templates;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _templates = await AppService.ListEmailTemplateAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Could not load templates: {ex.Message}", Severity.Warning);
+        }
+    }
+
+    private async Task OnTemplateSelected(long? templateId)
+    {
+        _selectedTemplateId = templateId;
+
+        if (templateId == null)
+            return;
+
+        try
+        {
+            var template = await AppService.GetEmailTemplateByIdAsync(templateId.Value);
+            if (template != null)
+            {
+                Subject = template.Subject;
+                Body = template.Body;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Could not load template: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void OnCancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async Task OnSend()
+    {
+        if (string.IsNullOrWhiteSpace(To) || string.IsNullOrWhiteSpace(Subject) || string.IsNullOrWhiteSpace(Body))
+        {
+            Snackbar.Add("Please fill in all required fields.", Severity.Warning);
+            return;
+        }
+
+        _sending = true;
+
+        try
+        {
+            await AppService.SendEmailAsync(To, Subject, Body, null, EntityType, EntityId);
+            Snackbar.Add("Email sent successfully!", Severity.Success);
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to send email: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _sending = false;
+        }
+    }
+}

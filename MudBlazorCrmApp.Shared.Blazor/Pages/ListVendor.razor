@@ -16,7 +16,7 @@
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AddCircleOutline" Color="Color.Primary" OnClick="@(e => OnAdd())">Add</MudButton>
 </MudStack>
 
-<MudDataGrid T="Vendor" @ref="grid" ServerData="(new Func<GridState<Vendor>, Task<GridData<Vendor>>>(ServerReload))" Filterable="true">
+<MudDataGrid T="Vendor" @ref="grid" ServerData="@ServerReload" Filterable="true">
     <ToolBarContent>
          <MudText Typo="Typo.h6">Vendor</MudText>
          <MudSpacer />
@@ -109,7 +109,7 @@
         return absolute.ToString();
     }
 
-    private async Task<GridData<Vendor>> ServerReload(GridState<Vendor> state)
+    private async Task<GridData<Vendor>> ServerReload(GridState<Vendor> state, CancellationToken cancellationToken)
     {
         var top = state.PageSize;
         var skip = state.Page * state.PageSize;
@@ -158,7 +158,8 @@
     {
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<AddVendor>("Add Vendor", dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<AddVendor>("Add Vendor", dialogOptions);
+        var result = await dialogRef.Result;
 
         if (!result.Canceled)
         {
@@ -171,7 +172,8 @@
         DialogParameters<UpdateVendor> dialogParams = new() { { x => x.Id, record.Id!.Value } };
         DialogOptions dialogOptions = new() { FullWidth = true, CloseOnEscapeKey = true };
 
-        var result = await DialogService.Show<UpdateVendor>("Update Vendor", dialogParams, dialogOptions).Result;
+        var dialogRef = await DialogService.ShowAsync<UpdateVendor>("Update Vendor", dialogParams, dialogOptions);
+        var result = await dialogRef.Result;
 
         if (!result.Canceled)
         {
@@ -181,7 +183,7 @@
 
     private async void OnDelete(Vendor record)
     {
-        var result = await DialogService.ShowMessageBox(
+        var result = await DialogService.ShowMessageBoxAsync(
             "Warning",
             "Are you sure you want to delete this record?",
             "Delete",
