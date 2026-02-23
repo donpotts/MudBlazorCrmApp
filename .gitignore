@@ -400,3 +400,9 @@ FodyWeavers.xsd
 # Markdown files (except README.md)
 *.md
 !README.md
+
+# Scratch/test files
+check.cs
+_typecheck/
+test-*.ps1
+
